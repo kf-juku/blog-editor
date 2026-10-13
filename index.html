@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
+<title>ブログエディター</title>
+<style>
+:root {
+  --crimson: #C6000B; --crimson-dark: #A00008;
+  --crimson-light: #FFF0F0; --crimson-mid: #f4a0a5;
+  --surface: #f4f6f9; --surface2: #edf0f5; --border: #dde3ec;
+  --text: #1a2535; --text-muted: #5a6a7e; --text-light: #94a3b8;
+  --blue: #3b82f6; --blue-light: #dbeafe; --blue-dark: #1d4ed8;
+  --green: #10b981; --green-light: #d1fae5; --green-dark: #065f46;
+  --amber: #f59e0b; --amber-light: #fef3c7; --amber-dark: #92400e;
+  --purple: #8b5cf6; --purple-light: #ede9fe; --purple-dark: #5b21b6;
+  --gray: #6b7280; --gray-light: #f3f4f6;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  --radius: 10px;
+}
+* { box-sizing: border-box; }
+body { font-family: 'Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif; background: var(--surface);
+  margin: 0; font-size: 14px; color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+button { font-family: inherit; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 試作の注意帯 */
+
+
+/* ナビ（B案） */
+.app-layout { display: flex; min-height: calc(100vh - 26px); }
+.app-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.side-nav { width: 170px; flex-shrink: 0; background: white; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; position: sticky; top: 0; height: calc(100vh - 26px); }
+.side-nav-logo { padding: 10px 14px; font-weight: 800; font-size: 13px; border-bottom: 1px solid var(--border); }
+.side-nav-logo small { display: block; font-weight: 400; color: var(--text-muted); font-size: 11px; }
+.side-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; border: none;
+  background: none; font-size: 13px; color: var(--text-muted); width: 100%; text-align: left; border-left: 3px solid transparent; }
+.side-nav-item.active { background: var(--surface2); color: var(--text); font-weight: 700; border-left-color: var(--text); }
+.side-nav-foot { margin-top: auto; padding: 10px 14px; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); }
+.bottom-nav { display: none; }
+@media (max-width: 640px) {
+  .side-nav { display: none; }
+  .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1.5px solid var(--border); z-index: 200; }
+  .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 4px; border: none; background: none; font-size: 11px; color: var(--text-muted); }
+  .bottom-nav-item.active { color: var(--text); font-weight: 700; }
+  .app-content { padding-bottom: 60px; }
+}
+
+/* 共通部品 */
+.view { display: none; padding: 12px 14px; }
+.view.active { display: block; }
+.page-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.page-head h1 { font-size: 18px; margin: 0; }
+.btn-primary { background: var(--crimson); color: white; border: none; border-radius: 8px; padding: 7px 15px;
+  font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.btn-primary:hover { background: var(--crimson-dark); }
+.btn-primary:disabled { background: var(--text-light); cursor: not-allowed; }
+.btn-ghost { background: white; color: var(--text-muted); border: 1.5px solid var(--border); border-radius: 7px;
+  padding: 6px 13px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+.btn-ghost:hover { background: var(--surface2); border-color: #94a3b8; }
+.btn-ghost.on { background: var(--text); color: white; border-color: var(--text); }
+.btn-icon { background: none; border: none; cursor: pointer; font-size: 13px; color: var(--text-muted); padding: 3px 6px; border-radius: 5px; }
+.btn-icon:hover { background: var(--surface2); color: var(--text); }
+.card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; margin-bottom: 8px; }
+.card h2 { font-size: 14px; margin: 0 0 6px; }
+.muted { color: var(--text-muted); font-size: 12px; }
+.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.b-gray { background: var(--gray-light); color: var(--gray); }
+.b-blue { background: var(--blue-light); color: var(--blue-dark); }
+.b-green { background: var(--green-light); color: var(--green-dark); }
+.b-amber { background: var(--amber-light); color: var(--amber-dark); }
+.b-purple { background: var(--purple-light); color: var(--purple-dark); }
+.b-red { background: #ffe4e6; color: #be123c; }
+.form-label { font-size: 10.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 3px; display: block; }
+.form-input, .form-select, .form-textarea { border: 1.5px solid var(--border); border-radius: 7px; padding: 6px 10px;
+  font-size: 13px; font-family: inherit; background: var(--surface); width: 100%; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--crimson); background: white; box-shadow: 0 0 0 3px rgba(198,0,11,0.1); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+table.tbl { border-collapse: collapse; width: auto; background: white; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+table.tbl th { background: var(--surface2); font-size: 11px; color: var(--text-muted); text-align: left; padding: 6px 10px; white-space: nowrap; }
+table.tbl td { padding: 7px 10px; border-top: 1px solid var(--border); font-size: 13px; vertical-align: top; }
+table.tbl tr.click:hover td { background: #fafbfd; cursor: pointer; }
+.t-title { font-weight: 700; }
+.t-sub { font-size: 11px; color: var(--text-muted); }
+.help { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%;
+  background: var(--surface2); color: var(--text-muted); font-size: 10px; font-weight: 700; cursor: help; }
+
+/* 記事一覧 */
+.stat-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.stat { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; }
+.stat .num { font-size: 22px; font-weight: 800; line-height: 1.2; }
+.stat .lbl { font-size: 11px; color: var(--text-muted); }
+
+/* エディター */
+.ed-top { background: white; border-bottom: 1px solid var(--border); padding: 8px 14px; position: sticky; top: 0; z-index: 30; }
+.ed-top .row1 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ed-title { font-size: 15px; font-weight: 800; }
+.sync { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); cursor: pointer; }
+.sync .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; }
+.sync.ng { color: var(--amber-dark); font-weight: 700; }
+.sync.ng .dot { background: var(--amber); }
+.steps { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.step { border: 1.5px solid var(--border); background: white; border-radius: 999px; padding: 3px 12px; font-size: 12px; color: var(--text-muted); cursor: pointer; }
+.step.done { background: var(--surface2); color: var(--text); }
+.step.cur { border-color: var(--text); color: var(--text); font-weight: 800; }
+.step.skip { opacity: .45; text-decoration: line-through; }
+.ed-body { display: grid; grid-template-columns: minmax(0,1fr) 340px; gap: 0; }
+.ed-body.chat-closed { grid-template-columns: minmax(0,1fr) 40px; }
+.ed-main { padding: 12px 14px; min-width: 0; }
+.ed-chat { border-left: 1px solid var(--border); background: white; display: flex; flex-direction: column; height: calc(100vh - 120px); position: sticky; top: 92px; }
+.chat-head { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 13px; }
+.chat-log { flex: 1; overflow-y: auto; padding: 8px 10px; }
+.msg { margin-bottom: 8px; font-size: 12.5px; }
+.msg .who { font-size: 10.5px; color: var(--text-muted); font-weight: 700; }
+.msg .bubble { padding: 2px 0; }
+.msg.me .bubble { background: var(--surface2); border-radius: 8px; padding: 6px 9px; }
+.msg .cost { font-size: 10.5px; color: var(--text-light); }
+.chat-input { border-top: 1px solid var(--border); padding: 8px 10px; }
+.ed-body.chat-closed .chat-log, .ed-body.chat-closed .chat-input, .ed-body.chat-closed .chat-head span { display: none; }
+.ed-body.chat-closed .chat-head { writing-mode: vertical-rl; border-bottom: none; padding: 10px 8px; }
+@media (max-width: 900px) { .ed-body { grid-template-columns: 1fr; } .ed-chat { position: static; height: 420px; border-left: none; border-top: 1px solid var(--border); } }
+
+.ed-body.no-chat { grid-template-columns: minmax(0,1fr); }
+.ed-body.no-chat .ed-chat { display: none; }
+.chat-target { padding: 6px 10px; border-bottom: 1px solid var(--border); font-size: 12px; background: var(--surface); }
+.chat-target b { font-weight: 700; }
+.doc .sel-target { background: #e2e8f0; outline: 1.5px solid var(--text-muted); }
+.step.skip::after { content: "（飛ばした）"; font-size: 10.5px; }
+.start-opt { display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px; border: 1.5px solid var(--border); border-radius: 8px; margin-bottom: 6px; cursor: pointer; font-size: 13px; }
+.start-opt input { margin-top: 4px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* 本文エディター */
+.toolbar { display: flex; gap: 4px; flex-wrap: wrap; padding: 6px; border: 1px solid var(--border); border-bottom: none; border-radius: var(--radius) var(--radius) 0 0; background: var(--surface2); }
+.toolbar button { background: white; border: 1px solid var(--border); border-radius: 5px; padding: 3px 9px; font-size: 12px; cursor: pointer; }
+.doc { background: white; border: 1px solid var(--border); border-radius: 0 0 var(--radius) var(--radius); padding: 14px 18px; min-height: 420px; font-size: 15px; line-height: 1.9; max-width: 760px; }
+.doc:focus { outline: none; border-color: var(--text-light); }
+.doc h2 { font-size: 17px; border-left: 4px solid var(--text); padding-left: 8px; margin: 18px 0 8px; }
+.doc .ai-add { border-bottom: 1.5px dotted var(--text-muted); cursor: help; }
+.doc .ai-add::before { content: "AI"; font-size: 9px; font-weight: 700; color: var(--text-muted); border: 1px solid var(--border); border-radius: 3px; padding: 0 3px; margin-right: 3px; vertical-align: 2px; }
+.doc .src { font-size: 12px; color: var(--text-muted); text-decoration: underline; }
+.doc .marker { background: linear-gradient(transparent 62%, #e2e8f0 62%); }
+.doc .warn-here { background: var(--amber-light); outline: 2px solid var(--amber); }
+.ph { border: 2px dashed var(--text-light); border-radius: 8px; padding: 10px 12px; margin: 10px 0; background: var(--surface); font-size: 12.5px; color: var(--text-muted); }
+.ph b { color: var(--text); }
+.balloon { display: flex; gap: 8px; align-items: flex-start; margin: 8px 0; }
+.balloon .ic { width: 38px; height: 38px; border-radius: 50%; background: var(--surface2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+.balloon .tx { background: var(--surface); border-radius: 10px; padding: 6px 10px; font-size: 14px; }
+
+/* 提案・チェックのリスト */
+.item { display: grid; grid-template-columns: 90px minmax(0, 560px) auto; gap: 10px; align-items: start; justify-content: start; padding: 8px 0; border-top: 1px solid var(--border); }
+.item:first-child { border-top: none; }
+.item .acts { display: flex; gap: 6px; }
+.item.done-ok > div:nth-child(2) { color: var(--text-muted); }
+.item.done-ng > div:nth-child(2) { color: var(--text-light); text-decoration: line-through; }
+.state-ok { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--green-dark); white-space: nowrap; }
+.state-ng { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
+.undo { background: none; border: none; color: var(--text-muted); text-decoration: underline; font-size: 12px; cursor: pointer; padding: 0 4px; }
+.grp-title { font-size: 13px; font-weight: 800; margin: 4px 0 2px; display: flex; gap: 6px; align-items: center; }
+.diff del { color: var(--text-light); }
+.diff ins { color: var(--text); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.title-opt { display: flex; gap: 8px; align-items: center; padding: 4px 0; font-size: 13px; }
+
+/* モーダル */
+.modal-back { position: fixed; inset: 0; background: rgba(15,23,42,.45); display: none; align-items: flex-start; justify-content: center; padding: 40px 12px; z-index: 500; overflow-y: auto; }
+.modal-back.show { display: flex; }
+.modal { background: white; border-radius: 12px; width: 100%; max-width: 620px; padding: 14px 16px; position: relative; max-height: calc(100vh - 80px); overflow-y: auto; }
+.modal h3 { margin: 0 0 8px; font-size: 16px; }
+.modal-foot { display: flex; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+.m-closebar{position:sticky;top:-8px;height:0;z-index:20;text-align:right;pointer-events:none;}
+.m-closefix{pointer-events:auto;position:relative;top:-6px;right:-6px;width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--text-muted);font-size:18px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.14);}
+.m-closefix:hover{border-color:var(--crimson);color:var(--crimson);}
+.type-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.type-card { border: 2px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; }
+.type-card.sel { border-color: var(--text); background: var(--surface); }
+.type-card b { display: block; font-size: 14px; }
+.chk { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; font-size: 13px; }
+.chk input { margin-top: 4px; width: 16px; height: 16px; }
+
+#toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#1e293b; color:white; padding:10px 20px;
+  border-radius:20px; font-size:13px; font-weight:600; z-index:9999; opacity:0; transition:opacity 0.2s; pointer-events:none; white-space:nowrap; }
+#toast.show { opacity:1; }
+.cost { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; }
+.act-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+.note-mock { font-size: 11px; color: var(--amber-dark); background: var(--amber-light); border-radius: 6px; padding: 2px 8px; display: inline-block; }
+
+.spin { display:inline-block;width:12px;height:12px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:-2px;margin-right:5px; }
+.spin.dark { border-color:#cbd5e1;border-top-color:#334155; }
+.btn-ghost:disabled { opacity:.6; cursor:not-allowed; }
+.sync.saving { color: var(--text-muted); }
+.sync.saving .dot { background: var(--text-light); }
+.flash { background: #fde68a !important; transition: background 1.2s; }
+.jump { cursor: pointer; }
+.jump:hover { text-decoration: underline; text-decoration-color: var(--text-light); }
+.back-bar { position:sticky; top:82px; z-index:25; box-shadow: var(--shadow-sm); display:flex; align-items:center; gap:8px; background: var(--surface2); border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; font-size: 12.5px; }
+.fig { margin: 10px 0; } .fig img { max-width: 100%; border-radius: 6px; } .fig figcaption { font-size: 11px; color: var(--text-muted); }
+.empty-state { text-align:center; padding:30px 20px; color:var(--text-light); background:white; border:1px solid var(--border); border-radius:var(--radius); max-width:760px; }
+.doc a { color: var(--text); }
+@media (max-width: 640px) { #v-list table.tbl th:nth-child(2), #v-list table.tbl td:nth-child(2), #v-list table.tbl th:nth-child(n+4), #v-list table.tbl td:nth-child(n+4) { display: none; } }
+
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.login-box { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; width: 100%; max-width: 360px; }
+.login-box h1 { font-size: 18px; margin: 0 0 4px; }
+.err { color: #be123c; font-size: 12px; margin-top: 6px; }
+.step.later { opacity: .4; cursor: not-allowed; border-style: dashed; }
+.loading-msg { padding: 20px; color: var(--text-muted); font-size: 13px; }
+.app-layout { min-height: 100vh; }
+.side-nav { height: 100vh; }
+.ph-tools { margin-left: 6px; }
+.doc .marker { background: linear-gradient(transparent 62%, #bfdbfe 62%); }
+.doc table { border-collapse: collapse; margin: 8px 0; font-size: 13px; }
+.doc th, .doc td { border: 1px solid var(--border); padding: 4px 8px; text-align: left; }
+.doc th { background: #f8fafc; }
+.cost-line { display: flex; align-items: baseline; gap: 6px; margin-top: 2px; } .cost-line b { font-size: 18px; }
+
+.spin { display:inline-block;width:12px;height:12px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:-2px;margin-right:5px; }
+.spin.dark { border-color:#cbd5e1;border-top-color:#334155; }
+.btn-ghost:disabled { opacity:.6; cursor:not-allowed; }
+.sync.saving { color: var(--text-muted); }
+.sync.saving .dot { background: var(--text-light); }
+.flash { background: #fde68a !important; transition: background 1.2s; }
+.jump { cursor: pointer; }
+.jump:hover { text-decoration: underline; text-decoration-color: var(--text-light); }
+.back-bar { position:sticky; top:82px; z-index:25; box-shadow: var(--shadow-sm); display:flex; align-items:center; gap:8px; background: var(--surface2); border-radius: 8px; padding: 6px 10px; margin-bottom: 8px; font-size: 12.5px; }
+.fig { margin: 10px 0; } .fig img { max-width: 100%; border-radius: 6px; } .fig figcaption { font-size: 11px; color: var(--text-muted); }
+.empty-state { text-align:center; padding:30px 20px; color:var(--text-light); background:white; border:1px solid var(--border); border-radius:var(--radius); max-width:760px; }
+.doc a { color: var(--text); }
+@media (max-width: 640px) { #v-list table.tbl th:nth-child(2), #v-list table.tbl td:nth-child(2), #v-list table.tbl th:nth-child(n+4), #v-list table.tbl td:nth-child(n+4) { display: none; } }
+
+</style>
+</head>
+<body>
+<!-- ログイン -->
+<div id="login" class="login-wrap" style="display:none">
+  <div class="login-box">
+    <h1>ブログエディター</h1>
+    <div class="muted" style="margin-bottom:8px">進学塾クロフネ　共通パスワードを入れてください（この端末に記憶します）</div>
+    <input class="form-input" type="password" id="loginPass" placeholder="共通パスワード" onkeydown="if(event.key==='Enter')doLogin(document.getElementById('loginBtn'))">
+    <div id="loginErr" class="err" style="display:none"></div>
+    <button class="btn-primary" id="loginBtn" style="margin-top:8px;width:100%" onclick="doLogin(this)">ログイン</button>
+  </div>
+</div>
+
+<div class="app-layout" id="app" style="display:none">
+  <nav class="side-nav">
+    <div class="side-nav-logo"><span>ブログエディター</span><small>進学塾クロフネ</small></div>
+    <button class="side-nav-item active" data-v="list" onclick="go('list')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span>記事一覧</span></button>
+    <button class="side-nav-item" data-v="library" onclick="go('library')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>資料ライブラリ</span></button>
+    <button class="side-nav-item" data-v="settings" onclick="go('settings')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>設定</span></button>
+    <div class="side-nav-foot"><span>今月のAI利用料金</span><br><b style="font-size:14px;color:var(--text)" class="js-month">$0.00</b> <span class="js-month-yen">（約0円）</span><div class="t-sub" style="margin-top:4px" id="verLine"></div></div>
+  </nav>
+
+  <main class="app-content">
+
+    <!-- ================= 記事一覧 ================= -->
+    <section class="view active" id="v-list">
+      <div class="page-head">
+        <h1>記事一覧</h1>
+        <button class="btn-primary" onclick="openNew()">＋ 新しい記事を書く</button>
+        <button class="btn-ghost" onclick="loadList(this)">一覧を読み込み直す</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="num" id="stWork">-</div><div class="lbl">作業中の記事</div></div>
+        <div class="stat"><div class="num" id="stSent">-</div><div class="lbl">下書き送信済み</div></div>
+        <div class="stat"><div class="num js-month">$0.00</div><div class="lbl">今月のAI利用料金（<span class="js-month-yen2">約0円</span>・概算）</div></div>
+        <div class="stat"><div class="lbl">今の設定で記事1本を作る目安 <span class="help" title="塾長ブログ＝「AIで記事を作る」1回＋AIチャット5回。情報発信ブログ＝記事が長いぶん「AIで記事を作る」が重く、AIチャット10回。第2段階で「調査」と「最終チェック」が入ると、その分が足されます。内訳は「設定」→「モデル・料金」">?</span></div>
+          <div class="cost-line"><span class="lbl">塾長ブログ</span><b class="js-art-juku-yen">-</b></div>
+          <div class="cost-line"><span class="lbl">情報発信ブログ</span><b class="js-art-info-yen">-</b><span class="lbl">（第2段階の調査・最終チェック込みで <span class="js-art-info-full-yen">-</span>）</span></div></div>
+      </div>
+      <div class="row" style="margin-bottom:8px">
+        <input class="form-input" style="width:260px" placeholder="タイトルで検索" id="listQ" oninput="renderList()">
+        <button class="btn-ghost on" data-f="all" onclick="setListFilter(this)">すべて</button>
+        <button class="btn-ghost" data-f="juku" onclick="setListFilter(this)">塾長ブログ</button>
+        <button class="btn-ghost" data-f="info" onclick="setListFilter(this)">情報発信ブログ</button>
+        <span class="muted" id="listCount"></span>
+      </div>
+      <div id="listLoading" class="loading-msg"><span class="spin dark"></span>記事一覧を読み込んでいます…</div>
+      <table class="tbl" id="listTbl" style="display:none">
+        <thead><tr><th>タイトル</th><th>種類</th><th>進行状況</th><th>更新</th><th>AI料金</th></tr></thead>
+        <tbody id="listBody"></tbody>
+      </table>
+      <div class="empty-state" id="listEmpty" style="display:none"></div>
+    </section>
+
+    <!-- ================= 記事の画面 ================= -->
+    <section class="view" id="v-editor" style="padding:0">
+      <div class="ed-top">
+        <div class="row1">
+          <button class="btn-icon" onclick="leaveEditor()"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg><span>記事一覧</span></button>
+          <span class="ed-title" id="edTitle">（タイトル未定）</span>
+          <span class="muted" id="edType"></span>
+          <span class="sync ok" id="sync" onclick="syncClick()" title="この画面の内容とサーバーに保存されている内容が同じかを表示します"><span class="dot"></span><span id="syncTx">-</span></span>
+          <span class="muted">この記事のAI料金 <span id="artCost">$0.00</span>（<span id="artCostYen">約0円</span>） <span class="help" title="AIを呼ぶたびに、実際に使った量から計算した金額を足しています。概算です">?</span></span>
+        </div>
+        <div class="steps" id="steps" title="記事は 1→6 の順に進みます。灰色の工程は第2段階で使えるようになります">
+          <button class="step" onclick="step(0)">1 原稿</button>
+          <button class="step later" title="第2段階で使えるようになります">2 提案</button>
+          <button class="step later" title="第2段階で使えるようになります">3 調査</button>
+          <button class="step" onclick="step(3)">4 編集</button>
+          <button class="step later" title="第2段階で使えるようになります">5 最終チェック</button>
+          <button class="step" onclick="step(5)">6 送信</button>
+        </div>
+      </div>
+
+      <div class="ed-body" id="edBody">
+        <div class="ed-main">
+
+          <!-- 1 原稿 -->
+          <div class="panel" id="p0">
+            <div class="card">
+              <h2>原稿</h2>
+              <div class="muted" style="margin-bottom:6px">音声入力で作った文章をそのまま貼り付けてください。直接入力・修正もできます。入力中は自動で保存されます。</div>
+              <textarea class="form-textarea" style="min-height:260px" id="draft" oninput="draftInput()"></textarea>
+              <div class="muted"><span id="draftLen">0</span>字</div>
+            </div>
+            <div class="act-row"><button class="btn-primary" id="btnWrite" onclick="aiWrite(this)">AIで記事を作る</button><span class="cost">1回 <span data-cost="write">-</span>・30〜60秒かかります</span>
+              <button class="btn-ghost" onclick="draftToDoc()">AIに書かせず、原稿をそのまま本文にする</button></div>
+            <div class="muted" style="margin-top:6px">「2 提案」「3 調査」は第2段階で使えるようになります。今は原稿から直接記事を作ります。</div>
+          </div>
+
+          <!-- 4 編集 -->
+          <div class="panel" id="p3">
+            <div class="card" id="titleCard">
+              <h2>タイトル</h2>
+              <div id="titleOpts"></div>
+              <input class="form-input" style="max-width:600px;margin-top:4px" id="titleInput" placeholder="タイトルを入力" oninput="setTitle(this.value)">
+            </div>
+            <div class="toolbar" onmousedown="if(event.target.closest('button'))event.preventDefault()">
+              <button onclick="fmt('bold')"><b>太字</b></button>
+              <button onclick="fmt('h2')">見出し</button>
+              <button onclick="fmt('p')">見出しを戻す</button>
+              <button onclick="fmt('marker')">青マーカー</button>
+              <button onclick="fmt('link')">リンク</button>
+              <button onclick="insertPh()">画像の仮置きを入れる</button>
+              <button onclick="openRewrite()">選んだ文をAIに直させる</button>
+            </div>
+            <div class="doc" contenteditable="true" id="doc" oninput="docChanged()"></div>
+            <div class="act-row" style="margin-top:8px"><button class="btn-primary" onclick="step(5)">送信の準備へ進む</button><span class="muted">「5 最終チェック」は第2段階で使えるようになります。</span></div>
+          </div>
+
+          <!-- 6 送信 -->
+          <div class="panel" id="p5">
+            <div class="card">
+              <h2>WordPressに送る内容</h2>
+              <div class="row" style="align-items:flex-start">
+                <div style="width:240px"><label class="form-label">カテゴリ（1つ）</label><select class="form-select" id="cat" onchange="metaChanged()"><option value="">読み込み中…</option></select></div>
+                <div style="width:340px"><label class="form-label">スラッグ（英小文字とハイフン・公開後は変えない）</label><input class="form-input" id="slug" oninput="metaChanged()"></div>
+              </div>
+              <div style="max-width:640px;margin-top:6px"><label class="form-label">抜粋（120字前後） <span id="exLen" class="muted"></span></label><textarea class="form-textarea" style="min-height:60px" id="excerpt" oninput="exLen();metaChanged()"></textarea></div>
+              <div style="margin-top:6px"><label class="form-label">塾長コメント（吹き出し） <span class="muted">押すと本文の吹き出しが変わります</span></label>
+                <div class="row" id="comments"></div>
+              </div>
+            </div>
+            <div class="act-row"><button class="btn-primary" onclick="openSend()">WordPressに下書きを送る</button><span class="muted" id="sentInfo"></span></div>
+          </div>
+
+        </div>
+
+        <!-- AIチャット -->
+        <aside class="ed-chat">
+          <div class="chat-head"><button class="btn-icon" onclick="toggleChat()" title="AIチャットを折りたたむ／ひらく"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg></button><span>AIチャット（本文を直す）</span></div>
+          <div class="chat-target">直す対象：<b id="chatTarget">本文全体</b> <button class="undo" id="clearSel" style="display:none" onclick="clearTarget()">選択を外す</button> <span class="help" title="本文の文をドラッグで選ぶと、その文だけが対象になります。何も選ばないと本文全体が対象です。AIの案は「採用」を押すまで本文に入りません">?</span></div>
+          <div class="chat-log" id="chatLog"></div>
+          <div class="chat-input">
+            <textarea class="form-textarea" style="min-height:50px" id="chatIn" placeholder="例：保護者向けにやわらかく／もっと短く／具体例を1つ足して" onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){sendChat(document.getElementById('chatSend'))}"></textarea>
+            <div class="row" style="margin-top:4px"><button class="btn-ghost" id="chatSend" onclick="sendChat(this)">送る</button><span class="cost">1回 <span data-cost="chat">-</span></span><span class="muted">Ctrl＋Enter でも送れます</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= 資料ライブラリ ================= -->
+    <section class="view" id="v-library">
+      <div class="page-head"><h1>資料ライブラリ</h1></div>
+      <div class="empty-state">資料ライブラリは第3段階で使えるようになります。</div>
+    </section>
+
+    <!-- ================= 設定 ================= -->
+    <section class="view" id="v-settings">
+      <div class="page-head"><h1>設定</h1>
+        <button class="btn-ghost on" onclick="setTab(this,'s1')">AIの編集ルール</button>
+        <button class="btn-ghost" onclick="setTab(this,'s2')">モデル・料金</button>
+        <button class="btn-ghost" onclick="setTab(this,'s3')">WordPress・接続</button>
+      </div>
+      <div class="panel active" id="s1">
+        <div class="muted" style="margin-bottom:6px">ここを変えると、これから押すAIのボタンに反映されます。作成ずみの記事は書き換わりません。</div>
+        <div class="card" style="max-width:820px" oninput="rulesChanged()">
+          <label class="form-label">共通の文章編集方針</label><textarea class="form-textarea" data-k="rulesCommon"></textarea>
+          <label class="form-label" style="margin-top:6px">塾長ブログの文体</label><textarea class="form-textarea" data-k="rulesJuku"></textarea>
+          <label class="form-label" style="margin-top:6px">情報発信ブログの文体</label><textarea class="form-textarea" data-k="rulesInfo"></textarea>
+          <label class="form-label" style="margin-top:6px">読みやすさとユーモア（塾長ブログは全部、情報発信ブログは1〜2か所だけ使う）</label><textarea class="form-textarea" data-k="rulesHumor"></textarea>
+          <label class="form-label" style="margin-top:6px">音声入力の誤変換リスト（1行に1つ「誤→正」。「記事を作る」のときに直します）</label><textarea class="form-textarea" style="min-height:90px" data-k="voiceFix"></textarea>
+          <label class="form-label" style="margin-top:6px">禁止表現</label><textarea class="form-textarea" style="min-height:50px" data-k="rulesNg"></textarea>
+          <label class="form-label" style="margin-top:6px">手本にする過去記事（WordPressの投稿ID。カンマ区切り・3本まで）</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div style="flex:1;min-width:160px"><div class="muted">塾長ブログ</div><input class="form-input" data-k="exemplarJuku" placeholder="3285,3474"></div>
+            <div style="flex:1;min-width:160px"><div class="muted">情報発信ブログ</div><input class="form-input" data-k="exemplarInfo" placeholder="781,2257"></div>
+          </div>
+          <div class="muted">AIは手本の文体・文の長さ・運び方を真似ます。内容は真似しません。1本増やすと「記事を作る」1回あたり約1円上がります。</div>
+          <label class="form-label" style="margin-top:6px">使ってよいキーワード</label><textarea class="form-textarea" style="min-height:40px" data-k="keywords"></textarea>
+          <label class="form-label" style="margin-top:6px">塾長コメントの候補（1行に1つ）</label><textarea class="form-textarea" style="min-height:120px" data-k="comments"></textarea>
+          <div class="row" style="margin-top:8px"><button class="btn-primary" id="rulesSave" disabled onclick="saveRules(this)">AIの編集ルールを保存</button><span class="muted" id="rulesState">変更はありません</span></div>
+        </div>
+      </div>
+      <div class="panel" id="s2">
+        <div class="card" style="max-width:900px">
+          <h2>ボタンごとのAI料金 <span class="muted">今の設定での目安・概算</span> <span class="help" title="ボタンを1回押すたびにAIを呼びます。金額は、塾長ブログ1本（原稿1,200字・本文2,500字程度）を想定した試算です。実際の料金は記事一覧と記事の画面に、使った量から計算して表示します">?</span></h2>
+          <table class="tbl" id="costTbl"><thead><tr><th>押すボタン</th><th>どこにあるか</th><th>使うモデル</th><th>1回あたり</th><th>1記事で押す回数</th><th>1記事あたり</th></tr></thead><tbody></tbody></table>
+          <div class="muted" style="margin-top:6px">「2 提案」「3 調査」「5 最終チェック」のボタンは第2段階で増えます。</div>
+          <div class="row" style="margin-top:8px"><button class="btn-primary" id="modelSave" disabled onclick="saveModels(this)">モデルの設定を保存</button><span class="muted" id="modelState">変更はありません</span></div>
+          <details class="unit"><summary>計算に使っている公式の単価（確認日 <span id="priceDate"></span>）</summary>
+            <table class="tbl" style="margin-top:4px"><thead><tr><th>モデル</th><th>読ませる量（100万トークンあたり）</th><th>書かせる量（100万トークンあたり）</th></tr></thead><tbody id="priceBody"></tbody></table>
+            <div class="muted" style="margin-top:4px">為替：1ドル <input class="form-input" id="fx" style="width:70px;display:inline-block" oninput="calcCost();modelsChanged()"> 円　出典：platform.claude.com の料金ページ</div>
+          </details>
+        </div>
+      </div>
+      <div class="panel" id="s3">
+        <div class="card" style="max-width:760px">
+          <h2>WordPress との接続</h2>
+          <div class="row"><span class="badge b-gray" id="wpState">まだ確かめていません</span><span class="muted">送信は専用ユーザー（blog-editor-tool・編集者）、作者は「川上」</span></div>
+          <div class="muted" style="margin-top:6px">合い鍵（アプリケーションパスワード）は GAS 側に保存されていて、この画面には表示しません。</div>
+          <button class="btn-ghost" style="margin-top:8px" onclick="testWp(this)">接続を確かめる</button>
+        </div>
+        <div class="card" style="max-width:760px">
+          <h2>この端末</h2>
+          <div class="muted">共通パスワードはこの端末のブラウザに記憶しています。</div>
+          <button class="btn-ghost" style="margin-top:8px" onclick="logout()">この端末からログアウトする</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<nav class="bottom-nav" id="bnav" style="display:none">
+  <button class="bottom-nav-item active" data-v="list" onclick="go('list')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span>記事一覧</span></button>
+  <button class="bottom-nav-item" data-v="library" onclick="go('library')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>資料</span></button>
+  <button class="bottom-nav-item" data-v="settings" onclick="go('settings')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>設定</span></button>
+</nav>
+
+<!-- 新しい記事 -->
+<div class="modal-back" id="m-new"><div class="modal">
+  <h3>新しい記事を書く</h3>
+  <label class="form-label">記事の種類</label>
+  <div class="type-cards">
+    <div class="type-card sel" data-t="juku" onclick="selType(this)"><b>塾長ブログ</b><span class="muted">日々の出来事・教室で感じたこと・教育の考え</span></div>
+    <div class="type-card" data-t="info" onclick="selType(this)"><b>情報発信ブログ</b><span class="muted">受験・学校・学習方法・制度（調査・最終チェックは第2段階）</span></div>
+  </div>
+  <label class="form-label" style="margin-top:10px">どこから始めるか</label>
+  <label class="start-opt"><input type="radio" name="startAt" value="0" checked><span><b>原稿から</b>（AIで記事にする）</span></label>
+  <label class="start-opt"><input type="radio" name="startAt" value="3"><span><b>本文ができているので編集から</b>（貼った文章をそのまま本文にする）</span></label>
+  <label class="form-label" style="margin-top:8px">原稿または本文（あとからでも貼れます）</label>
+  <textarea class="form-textarea" id="newText" placeholder="音声入力で作った文章や、できている本文を貼り付け"></textarea>
+  <div class="modal-foot"><button class="btn-primary" id="newBtn" onclick="createArticle(this)">この内容で記事を作る</button><button class="btn-ghost" onclick="closeModal('m-new')">キャンセル</button></div>
+</div></div>
+
+<!-- 選んだ文をAIに直させる -->
+<div class="modal-back" id="m-rewrite"><div class="modal">
+  <h3>選んだ文をAIに直させる</h3>
+  <div class="muted">選んだ文：「<span id="rwSrc"></span>」　選んだ文以外は変わりません。</div>
+  <div class="row" style="margin-top:6px"><input class="form-input" style="flex:1;min-width:200px" id="rwHow" placeholder="どう直すか（例：もっと短く）" value="もっと短く"><button class="btn-ghost" onclick="rewritePreview(this)">修正案を作る</button><span class="cost">1回 <span data-cost="chat">-</span></span></div>
+  <div class="card" style="margin-top:8px;display:none" id="rwOut"><div class="t-sub">修正前と修正後</div><div class="diff"><del id="rwDel"></del><br><ins id="rwIns"></ins></div></div>
+  <div class="modal-foot"><button class="btn-primary" id="rwAdopt" disabled onclick="rewriteAdopt()">この修正を採用</button><button class="btn-ghost" onclick="closeModal('m-rewrite')">やめる</button></div>
+</div></div>
+
+<!-- リンク -->
+<div class="modal-back" id="m-link"><div class="modal">
+  <h3>リンクを付ける</h3>
+  <div class="muted">選んだ文：「<span id="lkSrc"></span>」</div>
+  <input class="form-input" style="margin-top:6px" id="lkUrl" placeholder="https://">
+  <div class="modal-foot"><button class="btn-primary" onclick="applyLink()">この文にリンクを付ける</button><button class="btn-ghost" onclick="closeModal('m-link')">やめる</button></div>
+</div></div>
+
+<!-- 本文全体の修正案 -->
+<div class="modal-back" id="m-whole"><div class="modal" style="max-width:820px">
+  <h3>本文全体を直す案</h3>
+  <div class="muted">採用すると本文がこの内容に入れ替わります。今の本文は履歴に残します。</div>
+  <div class="doc" id="wholePreview" style="min-height:200px;margin-top:8px;max-width:none"></div>
+  <div class="modal-foot"><button class="btn-primary" id="wholeAdopt" onclick="wholeAdopt()">この案を採用して本文に入れる</button><button class="btn-ghost" onclick="closeModal('m-whole')">閉じる</button></div>
+</div></div>
+
+<!-- 送信前の確認 -->
+<div class="modal-back" id="m-send"><div class="modal">
+  <h3>WordPressに下書きを送る前の確認</h3>
+  <div id="sendBody"></div>
+  <div class="modal-foot" id="sendFoot"><button class="btn-primary" id="sendBtn" disabled onclick="doSend(this, false)">このまま下書きを送る</button><button class="btn-ghost" onclick="closeModal('m-send')">戻って直す</button></div>
+</div></div>
+
+<!-- ずれの解決 -->
+<div class="modal-back" id="m-sync"><div class="modal">
+  <h3 id="syTitle">この画面とサーバーの内容がずれています</h3>
+  <div class="muted" id="syLead"></div>
+  <div class="card" style="margin-top:8px"><table class="tbl"><thead><tr><th></th><th>この端末</th><th>サーバー</th></tr></thead><tbody id="syBody"></tbody></table></div>
+  <div class="modal-foot"><button class="btn-ghost" onclick="resolveSync('mine', this)">この端末を正にする</button><button class="btn-ghost" onclick="resolveSync('server', this)">サーバーを正にする</button></div>
+</div></div>
+
+<div id="toast"></div>
+<script>
+// ===== ブログエディター（第1段階） =====
+var APP_VERSION = 'v1.2（2026-10-10 誤変換リスト・読みやすさ）';
+var GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9v4PW9op-Nx58BaRsGwk__KWzLecZtNQR7N5lu_N9O3nKQYRQhubBlQAQLf1WytWHWw/exec';
+var GAS_URL = (new URLSearchParams(location.search).get('gas')) || GAS_URL_DEFAULT;
+var STEP_NAMES = ['原稿入力中', '提案確認中', '調査中', '編集中', '最終チェック中', '送信準備中'];
+var SAVE_DELAY = 2500;   // 自動保存までの待ち（GASの往復より短くしない）
+var POLL_MS = 60000;     // ほかの端末の保存を確かめる間隔
+
+var PASS = lsGet('be_pass') || '';
+var articles = [], monthUsd = 0, settings = null, listFilter = 'all', newType = 'juku';
+var cur = null;          // 開いている記事 { id, title, type, step, status, wpId, version, updatedAt, costUsd, skipped, content:{...} }
+var st = { dirty: false, saving: false, pending: false, editSeq: 0, snapshot: '', retryTimer: null, saveTimer: null, conflictServer: null, pollTimer: null };
+var savedRange = null, chatRanges = {}, wholeHtml = '';
+
+// ===== 小道具 =====
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { } }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) { } }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function hm(iso) { if (!iso) return ''; var t = String(iso); var d = t.slice(5, 10).replace('-', '/'); var today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(5, 10).replace('-', '/'); return (d === today ? '今日 ' : d + ' ') + t.slice(11, 16); }
+function toast(msg, ms) { var el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(function () { el.classList.remove('show'); }, ms || 2400); }
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function busy(btn, label) { if (!btn) return function () { }; var tx = btn.innerHTML; var dark = btn.classList.contains('btn-ghost') || btn.classList.contains('btn-icon'); btn.disabled = true; btn.innerHTML = '<span class="spin' + (dark ? ' dark' : '') + '"></span><span>' + (label || '処理中…') + '</span>'; return function () { btn.disabled = false; btn.innerHTML = tx; }; }
+
+// ===== GAS とのやりとり =====
+function api(action, payload) {
+  var body = Object.assign({ action: action, pass: PASS }, payload || {});
+  return fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
+    .then(function (r) { if (!r.ok) throw new Error('サーバーに接続できませんでした（' + r.status + '）'); return r.json(); })
+    .then(function (j) {
+      if (j.auth === false) { showLogin('パスワードが違います。入れ直してください'); throw new Error('パスワードが違います'); }
+      if (!j.ok) throw new Error(j.error || 'エラーが起きました');
+      return j;
+    });
+}
+function netMsg(e) { var m = String(e && e.message || e); return /Failed to fetch|NetworkError|Load failed/.test(m) ? '通信できませんでした。ネットの接続を確かめてください' : m; }
+
+// ===== ログイン =====
+function showLogin(err) {
+  document.getElementById('app').style.display = 'none'; document.getElementById('bnav').style.display = 'none';
+  document.getElementById('login').style.display = '';
+  var e = document.getElementById('loginErr'); e.style.display = err ? '' : 'none'; e.textContent = err || '';
+  setTimeout(function () { document.getElementById('loginPass').focus(); }, 50);
+}
+function doLogin(btn) {
+  var v = document.getElementById('loginPass').value.trim();
+  if (!v) { showLogin('パスワードを入れてください'); return; }
+  PASS = v; var done = busy(btn, '確かめています…');
+  api('ping').then(function () { lsSet('be_pass', v); done(); startApp(); }).catch(function (e) { done(); if (PASS === v) showLogin(netMsg(e)); });
+}
+function logout() { lsDel('be_pass'); PASS = ''; showLogin(''); }
+function startApp() {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = ''; document.getElementById('bnav').style.display = '';
+  document.getElementById('verLine').textContent = '画面 ' + APP_VERSION;
+  loadSettings(); loadList();
+}
+
+// ===== 画面の切り替え =====
+function go(v) {
+  document.querySelectorAll('.view').forEach(function (el) { el.classList.toggle('active', el.id === 'v-' + v); });
+  document.querySelectorAll('[data-v]').forEach(function (el) { el.classList.toggle('active', el.getAttribute('data-v') === v || (v === 'editor' && el.getAttribute('data-v') === 'list')); });
+  if (v !== 'editor') stopPoll();
+  window.scrollTo(0, 0);
+}
+
+// ===== 記事一覧 =====
+function loadList(btn) {
+  var done = busy(btn, '読み込み中…');
+  return api('list').then(function (j) {
+    done(); articles = j.articles || []; monthUsd = j.monthUsd || 0; updateMonth();
+    if (j.version) document.getElementById('verLine').textContent = '画面 ' + APP_VERSION + '／GAS ' + j.version;
+    renderList();
+  }).catch(function (e) { done(); document.getElementById('listLoading').innerHTML = '記事一覧を読み込めませんでした：' + esc(netMsg(e)) + ' <button class="btn-ghost" onclick="loadList(this)">もう一度読み込む</button>'; });
+}
+function statusBadge(a) {
+  if (a.status === 'sent') return '<span class="badge b-green">下書き送信済み</span>';
+  if (a.status === 'pub') return '<span class="badge b-green">公開済み</span>';
+  return '<span class="badge b-gray">' + (STEP_NAMES[a.step] || '原稿入力中') + '</span>';
+}
+function renderList() {
+  document.getElementById('listLoading').style.display = 'none';
+  var q = (document.getElementById('listQ').value || '').trim();
+  var rows = articles.filter(function (a) { return (listFilter === 'all' || a.type === listFilter) && (!q || String(a.title).indexOf(q) >= 0); });
+  document.getElementById('listBody').innerHTML = rows.map(function (a) {
+    return '<tr class="click" onclick="openArticle(\'' + a.id + '\')"><td><div class="t-title">' + esc(a.title || '（タイトル未定）') + '</div><div class="t-sub">' + (a.wpId ? 'WordPress 下書き #' + a.wpId : '') + '</div></td>' +
+      '<td class="t-sub">' + (a.type === 'info' ? '情報発信ブログ' : '塾長ブログ') + '</td><td>' + statusBadge(a) + '</td><td class="t-sub">' + hm(a.updatedAt) + '</td><td class="t-sub">$' + (a.costUsd || 0).toFixed(2) + '</td></tr>';
+  }).join('');
+  document.getElementById('listTbl').style.display = rows.length ? '' : 'none';
+  var em = document.getElementById('listEmpty');
+  em.style.display = rows.length ? 'none' : '';
+  em.textContent = articles.length ? '条件に合う記事がありません。検索語や絞り込みを変えてください。' : 'まだ記事がありません。「＋ 新しい記事を書く」から始めてください。';
+  document.getElementById('listCount').textContent = '全' + articles.length + '件中 ' + rows.length + '件表示';
+  document.getElementById('stWork').textContent = articles.filter(function (a) { return !a.status; }).length;
+  document.getElementById('stSent').textContent = articles.filter(function (a) { return a.status === 'sent'; }).length;
+}
+function setListFilter(btn) { listFilter = btn.getAttribute('data-f'); btn.parentNode.querySelectorAll('[data-f]').forEach(function (b) { b.classList.toggle('on', b === btn); }); renderList(); }
+
+// ===== 新しい記事 =====
+function openNew() { document.getElementById('newText').value = ''; document.querySelector('input[name=startAt][value="0"]').checked = true; openModal('m-new'); }
+function selType(el) { document.querySelectorAll('.type-card').forEach(function (c) { c.classList.toggle('sel', c === el); }); newType = el.getAttribute('data-t'); }
+function textToHtml(t) { return t.split(/\n+/).map(function (l) { return l.trim() ? '<p>' + esc(l.trim()) + '</p>' : ''; }).join(''); }
+function createArticle(btn) {
+  var start = +document.querySelector('input[name=startAt]:checked').value;
+  var text = document.getElementById('newText').value.trim();
+  var done = busy(btn, '作成中…');
+  api('create', { type: newType, step: start, draft: start === 0 ? text : '', doc: start === 3 && text ? textToHtml(text) : '', skipped: start === 3 ? { 1: true, 2: true } : {} })
+    .then(function (j) { done(); closeModal('m-new'); articles.unshift(j.article); renderList(); enterArticle(j.article); toast('記事を作りました'); })
+    .catch(function (e) { done(); toast('記事を作れませんでした：' + netMsg(e), 4000); });
+}
+
+// ===== 記事を開く =====
+function openArticle(id) {
+  toast('記事を開いています…');
+  api('get', { id: id }).then(function (j) { enterArticle(j.article); }).catch(function (e) { toast('記事を開けませんでした：' + netMsg(e), 4000); });
+}
+function enterArticle(a) {
+  cur = a; cur.content = cur.content || {}; cur.content.chat = cur.content.chat || [];
+  st = { dirty: false, saving: false, pending: false, editSeq: 0, snapshot: '', retryTimer: null, saveTimer: null, conflictServer: null, pollTimer: null };
+  chatRanges = {}; savedRange = null;
+  fillEditor();
+  go('editor');
+  step(cur.status === 'sent' ? 5 : (cur.step === 1 || cur.step === 2 || cur.step === 4 ? 3 : cur.step || 0), true);
+  setSync('ok');
+  startPoll();
+  // この端末に、送れていない内容が残っていないか
+  var bk = readBackup(cur.id);
+  if (bk) {
+    st.conflictServer = { title: cur.title, version: cur.version, updatedAt: cur.updatedAt, content: cur.content, step: cur.step };
+    showSyncModal('この端末に、サーバーへ送れていない内容が残っています', '前回この端末で編集した内容が、サーバーに届く前に画面が閉じられたようです（' + hm(bk.ts) + '）。どちらを正にするか選んでください。', bk);
+  }
+}
+function fillEditor() {
+  document.getElementById('edTitle').textContent = cur.title || '（タイトル未定）';
+  document.getElementById('edType').textContent = cur.type === 'info' ? '情報発信ブログ' : '塾長ブログ';
+  document.getElementById('draft').value = cur.content.draft || ''; draftCount();
+  setDoc(cur.content.doc || '');
+  document.getElementById('titleInput').value = cur.title === '（タイトル未定）' ? '' : (cur.title || '');
+  document.getElementById('slug').value = cur.content.slug || '';
+  document.getElementById('excerpt').value = cur.content.excerpt || ''; exLen();
+  renderTitles(); renderChat(); renderComments(); updateArtCost(); renderSentInfo(); loadCategories();
+}
+function leaveEditor() {
+  if (st.dirty || st.saving) { flushSave(); toast('保存してから一覧に戻ります…'); }
+  var a = articles.filter(function (x) { return x.id === cur.id; })[0];
+  if (a) Object.assign(a, { title: cur.title, step: cur.step, status: cur.status, wpId: cur.wpId, version: cur.version, updatedAt: cur.updatedAt, costUsd: cur.costUsd });
+  go('list'); renderList();
+}
+
+// ===== 工程 =====
+function step(n, silent) {
+  if (!cur) return;
+  if ([1, 2, 4].indexOf(n) >= 0) return;
+  var changed = cur.step !== n; cur.step = n;
+  document.querySelectorAll('#steps .step').forEach(function (el, i) {
+    el.classList.remove('cur', 'done');
+    if (el.classList.contains('later')) return;
+    if (i === n) el.classList.add('cur'); else if (i < n) el.classList.add('done');
+  });
+  [0, 3, 5].forEach(function (i) { document.getElementById('p' + i).classList.toggle('active', i === n); });
+  document.getElementById('edBody').classList.toggle('no-chat', n !== 3);
+  if (changed && !silent) markDirty();
+  window.scrollTo(0, 0);
+}
+
+// ===== 原稿 =====
+function draftInput() { draftCount(); cur.content.draft = document.getElementById('draft').value; markDirty(); }
+function draftCount() { document.getElementById('draftLen').textContent = document.getElementById('draft').value.length.toLocaleString(); }
+function draftToDoc() {
+  var t = document.getElementById('draft').value.trim();
+  if (!t) { toast('先に原稿を貼り付けてください'); return; }
+  if (docText() && !confirmReplace()) return;
+  st.snapshot = st.snapshot || '原稿をそのまま本文にする前';
+  setDoc(textToHtml(t)); cur.content.doc = cleanDoc(); step(3); markDirty(); toast('原稿をそのまま本文にしました');
+}
+function confirmReplace() { toast('今の本文は履歴に残してから入れ替えます'); return true; }
+
+// ===== AIで記事を作る =====
+function aiWrite(btn) {
+  var draft = document.getElementById('draft').value.trim();
+  if (!draft) { toast('先に原稿を貼り付けてください'); document.getElementById('draft').focus(); return; }
+  flushSave();
+  var done = busy(btn, 'AIが記事を書いています…（30〜60秒）');
+  api('ai', { kind: 'write', id: cur.id, draft: draft }).then(function (j) {
+    done(); addCost(j.costUsd);
+    var r = j.result;
+    if (docText()) st.snapshot = 'AIで記事を作る前';
+    cur.content.titleOptions = r.titles || [];
+    cur.content.comments = r.comments || [];
+    if (r.slug && !cur.content.slug) { cur.content.slug = r.slug; document.getElementById('slug').value = r.slug; }
+    if (r.excerpt && !cur.content.excerpt) { cur.content.excerpt = r.excerpt; document.getElementById('excerpt').value = r.excerpt; exLen(); }
+    setDoc(r.html); cur.content.doc = cleanDoc();
+    if (!cur.title || cur.title === '（タイトル未定）') setTitle((r.titles || [])[0] || '', true);
+    renderTitles(); renderComments();
+    step(3); markDirty();
+    toast('記事ができました（' + yen(j.costUsd) + '）' + (j.truncated ? '。途中で切れている可能性があります' : ''), 3500);
+  }).catch(function (e) { done(); toast('記事を作れませんでした：' + netMsg(e), 5000); });
+}
+
+// ===== タイトル =====
+function renderTitles() {
+  var t = cur.content.titleOptions || [];
+  document.getElementById('titleOpts').innerHTML = t.length ? t.map(function (x, i) {
+    return '<label class="title-opt"><input type="radio" name="tt" ' + (cur.title === x ? 'checked' : '') + ' onchange="setTitle(cur.content.titleOptions[' + i + '], true)"><span>' + esc(x) + '</span></label>';
+  }).join('') : '<div class="muted">AIで記事を作ると、タイトル案が3つ出ます。</div>';
+}
+function setTitle(v, fromOpt) {
+  cur.title = v || '（タイトル未定）';
+  document.getElementById('edTitle').textContent = cur.title;
+  if (fromOpt) document.getElementById('titleInput').value = v;
+  markDirty();
+}
+
+// ===== 本文 =====
+function setDoc(html) {
+  var d = document.getElementById('doc');
+  d.innerHTML = html || '';
+  decorateDoc();
+  if (!docText() && !d.querySelector('.ph,.balloon')) d.innerHTML = '<p><br></p>';
+}
+function decorateDoc() {
+  var d = document.getElementById('doc');
+  d.querySelectorAll('.balloon').forEach(function (b) {
+    b.setAttribute('contenteditable', 'false');
+    if (!b.querySelector('.ic')) { var ic = document.createElement('div'); ic.className = 'ic'; ic.textContent = '塾長'; b.insertBefore(ic, b.firstChild); }
+  });
+  d.querySelectorAll('.ph').forEach(function (p) {
+    p.setAttribute('contenteditable', 'false');
+    if (!p.querySelector('.ph-tools')) {
+      var t = document.createElement('span'); t.className = 'ph-tools';
+      t.innerHTML = ' <button class="btn-ghost ph-del" style="padding:1px 8px">この仮置きを消す</button>';
+      p.appendChild(t);
+    }
+  });
+}
+function cleanDoc() {
+  var w = document.createElement('div'); w.innerHTML = document.getElementById('doc').innerHTML;
+  w.querySelectorAll('.ph-tools,.balloon .ic').forEach(function (x) { x.remove(); });
+  w.querySelectorAll('[contenteditable]').forEach(function (x) { x.removeAttribute('contenteditable'); });
+  w.querySelectorAll('.flash,.sel-target').forEach(function (x) { x.classList.remove('flash', 'sel-target'); });
+  return w.innerHTML;
+}
+function docText() { return (document.getElementById('doc').textContent || '').trim(); }
+function docChanged() { if (!cur) return; cur.content.doc = cleanDoc(); markDirty(); }
+document.addEventListener('click', function (e) {
+  var b = e.target.closest ? e.target.closest('.ph-del') : null;
+  if (!b) return;
+  b.closest('.ph').remove(); docChanged(); toast('画像の仮置きを消しました');
+});
+document.addEventListener('selectionchange', function () {
+  var sel = window.getSelection(); var doc = document.getElementById('doc'); var t = document.getElementById('chatTarget');
+  if (!sel || !sel.rangeCount || !doc || !t) return;
+  var txt = sel.toString().trim();
+  if (txt && doc.contains(sel.anchorNode) && doc.contains(sel.focusNode)) {
+    savedRange = sel.getRangeAt(0).cloneRange();
+    t.textContent = '選んだ文「' + (txt.length > 24 ? txt.slice(0, 24) + '…' : txt) + '」';
+    document.getElementById('clearSel').style.display = '';
+  }
+});
+function clearTarget() { savedRange = null; document.getElementById('chatTarget').textContent = '本文全体'; document.getElementById('clearSel').style.display = 'none'; }
+function restoreSel() { if (!savedRange) return false; var s = window.getSelection(); s.removeAllRanges(); s.addRange(savedRange); return true; }
+function needSel() { if (!savedRange || !savedRange.toString().trim()) { toast('先に本文の文をドラッグで選んでください'); return false; } return true; }
+function fmt(kind) {
+  if (!needSel()) return;
+  document.getElementById('doc').focus(); restoreSel();
+  if (kind === 'bold') document.execCommand('bold');
+  if (kind === 'h2') document.execCommand('formatBlock', false, 'h2');
+  if (kind === 'p') document.execCommand('formatBlock', false, 'p');
+  if (kind === 'marker') { var sp = document.createElement('span'); sp.className = 'marker'; try { savedRange.surroundContents(sp); } catch (e) { toast('段落をまたいで選ぶとマーカーを付けられません'); return; } }
+  if (kind === 'link') { document.getElementById('lkSrc').textContent = savedRange.toString(); document.getElementById('lkUrl').value = ''; openModal('m-link'); return; }
+  docChanged();
+}
+function applyLink() {
+  var u = document.getElementById('lkUrl').value.trim();
+  if (!/^https?:\/\//.test(u)) { toast('https:// から始まるURLを入れてください'); return; }
+  document.getElementById('doc').focus(); restoreSel(); document.execCommand('createLink', false, u);
+  closeModal('m-link'); docChanged(); toast('リンクを付けました');
+}
+function insertPh() {
+  var what = '（何の画像か書いてください）';
+  var wrap = document.createElement('div'); wrap.innerHTML = '<div class="ph" data-what="' + what + '">画像の仮置き：' + what + '（種類：写真／用途：）</div>';
+  var node = wrap.firstChild; var doc = document.getElementById('doc');
+  if (savedRange && doc.contains(savedRange.endContainer)) {
+    var blk = savedRange.endContainer.nodeType === 1 ? savedRange.endContainer : savedRange.endContainer.parentNode;
+    while (blk && blk.parentNode !== doc) blk = blk.parentNode;
+    if (blk) blk.parentNode.insertBefore(node, blk.nextSibling); else doc.appendChild(node);
+  } else doc.appendChild(node);
+  decorateDoc(); node.scrollIntoView({ block: 'center' }); docChanged();
+  toast('画像の仮置きを入れました。中の文は送信前に「何の画像か」に書き換えてください');
+}
+
+// ===== 選んだ文をAIに直させる =====
+function openRewrite() {
+  if (!needSel()) return;
+  document.getElementById('rwSrc').textContent = savedRange.toString();
+  document.getElementById('rwOut').style.display = 'none'; document.getElementById('rwAdopt').disabled = true;
+  openModal('m-rewrite');
+}
+function rewritePreview(btn) {
+  var src = savedRange.toString(); var how = document.getElementById('rwHow').value.trim() || 'もっと読みやすく';
+  var done = busy(btn, '作成中…');
+  api('ai', { kind: 'chat', id: cur.id, selected: src, instruction: how, context: docText() }).then(function (j) {
+    done(); addCost(j.costUsd);
+    document.getElementById('rwDel').textContent = src;
+    document.getElementById('rwIns').textContent = j.result.noChange ? '（直す必要が見つかりませんでした。指示を変えてもう一度作ってください）' : j.result.text;
+    document.getElementById('rwOut').style.display = ''; document.getElementById('rwAdopt').disabled = !!j.result.noChange;
+  }).catch(function (e) { done(); toast('修正案を作れませんでした：' + netMsg(e), 4000); });
+}
+function replaceRange(range, text) {
+  range.deleteContents(); var n = document.createTextNode(text); range.insertNode(n);
+  var sp = document.createElement('span'); sp.className = 'flash'; n.parentNode.insertBefore(sp, n); sp.appendChild(n);
+  setTimeout(function () { if (sp.parentNode) { sp.parentNode.replaceChild(n, sp); } }, 1600);
+}
+function rewriteAdopt() { replaceRange(savedRange, document.getElementById('rwIns').textContent); closeModal('m-rewrite'); clearTarget(); docChanged(); toast('本文に反映しました'); }
+
+// ===== AIチャット =====
+function renderChat() {
+  var log = document.getElementById('chatLog');
+  var intro = '<div class="msg"><div class="who">使い方</div><div class="bubble muted">左の本文に対して指示します。文を選んでから指示するとその文だけ、選ばずに指示すると本文全体を直します。AIの案は「採用して本文に入れる」を押したときだけ本文に入ります。</div></div>';
+  log.innerHTML = intro + cur.content.chat.map(chatHtml).join('');
+  log.scrollTop = log.scrollHeight;
+}
+function chatHtml(m, i) {
+  if (m.me) return '<div class="msg me"><div class="who">あなた（対象：' + esc(m.target) + '）</div><div class="bubble">' + esc(m.text) + '</div></div>';
+  var acts;
+  if (m.none) acts = '';
+  else if (m.state === 'ok') acts = '<span class="state-ok">✓ 本文に入れた</span>';
+  else if (m.state === 'ng') acts = '<span class="state-ng">却下した</span>';
+  else if (m.whole) acts = '<button class="btn-ghost" onclick="openWhole(' + i + ')">案を見て採用する</button><button class="btn-ghost" onclick="chatReject(' + i + ')">却下</button>';
+  else if (chatRanges[i]) acts = '<button class="btn-ghost" onclick="chatAdopt(' + i + ')">採用して本文に入れる</button><button class="btn-ghost" onclick="chatReject(' + i + ')">却下</button><button class="btn-icon" onclick="chatShow(' + i + ')">本文のその場所を見る</button>';
+  else acts = '<span class="state-ng">画面を開き直したため採用できません。もう一度指示してください</span>';
+  return '<div class="msg"><div class="who">AI</div><div class="bubble">' + m.html + (acts ? '<div class="row" style="margin-top:4px">' + acts + '</div>' : '') + '</div><div class="cost">' + esc(m.cost || '') + '</div></div>';
+}
+function sendChat(btn) {
+  var inp = document.getElementById('chatIn'); var text = inp.value.trim();
+  if (!text) { toast('AIへの指示を入力してください'); return; }
+  if (!docText()) { toast('本文がまだありません'); return; }
+  var range = savedRange && savedRange.toString().trim() ? savedRange.cloneRange() : null;
+  var src = range ? range.toString() : '';
+  cur.content.chat.push({ me: true, text: text, target: range ? '選んだ文' : '本文全体' }); inp.value = ''; renderChat();
+  var done = busy(btn, 'AIが考え中…');
+  var payload = range ? { kind: 'chat', id: cur.id, selected: src, instruction: text, context: docText() } : { kind: 'chat', id: cur.id, instruction: text, doc: cleanDoc() };
+  api('ai', payload).then(function (j) {
+    done(); addCost(j.costUsd); var r = j.result; var m;
+    if (r.noChange) m = { html: (range ? '選んだ文' : '本文') + 'は、このままで直す必要が見つかりませんでした。別の言い方で指示してみてください。', none: true };
+    else if (range) { m = { html: '選んだ文だけを直す案です。ほかの文は変わりません。<div class="diff" style="margin-top:4px"><del>' + esc(src) + '</del> <ins>' + esc(r.text) + '</ins></div>', to: r.text }; }
+    else m = { html: '本文全体を直す案ができました。「案を見て採用する」で中身を確かめられます。', whole: r.text };
+    m.cost = yen(j.costUsd);
+    cur.content.chat.push(m);
+    if (range) chatRanges[cur.content.chat.length - 1] = range;
+    clearTarget(); renderChat(); markDirty();
+  }).catch(function (e) { done(); cur.content.chat.push({ html: 'AIに接続できませんでした：' + esc(netMsg(e)) + '。もう一度送ってください。', none: true }); renderChat(); });
+}
+function chatAdopt(i) { var m = cur.content.chat[i]; replaceRange(chatRanges[i], m.to); m.state = 'ok'; delete chatRanges[i]; renderChat(); docChanged(); toast('本文に反映しました'); }
+function chatReject(i) { cur.content.chat[i].state = 'ng'; delete chatRanges[i]; renderChat(); markDirty(); }
+function chatShow(i) { var r = chatRanges[i]; if (!r) return; var n = r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentNode; n.scrollIntoView({ block: 'center', behavior: 'smooth' }); n.classList.add('flash'); setTimeout(function () { n.classList.remove('flash'); }, 1800); }
+function openWhole(i) { wholeHtml = cur.content.chat[i].whole; document.getElementById('wholePreview').innerHTML = wholeHtml; document.getElementById('wholeAdopt').setAttribute('data-i', i); openModal('m-whole'); }
+function wholeAdopt() {
+  var i = +document.getElementById('wholeAdopt').getAttribute('data-i');
+  st.snapshot = st.snapshot || 'AIチャットで本文全体を直す前';
+  setDoc(wholeHtml); cur.content.doc = cleanDoc(); cur.content.chat[i].state = 'ok';
+  closeModal('m-whole'); renderChat(); markDirty(); toast('本文を入れ替えました（前の本文は履歴に残します）');
+}
+function toggleChat() { document.getElementById('edBody').classList.toggle('chat-closed'); }
+
+// ===== 送信 =====
+var categories = null;
+function loadCategories() {
+  var sel = document.getElementById('cat');
+  if (categories) return fillCats();
+  api('wpCategories').then(function (j) { categories = j.categories || []; fillCats(); })
+    .catch(function (e) { sel.innerHTML = '<option value="">カテゴリを読み込めませんでした</option>'; });
+}
+function fillCats() {
+  var sel = document.getElementById('cat');
+  sel.innerHTML = '<option value="">（選んでください）</option>' + categories.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + '</option>'; }).join('');
+  sel.value = cur.content.categoryId || '';
+}
+function metaChanged() {
+  cur.content.slug = document.getElementById('slug').value.trim();
+  cur.content.excerpt = document.getElementById('excerpt').value;
+  cur.content.categoryId = document.getElementById('cat').value;
+  markDirty();
+}
+function exLen() { document.getElementById('exLen').textContent = '（' + document.getElementById('excerpt').value.length + '字）'; }
+function renderComments() {
+  var all = String((settings && settings.comments) || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+  var pick = (cur.content.comments || []).filter(Boolean);
+  var list = pick.concat(all.filter(function (c) { return pick.indexOf(c) < 0; })).slice(0, 10);
+  var tx = document.querySelector('#doc .balloon .tx'); var curTx = tx ? tx.textContent : '';
+  document.getElementById('comments').innerHTML = list.length ? list.map(function (c, i) {
+    return '<button class="btn-ghost' + (c === curTx ? ' on' : '') + '" onclick="pickComment(this)">' + (i < pick.length ? '★ ' : '') + '<span>' + esc(c) + '</span></button>';
+  }).join('') + '<span class="muted">★＝AIのおすすめ</span>' : '<span class="muted">設定画面で塾長コメントの候補を入れてください</span>';
+}
+function pickComment(btn) {
+  var text = btn.querySelector('span').textContent;
+  var doc = document.getElementById('doc'); var tx = doc.querySelector('.balloon .tx');
+  if (!tx) {
+    var b = document.createElement('div'); b.className = 'balloon'; b.innerHTML = '<div class="tx"></div>';
+    var first = doc.querySelector('p'); if (first && first.nextSibling) doc.insertBefore(b, first.nextSibling); else doc.insertBefore(b, doc.firstChild);
+    decorateDoc(); tx = b.querySelector('.tx');
+  }
+  tx.textContent = text;
+  btn.parentNode.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === btn); });
+  docChanged(); toast('本文の吹き出しを変えました');
+}
+function renderSentInfo() {
+  var el = document.getElementById('sentInfo');
+  el.innerHTML = cur.wpId ? 'WordPress 下書き #' + cur.wpId + ' に送信済み（もう一度送ると、その下書きを更新します）' : '';
+}
+/** 本文 → WordPress（SWELL）用のHTML */
+function toWpHtml() {
+  var w = document.createElement('div'); w.innerHTML = cleanDoc();
+  var s = settings || {};
+  w.querySelectorAll('.balloon').forEach(function (b) {
+    var t = (b.querySelector('.tx') || b).textContent.trim();
+    var attrs = JSON.stringify({ balloonIcon: s.balloonIcon, balloonName: s.balloonName || '塾長 川上', balloonCol: 'blue' });
+    var c = document.createComment(' wp:loos/balloon ' + attrs + ' '); var p = document.createElement('p'); p.textContent = t; var e = document.createComment(' /wp:loos/balloon ');
+    b.parentNode.insertBefore(c, b); b.parentNode.insertBefore(p, b); b.parentNode.insertBefore(e, b); b.remove();
+  });
+  w.querySelectorAll('.marker').forEach(function (m) { m.className = 'swl-marker mark_blue'; });
+  w.querySelectorAll('b,strong').forEach(function (b) { var sp = document.createElement('span'); sp.className = 'swl-format-1'; sp.innerHTML = b.innerHTML; b.parentNode.replaceChild(sp, b); });
+  w.querySelectorAll('.ai-add').forEach(function (a) { a.replaceWith(document.createTextNode(a.textContent)); });
+  w.querySelectorAll('.ph').forEach(function (p) { var q = document.createElement('p'); q.textContent = '【画像の仮置き】' + p.textContent.replace(/^画像の仮置き：/, '').trim(); p.parentNode.replaceChild(q, p); });
+  w.querySelectorAll('[data-what]').forEach(function (x) { x.removeAttribute('data-what'); });
+  w.querySelectorAll('table').forEach(function (t) {
+    var f = document.createElement('figure'); f.className = 'wp-block-table';
+    t.parentNode.insertBefore(document.createComment(' wp:table '), t); t.parentNode.insertBefore(f, t); f.appendChild(t);
+    f.parentNode.insertBefore(document.createComment(' /wp:table '), f.nextSibling);
+  });
+  var html = w.innerHTML;
+  if (s.fixedBlockRef) html += '\n<!-- wp:block {"ref":' + Number(s.fixedBlockRef) + '} /-->';
+  return html;
+}
+function openSend() {
+  metaChanged();
+  var b = document.getElementById('sendBody'); var html = '';
+  var ph = document.querySelectorAll('#doc .ph').length;
+  var problems = [];
+  if (!cur.title || cur.title === '（タイトル未定）') problems.push('タイトルが入っていません（「4 編集」で入れてください）');
+  if (!docText()) problems.push('本文がありません');
+  if (cur.content.slug && !/^[a-z0-9-]+$/.test(cur.content.slug)) problems.push('スラッグは英小文字・数字・ハイフンだけにしてください');
+  if (problems.length) {
+    b.innerHTML = '<div class="grp-title"><span class="badge b-red">送れません</span></div>' + problems.map(function (p) { return '<div class="muted">・' + esc(p) + '</div>'; }).join('');
+    document.getElementById('sendBtn').disabled = true; openModal('m-send'); return;
+  }
+  var todo = (docText().match(/【要(エピソード|確認)[^】]*】/g) || []);
+  if (todo.length) html += '<div class="grp-title"><span class="badge b-amber">未完成</span><span>AIが書けなかった箇所が ' + todo.length + '件あります：' + esc(todo.slice(0, 3).join(' ')) + (todo.length > 3 ? ' ほか' : '') + '。本文で「【要」を探して埋めてください</span></div>';
+  html += '<div class="grp-title"><span class="badge b-amber">注意</span><span>最終チェック（事実・誤字・個人情報の確認）は第2段階で入ります。送る前に本文を読み直してください</span></div>';
+  html += '<div class="grp-title" style="margin-top:6px"><span class="badge b-gray">画像</span></div>';
+  html += ph ? '<div class="muted">・画像の仮置きが ' + ph + '件残っています。WordPress で差し替えてください</div>' : '<div class="muted">・画像の仮置きはありません</div>';
+  html += '<label class="chk"><input type="checkbox" class="must" onchange="chkSend()"><span>写っている生徒の掲載許可を確認した（写真がない場合もチェック）</span></label>';
+  var cat = document.getElementById('cat'); var catName = cat.value ? cat.options[cat.selectedIndex].text : '（なし）';
+  html += '<div class="muted" style="margin-top:6px">送り先：WordPress の下書き（' + (cur.wpId ? '#' + cur.wpId + ' を更新' : '新規') + '）／作者：川上／カテゴリ：' + esc(catName) + '</div>';
+  b.innerHTML = html; chkSend(); openModal('m-send');
+}
+function chkSend() { var all = Array.prototype.every.call(document.querySelectorAll('#m-send .must'), function (c) { return c.checked; }); document.getElementById('sendBtn').disabled = !all; }
+function doSend(btn, overwrite) {
+  flushSave();
+  var done = busy(btn, '送信中…');
+  api('wpSend', { id: cur.id, title: cur.title, html: toWpHtml(), slug: cur.content.slug, excerpt: cur.content.excerpt, categoryId: cur.content.categoryId, overwrite: !!overwrite }).then(function (j) {
+    done();
+    if (j.conflict) {
+      document.getElementById('sendBody').innerHTML = '<div class="grp-title"><span class="badge b-amber">確認</span><span>送ったあと、WordPress 側でこの下書きが直されています（' + esc(String(j.wpModified).replace('T', ' ')) + '）</span></div><div class="muted">このまま送ると、WordPress で直した内容は消えます。<a href="' + esc(j.link) + '" target="_blank" rel="noopener">WordPress の下書きを開く</a></div>';
+      document.getElementById('sendFoot').innerHTML = '<button class="btn-primary" onclick="doSend(this, true)">ツールの内容で上書きする</button><button class="btn-ghost" onclick="resetSendFoot();closeModal(\'m-send\')">やめる</button>';
+      return;
+    }
+    cur.wpId = j.wpId; cur.status = 'sent'; cur.version = j.version; cur.updatedAt = j.updatedAt; cur.step = 5;
+    resetSendFoot(); closeModal('m-send'); renderSentInfo(); setSync('ok');
+    toast(j.updated ? 'WordPress の下書き #' + j.wpId + ' を更新しました' : 'WordPress に下書き #' + j.wpId + ' を作りました', 3500);
+  }).catch(function (e) {
+    done();
+    var m = netMsg(e);
+    if (/公開済み/.test(m)) { cur.status = 'pub'; }
+    document.getElementById('sendBody').innerHTML = '<div class="grp-title"><span class="badge b-red">送れませんでした</span></div><div class="muted">' + esc(m) + '</div><div class="muted">記事はツールに残っています。直してからもう一度送ってください。</div>';
+    resetSendFoot(); document.getElementById('sendBtn').disabled = true;
+  });
+}
+function resetSendFoot() { document.getElementById('sendFoot').innerHTML = '<button class="btn-primary" id="sendBtn" disabled onclick="doSend(this, false)">このまま下書きを送る</button><button class="btn-ghost" onclick="closeModal(\'m-send\')">戻って直す</button>'; }
+
+// ===== 保存（版番号つき）・この端末への一時保存 =====
+function snapshotState() { return { title: cur.title, step: cur.step, content: JSON.parse(JSON.stringify(cur.content)) }; }
+function writeBackup() { if (!cur) return; var s = snapshotState(); s.baseVersion = cur.version; s.ts = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 19); lsSet('be_bk_' + cur.id, JSON.stringify(s)); }
+function readBackup(id) { try { var b = JSON.parse(lsGet('be_bk_' + id) || 'null'); return b; } catch (e) { return null; } }
+function markDirty() {
+  if (!cur) return;
+  st.dirty = true; st.editSeq++; writeBackup();
+  setSync('dirty');
+  clearTimeout(st.saveTimer); st.saveTimer = setTimeout(doSave, SAVE_DELAY);
+}
+function flushSave() { if (!cur) return; if (st.dirty && !st.conflictServer) { clearTimeout(st.saveTimer); doSave(); } }
+function doSave(force) {
+  if (!cur || (!st.dirty && !force)) return;
+  if (st.conflictServer && !force) return;     // ずれを解決するまで送らない
+  if (st.saving) { st.pending = true; return; } // 送信は1本ずつ
+  st.saving = true; var seq = st.editSeq; var id = cur.id;
+  setSync('saving');
+  var snap = st.snapshot; st.snapshot = '';
+  api('save', { id: id, baseVersion: cur.version, force: !!force, snapshot: snap, content: cur.content, meta: { title: cur.title, step: cur.step } }).then(function (j) {
+    st.saving = false;
+    if (!cur || cur.id !== id) return;
+    if (j.conflict) {
+      if (snap) st.snapshot = snap;
+      st.conflictServer = j.server;
+      setSync('conflict');
+      showSyncModal('この画面とサーバーの内容がずれています', 'ほかの端末で、この記事が保存されていました（' + hm(j.server.updatedAt) + '）。どちらを正にするか選んでください。機械が勝手にどちらかに決めることはしません。', snapshotState());
+      return;
+    }
+    cur.version = j.version; cur.updatedAt = j.updatedAt;
+    if (st.editSeq === seq) { st.dirty = false; lsDel('be_bk_' + id); setSync('ok'); }
+    else { writeBackup(); setSync('dirty'); }
+    if (st.pending || st.dirty) { st.pending = false; clearTimeout(st.saveTimer); st.saveTimer = setTimeout(doSave, 300); }
+  }).catch(function (e) {
+    st.saving = false; if (snap) st.snapshot = snap;
+    if (!cur || cur.id !== id) return;
+    setSync('fail', netMsg(e));
+    clearTimeout(st.retryTimer); st.retryTimer = setTimeout(function () { doSave(); }, 15000);
+  });
+}
+function setSync(state, msg) {
+  var s = document.getElementById('sync'), t = document.getElementById('syncTx');
+  s.className = 'sync ' + ({ ok: 'ok', saving: 'saving', dirty: 'saving', fail: 'ng', conflict: 'ng', newer: 'ng' }[state] || 'ok');
+  t.textContent = {
+    ok: 'サーバーと一致（' + hm(cur && cur.updatedAt) + ' 保存）',
+    saving: '保存中…',
+    dirty: '未保存の変更あり（自動で保存します）',
+    fail: '未保存：' + (msg || '') + '（15秒ごとに送り直します）',
+    conflict: 'サーバーとずれています（押して選ぶ）',
+    newer: 'ほかの端末で新しい保存があります（押して確認）'
+  }[state] || '';
+}
+function syncClick() {
+  if (st.conflictServer) { showSyncModal('この画面とサーバーの内容がずれています', 'どちらを正にするか選んでください。', snapshotState()); return; }
+  if (document.getElementById('sync').classList.contains('ng')) checkServer(true);
+}
+function showSyncModal(title, lead, mine) {
+  var sv = st.conflictServer || {};
+  document.getElementById('syTitle').textContent = title;
+  document.getElementById('syLead').textContent = lead;
+  var mc = mine.content || {}, sc = sv.content || {};
+  function len(h) { var d = document.createElement('div'); d.innerHTML = h || ''; return (d.textContent || '').length; }
+  var rows = [
+    ['タイトル', mine.title, sv.title],
+    ['本文の文字数', len(mc.doc) + '字', len(sc.doc) + '字'],
+    ['原稿の文字数', (mc.draft || '').length + '字', (sc.draft || '').length + '字'],
+    ['保存した時刻', mine.ts ? hm(mine.ts) + '（この端末）' : 'いま編集中', hm(sv.updatedAt)]
+  ];
+  document.getElementById('syBody').innerHTML = rows.map(function (r) { return '<tr><td class="t-sub">' + r[0] + '</td><td' + (r[1] !== r[2] ? ' style="font-weight:700"' : '') + '>' + esc(r[1]) + '</td><td' + (r[1] !== r[2] ? ' style="font-weight:700"' : '') + '>' + esc(r[2]) + '</td></tr>'; }).join('');
+  openModal('m-sync');
+  st._mine = mine;
+}
+function resolveSync(which, btn) {
+  var sv = st.conflictServer;
+  if (which === 'server') {
+    if (sv) { cur.title = sv.title; cur.step = sv.step; cur.version = sv.version; cur.updatedAt = sv.updatedAt; cur.content = sv.content || {}; cur.content.chat = cur.content.chat || []; }
+    st.conflictServer = null; st.dirty = false; lsDel('be_bk_' + cur.id);
+    fillEditor(); step(cur.step === 1 || cur.step === 2 || cur.step === 4 ? 3 : cur.step, true); closeModal('m-sync'); setSync('ok'); toast('サーバーの内容に合わせました');
+  } else {
+    var mine = st._mine;
+    if (mine && mine.content) { cur.title = mine.title; cur.content = mine.content; cur.content.chat = cur.content.chat || []; fillEditor(); }
+    if (sv) cur.version = sv.version;
+    st.conflictServer = null; st.dirty = true; closeModal('m-sync');
+    var done = busy(btn, '保存中…');
+    doSave(true);
+    setTimeout(done, 300);
+    toast('この端末の内容でサーバーを上書きします');
+  }
+}
+function startPoll() { stopPoll(); st.pollTimer = setInterval(function () { checkServer(false); }, POLL_MS); }
+function stopPoll() { if (st && st.pollTimer) clearInterval(st.pollTimer); }
+function checkServer(open) {
+  if (!cur || st.saving || st.conflictServer) return;
+  var id = cur.id;
+  api('head', { id: id }).then(function (j) {
+    if (!cur || cur.id !== id || st.saving) return;
+    if (j.version > cur.version) {
+      if (!open) { setSync('newer'); return; }
+      api('get', { id: id }).then(function (g) {
+        st.conflictServer = g.article;
+        showSyncModal('ほかの端末で新しい保存があります', st.dirty ? 'この端末にも保存していない変更があります。どちらを正にするか選んでください。' : 'この端末では変更していません。ふつうは「サーバーを正にする」を選びます。', snapshotState());
+      });
+    } else if (!st.dirty) setSync('ok');
+  }).catch(function () { });
+}
+window.addEventListener('beforeunload', function (e) { if (st && (st.dirty || st.saving)) { writeBackup(); e.preventDefault(); e.returnValue = ''; } });
+
+// ===== 料金 =====
+function yen(d) { var fx = Number((settings && settings.fx) || 150); return '約' + Math.round((d || 0) * fx) + '円'; }
+function addCost(usd) { usd = usd || 0; if (cur) cur.costUsd = (cur.costUsd || 0) + usd; monthUsd += usd; updateArtCost(); updateMonth(); }
+function updateArtCost() { if (!cur) return; document.getElementById('artCost').textContent = '$' + (cur.costUsd || 0).toFixed(2); document.getElementById('artCostYen').textContent = yen(cur.costUsd); }
+function updateMonth() {
+  document.querySelectorAll('.js-month').forEach(function (el) { el.textContent = '$' + monthUsd.toFixed(2); });
+  document.querySelectorAll('.js-month-yen').forEach(function (el) { el.textContent = '（' + yen(monthUsd) + '）'; });
+  document.querySelectorAll('.js-month-yen2').forEach(function (el) { el.textContent = yen(monthUsd); });
+}
+// 1回あたりの目安（千トークン。試作の実測：日本語1文字≒1.2トークン）
+// 塾長ブログ：本文2,500字前後／情報発信ブログ：本文4,000字前後（試作 test2 の実測：3,327字で書かせた量 4,029）
+var ACTS = [
+  { key: 'write', name: 'AIで記事を作る（手本の過去記事2本を含む）', where: '記事 › 1 原稿', inK: 15, outK: 3.5, n: 1, infoIn: 17, infoOut: 5.5, infoN: 1 },
+  { key: 'chat', name: 'AIチャットの「送る」／選んだ文をAIに直させる', where: '記事 › 右のAIチャット', inK: 5, outK: 0.5, n: 5, infoIn: 7, infoOut: 0.6, infoN: 10 }
+];
+// 第2段階で増えるボタンの目安（調査は試作 test1b の実測 約$0.14、最終チェックは試算）
+var LATER_INFO_USD = 0.14 + 0.35;
+var MODEL_LABEL = { 'claude-opus-5-5': 'Opus 5.5', 'claude-sonnet-5-5': 'Sonnet 5.5', 'claude-haiku-5-5': 'Haiku 5.5' };
+function oneCost(a, info) { var m = (settings.models || {})[a.key]; var p = (settings.prices || {})[m] || [0, 0]; return ((info ? a.infoIn : a.inK) * p[0] + (info ? a.infoOut : a.outK) * p[1]) / 1000; }
+function calcCost() {
+  if (!settings) return;
+  var fxIn = document.getElementById('fx'); if (fxIn.value) settings.fx = Number(fxIn.value) || 150;
+  var html = '', tot = 0, totInfo = 0;
+  ACTS.forEach(function (a, i) {
+    var c = oneCost(a); tot += c * a.n; totInfo += oneCost(a, true) * a.infoN;
+    var opts = Object.keys(settings.prices || {}).map(function (m) { return '<option value="' + m + '"' + (m === settings.models[a.key] ? ' selected' : '') + '>' + (MODEL_LABEL[m] || m) + '</option>'; }).join('');
+    html += '<tr><td class="t-title">' + a.name + '</td><td class="t-sub">' + a.where + '</td><td><select class="form-select" style="width:140px" onchange="settings.models[\'' + a.key + '\']=this.value;calcCost();modelsChanged()">' + opts + '</select></td>' +
+      '<td><b>' + yen(c) + '</b> <span class="t-sub">$' + c.toFixed(3) + '（情報発信ブログ ' + yen(oneCost(a, true)) + '）</span></td><td class="t-sub">' + a.n + '回（情報発信ブログ ' + a.infoN + '回）</td><td>' + yen(c * a.n) + '<span class="t-sub">（情報発信ブログ ' + yen(oneCost(a, true) * a.infoN) + '）</span></td></tr>';
+    document.querySelectorAll('[data-cost="' + a.key + '"]').forEach(function (el) { el.textContent = yen(c); });
+  });
+  document.querySelector('#costTbl tbody').innerHTML = html;
+  document.querySelectorAll('.js-art-juku-yen').forEach(function (el) { el.textContent = yen(tot); });
+  document.querySelectorAll('.js-art-info-yen').forEach(function (el) { el.textContent = yen(totInfo); });
+  document.querySelectorAll('.js-art-info-full-yen').forEach(function (el) { el.textContent = yen(totInfo + LATER_INFO_USD); });
+  document.getElementById('priceBody').innerHTML = Object.keys(settings.prices || {}).map(function (m) { var p = settings.prices[m]; return '<tr><td>' + (MODEL_LABEL[m] || m) + '</td><td>$' + p[0] + '</td><td>$' + p[1] + '</td></tr>'; }).join('');
+  document.getElementById('priceDate').textContent = settings.priceCheckedAt || '';
+  updateMonth(); updateArtCost();
+}
+
+// ===== 設定 =====
+function loadSettings() {
+  return api('getSettings').then(function (j) {
+    settings = j.settings;
+    document.querySelectorAll('#s1 [data-k]').forEach(function (t) { t.value = settings[t.getAttribute('data-k')] || ''; });
+    document.getElementById('fx').value = settings.fx || 150;
+    calcCost(); if (cur) renderComments();
+  }).catch(function (e) { toast('設定を読み込めませんでした：' + netMsg(e), 4000); });
+}
+function setTab(btn, id) { btn.parentNode.querySelectorAll('.btn-ghost').forEach(function (b) { b.classList.remove('on'); }); btn.classList.add('on'); ['s1', 's2', 's3'].forEach(function (s) { document.getElementById(s).classList.toggle('active', s === id); }); }
+function rulesChanged() { document.getElementById('rulesSave').disabled = false; document.getElementById('rulesState').textContent = '保存していない変更があります'; }
+function saveRules(btn) {
+  var s = {}; document.querySelectorAll('#s1 [data-k]').forEach(function (t) { s[t.getAttribute('data-k')] = t.value; });
+  var done = busy(btn, '保存中…');
+  api('saveSettings', { settings: s }).then(function (j) { done(); settings = j.settings; btn.disabled = true; document.getElementById('rulesState').textContent = '✓ 保存しました。これから押すAIのボタンに使われます'; toast('AIの編集ルールを保存しました'); if (cur) renderComments(); })
+    .catch(function (e) { done(); toast('保存できませんでした：' + netMsg(e), 4000); });
+}
+function modelsChanged() { document.getElementById('modelSave').disabled = false; document.getElementById('modelState').textContent = '保存していない変更があります'; }
+function saveModels(btn) {
+  var done = busy(btn, '保存中…');
+  api('saveSettings', { settings: { models: settings.models, fx: Number(document.getElementById('fx').value) || 150 } }).then(function (j) { done(); settings = j.settings; btn.disabled = true; document.getElementById('modelState').textContent = '✓ 保存しました'; calcCost(); toast('モデルの設定を保存しました'); })
+    .catch(function (e) { done(); toast('保存できませんでした：' + netMsg(e), 4000); });
+}
+function testWp(btn) {
+  var done = busy(btn, '確かめています…'); var el = document.getElementById('wpState');
+  api('wpTest').then(function (j) { done(); el.className = 'badge b-green'; el.textContent = '接続できています（' + j.name + '・' + hm(j.at) + ' 確認）'; })
+    .catch(function (e) { done(); el.className = 'badge b-red'; el.textContent = '接続できません：' + netMsg(e); });
+}
+
+// ===== モーダル共通（右上の×・Esc） =====
+document.querySelectorAll('.modal-back').forEach(function (back) {
+  var box = back.querySelector(':scope > .modal'); var bar = document.createElement('div'); bar.className = 'm-closebar';
+  var b = document.createElement('button'); b.className = 'm-closefix'; b.type = 'button'; b.textContent = '×'; b.title = '閉じる（Escでも閉じます）';
+  b.onclick = function () { if (back.id === 'm-sync') { toast('どちらを正にするか選んでください'); return; } closeModal(back.id); if (back.id === 'm-send') resetSendFoot(); };
+  bar.appendChild(b); box.insertBefore(bar, box.firstChild);
+});
+document.addEventListener('keydown', function (e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); flushSave(); return; }
+  if (e.key !== 'Escape') return; var o = document.querySelectorAll('.modal-back.show'); if (!o.length) return;
+  var top = o[o.length - 1]; if (top.id === 'm-sync') return; top.classList.remove('show');
+});
+
+// ===== 起動 =====
+if (PASS) { startApp(); } else { showLogin(''); }
+
+</script>
+</body>
+
+</html>
