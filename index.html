@@ -214,6 +214,22 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
 .side-nav { height: 100vh; }
 .ph-tools { margin-left: 6px; }
 .doc .marker { background: linear-gradient(transparent 62%, #bfdbfe 62%); }
+.help { cursor: pointer; }
+.help-pop { position: absolute; z-index: 1000; max-width: 320px; background: #1e293b; color: #fff; font-size: 12px; line-height: 1.6; padding: 8px 10px; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+.t-no { width: 1%; white-space: nowrap; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.t-act { width: 1%; white-space: nowrap; text-align: right; }
+.del-btn { color: var(--text-muted); }
+.del-btn:hover { color: #be123c; }
+.check-panel { border: 1px solid var(--border); background: #f8fafc; border-radius: 8px; padding: 8px 12px; margin: 8px; font-size: 13px; }
+.check-head { display: flex; gap: 8px; align-items: baseline; margin-bottom: 4px; }
+.check-item { display: flex; gap: 6px; align-items: flex-start; padding: 4px 0; border-top: 1px dashed var(--border); line-height: 1.6; }
+.check-item.done .check-note { color: var(--text-muted); text-decoration: line-through; }
+.check-item input { margin-top: 4px; }
+.check-where { padding: 0 6px; font-size: 12px; }
+.ai-prog { margin-top: 8px; max-width: 520px; }
+.ai-prog-bar { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.ai-prog-bar span { display: block; height: 100%; width: 0; background: #1e293b; transition: width .5s linear; }
+.ai-prog-tx { font-size: 12px; margin-top: 4px; }
 .doc table { border-collapse: collapse; margin: 8px 0; font-size: 13px; }
 .doc th, .doc td { border: 1px solid var(--border); padding: 4px 8px; text-align: left; }
 .doc th { background: #f8fafc; }
@@ -232,6 +248,142 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
 .empty-state { text-align:center; padding:30px 20px; color:var(--text-light); background:white; border:1px solid var(--border); border-radius:var(--radius); max-width:760px; }
 .doc a { color: var(--text); }
 @media (max-width: 640px) { #v-list table.tbl th:nth-child(2), #v-list table.tbl td:nth-child(2), #v-list table.tbl th:nth-child(n+4), #v-list table.tbl td:nth-child(n+4) { display: none; } }
+
+/* v1.8 右側のタブ・点検・ツールバー固定 */
+.toolbar { position: sticky; top: var(--edtop, 92px); z-index: 20; align-items: center; }
+.tb-hint { font-size: 11px; color: var(--text-muted); margin-left: 4px; }
+.chat-head { gap: 4px; padding: 6px 8px; }
+.side-tabs { display: flex; gap: 2px; flex: 1; }
+.side-tab { flex: 1; border: 1px solid var(--border); background: var(--surface2); border-radius: 6px; padding: 6px 4px; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text-muted); }
+.side-tab.on { background: #1e293b; color: #fff; border-color: #1e293b; }
+.tab-n { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; background: #f59e0b; color: #fff; font-size: 11px; line-height: 18px; }
+.tab-n:empty { display: none; }
+.side-closed-label { display: none; }
+.side-pane { display: none; flex: 1; flex-direction: column; min-height: 0; }
+.side-pane.on { display: flex; }
+#paneCheck, #paneFinish { overflow-y: auto; }
+.ed-body.chat-closed .side-pane, .ed-body.chat-closed .side-tabs { display: none !important; }
+.ed-body.chat-closed .side-closed-label { display: inline; font-size: 13px; }
+.chat-guide { margin: 0; padding: 4px 10px; font-size: 12px; line-height: 1.6; background: #f8fafc; border-bottom: 1px solid var(--border); }
+.chat-guide summary { cursor: pointer; color: var(--text-muted); }
+.chat-guide ol { margin: 4px 0 2px; padding-left: 18px; }
+.ed-body { grid-template-columns: minmax(0,1fr) 440px; }
+.ed-chat { top: var(--edtop, 92px); height: calc(100vh - var(--edtop, 92px)); }
+.msg.me .bubble.clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.msg .more { font-size: 11px; margin-top: 2px; }
+@media (min-width: 901px) { body:has(#v-editor.active .ed-body:not(.no-chat):not(.chat-closed)) #toast { left: auto; right: 460px; transform: none; max-width: calc(100vw - 720px); bottom: 70px; white-space: normal; } }
+@media (max-width: 900px) { .ed-body { grid-template-columns: 1fr; } .ed-chat { position: static; height: 520px; } }
+.chat-target { padding: 6px 10px; }
+.ct-quote { margin-top: 4px; background: #fde68a; border-radius: 4px; padding: 4px 6px; font-size: 12px; line-height: 1.6; max-height: 72px; overflow: hidden; }
+::highlight(be-target) { background: #fde68a; }
+::highlight(be-pending) { background: #dcfce7; text-decoration: underline wavy #16a34a; }
+.chat-cost { margin-top: 4px; font-size: 11px; line-height: 1.5; white-space: normal; }
+.diff2 { margin-top: 4px; font-size: 13px; line-height: 1.6; }
+.diff2 .lb { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
+.diff2 .bf { background: #fee2e2; padding: 3px 6px; border-radius: 4px; text-decoration: line-through; color: #7f1d1d; }
+.diff2 .af { background: #dcfce7; padding: 3px 6px; border-radius: 4px; }
+.check-panel { border: none; background: none; margin: 0; padding: 8px 10px; }
+.ck-lead { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin: 2px 0 6px; }
+.ck-item { border: 1px solid var(--border); border-radius: 8px; padding: 8px; margin-bottom: 8px; background: #fff; font-size: 13px; line-height: 1.6; }
+.ck-item.cur { border-color: #f59e0b; box-shadow: 0 0 0 2px #fde68a; }
+.ck-top { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 4px; }
+.ck-where { font-size: 12px; padding: 1px 6px; }
+.ck-acts { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.ck-acts button { font-size: 12px; padding: 3px 8px; }
+.ck-acts .ck-ai { background: #1e293b; color: #fff; border-color: #1e293b; }
+.ck-done-list summary { cursor: pointer; font-size: 12px; color: var(--text-muted); padding: 4px 0; }
+.ck-done { font-size: 12px; color: var(--text-muted); border-top: 1px dashed var(--border); padding: 4px 0; display: flex; gap: 6px; align-items: baseline; }
+.ck-done .ck-note { text-decoration: line-through; flex: 1; }
+.ck-how { white-space: nowrap; }
+.cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+.cmp-h { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.cmp-doc { max-width: none !important; height: 60vh; overflow-y: auto; min-height: 200px; font-size: 13px; }
+.cmp-doc .cmp-del { background: #fee2e2; outline: 2px solid #fecaca; }
+.cmp-doc .cmp-add { background: #dcfce7; outline: 2px solid #bbf7d0; }
+.cmp-del-l { background: #fee2e2; padding: 0 4px; border-radius: 3px; }
+.cmp-add-l { background: #dcfce7; padding: 0 4px; border-radius: 3px; }
+.bubble .wait { color: #b45309; }
+@media (max-width: 900px) { .cmp { grid-template-columns: 1fr; } .cmp-doc { height: 40vh; } }
+.ck-sec { font-weight: 700; font-size: 13px; margin: 10px 0 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+.ck-sec .muted { font-weight: 400; font-size: 11px; margin-left: 6px; }
+.diff2 .bf0 { background: #f1f5f9; padding: 3px 6px; border-radius: 4px; color: #475569; }
+.ck-done-item { opacity: .65; }
+.ck-fold { margin-top: 6px; }
+.ck-sub { font-size: 13px; font-weight: 700; margin: 10px 0 6px; color: #1e40af; }
+.ck-sub .muted { font-weight: 400; margin-left: 6px; font-size: 12px; }
+.b-blue { background: #dbeafe; color: #1e40af; }
+.ck-miss { font-size: 12px; color: #b91c1c; }
+.ck-fold > summary { cursor: pointer; font-size: 13px; color: var(--text-muted); padding: 6px 2px; }
+.ck-box { font-size: 12px; color: #9a3412; background: #ffedd5; border-radius: 6px; padding: 3px 8px; }
+.ck-rev { border-style: dashed; }
+.pin-box { border: 2px solid #f59e0b; border-radius: 8px; padding: 6px 8px; margin: 6px 0; background: #fffbeb; }
+.pin-h { font-weight: 700; font-size: 12px; color: #b45309; margin-bottom: 4px; }
+.chat-hist summary { cursor: pointer; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+.stale-warn { margin-top: 4px; background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-weight: 700; }
+.fin-pick { display: inline-flex; gap: 4px; align-items: center; font-size: 12px; font-weight: 700; }
+.fin-foot { position: sticky; bottom: 0; background: #fff; padding: 8px 0; border-top: 1px solid var(--border); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.ph-shot { font-size: 12px; color: var(--text-muted); margin-right: 6px; }
+.b-green { background: #dcfce7; color: #166534; }
+.b-rw { background: #ffedd5; color: #9a3412; }
+.btn-primary.btn-rw { background: #ea580c; margin-left: 8px; }
+.btn-primary.btn-rw:hover { background: #c2410c; }
+.btn-reload { padding: 3px 10px; font-size: 12px; }
+.rw-tag { display: inline-block; margin-right: 8px; padding: 1px 8px; border-radius: 4px; background: #ea580c; color: #fff; font-size: 12px; font-weight: 700; vertical-align: 2px; white-space: nowrap; }
+#edType .rw-tag { margin: 0 0 0 6px; }
+#askBody { white-space: pre-line; }
+.doc h3 { font-size: 15px; border-bottom: 1px dashed var(--border); padding-bottom: 2px; margin: 14px 0 6px; }
+.doc h3::before { content: 'H3 '; font-size: 10px; color: var(--text-muted); }
+.doc h2::before { content: 'H2 '; font-size: 10px; color: var(--text-muted); vertical-align: middle; }
+.slug-opts { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+.slug-opts button { font-size: 12px; padding: 2px 8px; }
+.cm-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; }
+.cm-lb { width: 120px; flex: none; font-size: 11px; font-weight: 700; color: var(--text-muted); padding-top: 6px; line-height: 1.4; }
+.btn-ghost.on { background: #1e293b; color: #fff; border-color: #1e293b; }
+.rel-item { display: flex; gap: 6px; align-items: center; padding: 3px 0; font-size: 13px; flex-wrap: wrap; }
+.rel-t { font-weight: 700; }
+.sec-card { margin-bottom: 12px; }
+.sec-card > h2 { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding-bottom: 6px; margin-bottom: 10px; border-bottom: 1px solid var(--border); }
+.sec-no { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; background: #1e293b; color: #fff; font-size: 12px; align-items: center; justify-content: center; flex: none; align-self: center; }
+.sec-sub { font-size: 12px; font-weight: 400; color: var(--text-muted); }
+.sec-send { border: 2px solid #1e293b; }
+.save-note { font-size: 12px; color: var(--text-muted); background: #f8fafc; border: 1px dashed var(--border); border-radius: 8px; padding: 6px 10px; margin-bottom: 10px; }
+.save-bar { position: sticky; bottom: 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; box-shadow: 0 -2px 8px rgba(0,0,0,.06); }
+.rel-sec { margin-bottom: 10px; }
+.rel-h { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+.rel-row { display: flex; gap: 6px; align-items: center; padding: 3px 6px; border-bottom: 1px solid var(--border); min-height: 28px; }
+.rel-row:hover { background: #f8fafc; }
+.rel-chosen .rel-row { border: 1px solid var(--border); border-radius: 6px; margin-bottom: 3px; background: #fff; }
+.rel-main { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px; overflow: hidden; }
+.rel-main .rel-t { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 0 1 auto; }
+.rel-meta { font-size: 11px; color: var(--text-muted); white-space: nowrap; flex: none; }
+.rel-btn { font-size: 11px; padding: 1px 8px; white-space: nowrap; line-height: 1.6; }
+.rel-add { border-color: #1e293b; }
+.rel-open { font-size: 11px; white-space: nowrap; }
+.rel-list { margin-top: 4px; }
+.rel-no { display: inline-flex; width: 18px; height: 18px; border-radius: 50%; background: #1e293b; color: #fff; font-size: 11px; align-items: center; justify-content: center; flex: none; }
+.rel-mv { font-size: 10px; padding: 0 5px; line-height: 1.6; min-width: 22px; }
+.rel-mv:disabled { opacity: .3; cursor: default; }
+.rel-row .badge { font-size: 10px; padding: 0 6px; white-space: nowrap; }
+.doc .keep { border: 1px dashed #64748b; background: #f1f5f9; border-radius: 6px; padding: 6px 10px; margin: 8px 0; font-size: 13px; color: #334155; }
+.keep-tools { display: flex; gap: 8px; align-items: center; margin-bottom: 2px; font-size: 11px; }
+.keep-tag { color: #64748b; font-weight: 700; }
+.ph-alt { display: block; margin-top: 4px; font-size: 11px; color: var(--text-muted); }
+.ph-alt code { background: #fff; border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; }
+.rw-diff { border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; margin: 8px 0; font-size: 12px; }
+.rw-diff summary { cursor: pointer; font-weight: 700; }
+.rw-row { display: flex; gap: 8px; margin: 6px 0; }
+.box-seg { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0; }
+.box-seg .muted { flex: none; width: 18px; padding-top: 8px; text-align: right; }
+.box-seg textarea { flex: 1; resize: vertical; }
+.rw-blk { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin: 4px 0; font-size: 14px; }
+.rw-blk .btn-ghost { flex: none; padding: 2px 10px; }
+.rw-row .lb { flex: none; width: 36px; font-weight: 700; color: var(--text-muted); }
+.rw-body { max-height: 260px; overflow: auto; margin-top: 6px; }
+.d-del { background: #fef2f2; color: #991b1b; text-decoration: line-through; padding: 2px 6px; border-radius: 4px; margin: 2px 0; }
+.d-add { background: #f0fdf4; color: #166534; padding: 2px 6px; border-radius: 4px; margin: 2px 0; }
+.ck-split { background: #fff7ed; border: 2px solid #fb923c; border-radius: 10px; padding: 10px; margin: 6px 0 10px; }
+.ck-split-h { font-weight: 700; font-size: 14px; color: #9a3412; margin-bottom: 4px; }
+.ck-all-done { background: #dcfce7; border-radius: 8px; padding: 8px; font-size: 13px; margin-bottom: 8px; }
 
 </style>
 </head>
@@ -253,7 +405,7 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
     <button class="side-nav-item active" data-v="list" onclick="go('list')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span>記事一覧</span></button>
     <button class="side-nav-item" data-v="library" onclick="go('library')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>資料ライブラリ</span></button>
     <button class="side-nav-item" data-v="settings" onclick="go('settings')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>設定</span></button>
-    <div class="side-nav-foot"><span>今月のAI利用料金</span><br><b style="font-size:14px;color:var(--text)" class="js-month">$0.00</b> <span class="js-month-yen">（約0円）</span><div class="t-sub" style="margin-top:4px" id="verLine"></div></div>
+    <div class="side-nav-foot"><span>今月のAI利用料金</span><br><b style="font-size:14px;color:var(--text)" class="js-month">$0.00</b><div class="t-sub" style="margin-top:4px" id="verLine"></div></div>
   </nav>
 
   <main class="app-content">
@@ -262,27 +414,30 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
     <section class="view active" id="v-list">
       <div class="page-head">
         <h1>記事一覧</h1>
-        <button class="btn-primary" onclick="openNew()">＋ 新しい記事を書く</button>
-        <button class="btn-ghost" onclick="loadList(this)">一覧を読み込み直す</button>
+        <button class="btn-primary" onclick="openNew()">＋ 新しい記事を書く</button><button class="btn-primary btn-rw" onclick="openRwPick()" title="検索で読まれている古い記事を、URLを変えずに今の書き方と最新の数字に直します">↻ 公開済みの記事をリライトする</button>
       </div>
       <div class="stat-row">
         <div class="stat"><div class="num" id="stWork">-</div><div class="lbl">作業中の記事</div></div>
         <div class="stat"><div class="num" id="stSent">-</div><div class="lbl">下書き送信済み</div></div>
-        <div class="stat"><div class="num js-month">$0.00</div><div class="lbl">今月のAI利用料金（<span class="js-month-yen2">約0円</span>・概算）</div></div>
-        <div class="stat"><div class="lbl">今の設定で記事1本を作る目安 <span class="help" title="塾長ブログ＝「AIで記事を作る」1回＋AIチャット5回。情報発信ブログ＝記事が長いぶん「AIで記事を作る」が重く、AIチャット10回。第2段階で「調査」と「最終チェック」が入ると、その分が足されます。内訳は「設定」→「モデル・料金」">?</span></div>
+        <div class="stat"><div class="num" id="stRw">-</div><div class="lbl">リライトで書き換え済み</div></div>
+        <div class="stat"><div class="num js-month">$0.00</div><div class="lbl">今月のAI利用料金（概算）</div></div>
+        <div class="stat"><div class="lbl">今の設定で記事1本を作る目安 <span class="help" title="塾長ブログ＝「AIで記事を作る」1回＋AIで部分修正5回＋仕上げチェック1回。情報発信ブログ＝記事が長いぶん「AIで記事を作る」が重く、AIで部分修正10回＋仕上げチェック1回。内訳は「設定」→「モデル・料金」">?</span></div>
           <div class="cost-line"><span class="lbl">塾長ブログ</span><b class="js-art-juku-yen">-</b></div>
-          <div class="cost-line"><span class="lbl">情報発信ブログ</span><b class="js-art-info-yen">-</b><span class="lbl">（第2段階の調査・最終チェック込みで <span class="js-art-info-full-yen">-</span>）</span></div></div>
+          <div class="cost-line"><span class="lbl">情報発信ブログ</span><b class="js-art-info-yen">-</b></div></div>
       </div>
       <div class="row" style="margin-bottom:8px">
         <input class="form-input" style="width:260px" placeholder="タイトルで検索" id="listQ" oninput="renderList()">
         <button class="btn-ghost on" data-f="all" onclick="setListFilter(this)">すべて</button>
         <button class="btn-ghost" data-f="juku" onclick="setListFilter(this)">塾長ブログ</button>
         <button class="btn-ghost" data-f="info" onclick="setListFilter(this)">情報発信ブログ</button>
+        <button class="btn-ghost" data-f="rw" onclick="setListFilter(this)">リライト</button>
+        <button class="btn-ghost" data-f="deleted" onclick="setListFilter(this)">削除した記事</button>
         <span class="muted" id="listCount"></span>
+        <button class="btn-ghost btn-reload" onclick="loadList(this)">一覧を読み込み直す</button>
       </div>
       <div id="listLoading" class="loading-msg"><span class="spin dark"></span>記事一覧を読み込んでいます…</div>
       <table class="tbl" id="listTbl" style="display:none">
-        <thead><tr><th>タイトル</th><th>種類</th><th>進行状況</th><th>更新</th><th>AI料金</th></tr></thead>
+        <thead><tr><th>No.</th><th>タイトル</th><th>種類</th><th>進行状況</th><th>更新</th><th>AI料金</th><th></th></tr></thead>
         <tbody id="listBody"></tbody>
       </table>
       <div class="empty-state" id="listEmpty" style="display:none"></div>
@@ -296,15 +451,13 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
           <span class="ed-title" id="edTitle">（タイトル未定）</span>
           <span class="muted" id="edType"></span>
           <span class="sync ok" id="sync" onclick="syncClick()" title="この画面の内容とサーバーに保存されている内容が同じかを表示します"><span class="dot"></span><span id="syncTx">-</span></span>
-          <span class="muted">この記事のAI料金 <span id="artCost">$0.00</span>（<span id="artCostYen">約0円</span>） <span class="help" title="AIを呼ぶたびに、実際に使った量から計算した金額を足しています。概算です">?</span></span>
+          <span class="muted">この記事のAI料金 <span id="artCost">$0.00（約0円）</span> <span class="help" title="AIを呼ぶたびに、実際に使った量から計算した金額を足しています。概算です">?</span></span>
         </div>
-        <div class="steps" id="steps" title="記事は 1→6 の順に進みます。灰色の工程は第2段階で使えるようになります">
+        <div class="steps" id="steps" title="記事は 1→4 の順に進みます">
           <button class="step" onclick="step(0)">1 原稿</button>
-          <button class="step later" title="第2段階で使えるようになります">2 提案</button>
-          <button class="step later" title="第2段階で使えるようになります">3 調査</button>
-          <button class="step" onclick="step(3)">4 編集</button>
-          <button class="step later" title="第2段階で使えるようになります">5 最終チェック</button>
-          <button class="step" onclick="step(5)">6 送信</button>
+          <button class="step" onclick="step(3)">2 編集</button>
+          <button class="step" onclick="step(4)">3 仕上げチェック</button>
+          <button class="step" onclick="step(5)">4 送信</button>
         </div>
       </div>
 
@@ -313,15 +466,23 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
 
           <!-- 1 原稿 -->
           <div class="panel" id="p0">
-            <div class="card">
+            <div class="card" id="rwCard" style="display:none">
+              <h2>リライトする記事</h2>
+              <div id="rwInfo"></div>
+              <div class="muted" style="margin-top:6px">AIは元の記事の中身・主張・主な言葉を残したまま、冒頭・見出し・抜粋を今の書き方に直します。年度の古い数字には【要確認】を付けるので、「3 仕上げチェック」で最新の数字を確かめてください。写真やSWELLの部品は「動かせない箱」のまま戻します。</div>
+              <div class="act-row" style="margin-top:8px"><button class="btn-primary" id="btnRewrite" onclick="aiRewrite(this)">AIでリライトする</button><span class="cost" id="rwCost"></span>
+                <button class="btn-ghost" onclick="step(3)">AIを使わずに、読み込んだ本文を直す</button></div>
+              <div class="muted" style="margin-top:4px">公開中の記事は、「4 送信」で送るまで変わりません。</div>
+            </div>
+            <div class="card" id="draftCard">
               <h2>原稿</h2>
               <div class="muted" style="margin-bottom:6px">音声入力で作った文章をそのまま貼り付けてください。直接入力・修正もできます。入力中は自動で保存されます。</div>
               <textarea class="form-textarea" style="min-height:260px" id="draft" oninput="draftInput()"></textarea>
               <div class="muted"><span id="draftLen">0</span>字</div>
             </div>
-            <div class="act-row"><button class="btn-primary" id="btnWrite" onclick="aiWrite(this)">AIで記事を作る</button><span class="cost">1回 <span data-cost="write">-</span>・30〜60秒かかります</span>
+            <div class="act-row" id="draftAct"><button class="btn-primary" id="btnWrite" onclick="aiWrite(this)">AIで記事を作る</button><span class="cost">1回 <span data-cost="write">-</span>・30〜60秒かかります</span>
               <button class="btn-ghost" onclick="draftToDoc()">AIに書かせず、原稿をそのまま本文にする</button></div>
-            <div class="muted" style="margin-top:6px">「2 提案」「3 調査」は第2段階で使えるようになります。今は原稿から直接記事を作ります。</div>
+            <div class="muted" style="margin-top:6px" id="draftNote">記事・タイトル案・点検・画像の仮置きとプロンプトを、1回でまとめて作ります。</div>
           </div>
 
           <!-- 4 編集 -->
@@ -332,44 +493,71 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
               <input class="form-input" style="max-width:600px;margin-top:4px" id="titleInput" placeholder="タイトルを入力" oninput="setTitle(this.value)">
             </div>
             <div class="toolbar" onmousedown="if(event.target.closest('button'))event.preventDefault()">
-              <button onclick="fmt('bold')"><b>太字</b></button>
-              <button onclick="fmt('h2')">見出し</button>
-              <button onclick="fmt('p')">見出しを戻す</button>
+              <button onclick="fmt('h2')" title="記事の中の大きな区切り。タイトルがH1になるので、本文はH2から">大見出し（H2）</button>
+              <button onclick="fmt('h3')" title="大見出しの中の小さな区切り">小見出し（H3）</button>
+              <button onclick="fmt('p')">見出しをやめる</button>
+              <button onclick="fmt('bold')" title="WordPressにはSWELLの太字（swl-format-1）で送ります。strongは使いません"><b>太字（SWELLの太字）</b></button>
               <button onclick="fmt('marker')">青マーカー</button>
               <button onclick="fmt('link')">リンク</button>
               <button onclick="insertPh()">画像の仮置きを入れる</button>
-              <button onclick="openRewrite()">選んだ文をAIに直させる</button>
+              <button onclick="focusChat()">選んだ文をAIで直す</button>
+              <span class="tb-hint" id="tbHint">文を選ぶか、カーソルを置いてから押します</span>
             </div>
             <div class="doc" contenteditable="true" id="doc" oninput="docChanged()"></div>
-            <div class="act-row" style="margin-top:8px"><button class="btn-primary" onclick="step(5)">送信の準備へ進む</button><span class="muted">「5 最終チェック」は第2段階で使えるようになります。</span></div>
+            <div class="act-row" style="margin-top:8px"><button class="btn-primary" id="actFinish" onclick="step(4)">仕上げチェックへ進む</button><button class="btn-ghost" id="actSend" onclick="step(5)">仕上げチェックをせずに送信へ</button></div>
           </div>
 
           <!-- 6 送信 -->
           <div class="panel" id="p5">
-            <div class="card">
-              <h2>WordPressに送る内容</h2>
+            <div class="save-note">この画面で変えた内容は、約2.5秒後に自動でツールに保存されます（上の「サーバーと一致」の時刻が変わります）。WordPressには、いちばん下の「⑤ WordPressに送る」で送ったときだけ反映されます。</div>
+            <div class="card sec-card">
+              <h2><span class="sec-no">①</span>WordPressの基本 <span class="sec-sub">カテゴリ・スラッグ（URL）・抜粋（検索結果や一覧に出る説明文）</span></h2>
               <div class="row" style="align-items:flex-start">
-                <div style="width:240px"><label class="form-label">カテゴリ（1つ）</label><select class="form-select" id="cat" onchange="metaChanged()"><option value="">読み込み中…</option></select></div>
-                <div style="width:340px"><label class="form-label">スラッグ（英小文字とハイフン・公開後は変えない）</label><input class="form-input" id="slug" oninput="metaChanged()"></div>
+                <div style="width:240px"><label class="form-label">カテゴリ（1つ）</label><select class="form-select" id="cat" onchange="metaChanged();catNote()"><option value="">読み込み中…</option></select><div class="muted" id="catNote" style="font-size:11px;margin-top:2px"></div></div>
+                <div style="width:340px"><label class="form-label">スラッグ（英小文字とハイフン・公開後は変えない）</label><input class="form-input" id="slug" oninput="metaChanged();renderSlugOpts()"><div class="slug-opts" id="slugOpts"></div></div>
               </div>
-              <div style="max-width:640px;margin-top:6px"><label class="form-label">抜粋（120字前後） <span id="exLen" class="muted"></span></label><textarea class="form-textarea" style="min-height:60px" id="excerpt" oninput="exLen();metaChanged()"></textarea></div>
-              <div style="margin-top:6px"><label class="form-label">塾長コメント（吹き出し） <span class="muted">押すと本文の吹き出しが変わります</span></label>
-                <div class="row" id="comments"></div>
-              </div>
+              <div style="max-width:640px;margin-top:8px"><label class="form-label">抜粋（120字前後） <span id="exLen" class="muted"></span></label><textarea class="form-textarea" style="min-height:60px" id="excerpt" oninput="exLen();metaChanged()"></textarea></div>
             </div>
-            <div class="act-row"><button class="btn-primary" onclick="openSend()">WordPressに下書きを送る</button><span class="muted" id="sentInfo"></span></div>
+            <div class="card sec-card">
+              <h2><span class="sec-no">②</span>アイキャッチ画像のプロンプト <span class="sec-sub">ChatGPTの画像生成に貼って、アイキャッチ画像を作ります。画像はWordPressで設定してください</span></h2>
+              <div style="max-width:760px"><textarea class="form-textarea" style="min-height:70px" id="eyecatch" oninput="cur.content.eyecatch=this.value;markDirty()" placeholder="「AIで記事を作る」で作られます"></textarea>
+              <button class="btn-ghost" style="margin-top:4px" onclick="copyText(document.getElementById('eyecatch').value,'アイキャッチのプロンプトをコピーしました')">プロンプトをコピー</button></div>
+            </div>
+            <div class="card sec-card">
+              <h2><span class="sec-no">③</span>あわせて読みたい <span class="sec-sub">記事の最後に出す過去の記事（3本まで）。話の似た記事や、前の年の版を選びます</span></h2>
+              <div id="related"></div>
+            </div>
+            <div class="card sec-card">
+              <h2><span class="sec-no">④</span>塾長コメント（吹き出し） <span class="sec-sub">記事の冒頭の吹き出しに入る一言。選ぶと本文の吹き出しがすぐ変わります</span></h2>
+              <div id="comments"></div>
+            </div>
+            <div class="card sec-card sec-send">
+              <h2><span class="sec-no">⑤</span>WordPressに送る <span class="sec-sub" id="sendSub">いつも「下書き」として送ります。公開はWordPressで行ってください</span></h2>
+              <div class="act-row" style="margin:0"><button class="btn-primary" id="btnOpenSend" onclick="openSend()">WordPressに下書きを送る</button><span class="muted" id="sentInfo"></span></div>
+            </div>
           </div>
-
         </div>
 
-        <!-- AIチャット -->
+        <!-- 右側：点検とAIチャット -->
         <aside class="ed-chat">
-          <div class="chat-head"><button class="btn-icon" onclick="toggleChat()" title="AIチャットを折りたたむ／ひらく"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg></button><span>AIチャット（本文を直す）</span></div>
-          <div class="chat-target">直す対象：<b id="chatTarget">本文全体</b> <button class="undo" id="clearSel" style="display:none" onclick="clearTarget()">選択を外す</button> <span class="help" title="本文の文をドラッグで選ぶと、その文だけが対象になります。何も選ばないと本文全体が対象です。AIの案は「採用」を押すまで本文に入りません">?</span></div>
-          <div class="chat-log" id="chatLog"></div>
-          <div class="chat-input">
-            <textarea class="form-textarea" style="min-height:50px" id="chatIn" placeholder="例：保護者向けにやわらかく／もっと短く／具体例を1つ足して" onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){sendChat(document.getElementById('chatSend'))}"></textarea>
-            <div class="row" style="margin-top:4px"><button class="btn-ghost" id="chatSend" onclick="sendChat(this)">送る</button><span class="cost">1回 <span data-cost="chat">-</span></span><span class="muted">Ctrl＋Enter でも送れます</span></div>
+          <div class="chat-head"><button class="btn-icon" onclick="toggleChat()" title="右の欄を折りたたむ／ひらく"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg></button>
+            <div class="side-tabs"><button class="side-tab" id="tabCheck" onclick="sideTab('check')">AIの点検 <span class="tab-n" id="tabCheckN"></span></button><button class="side-tab" id="tabChat" onclick="sideTab('chat')">AIで部分修正</button><button class="side-tab" id="tabFinish" onclick="sideTab('finish')">仕上げ <span class="tab-n" id="tabFinishN"></span></button></div>
+            <span class="side-closed-label">点検・部分修正・仕上げ</span></div>
+          <div class="side-pane" id="paneCheck"><div id="checkPanel"></div></div>
+          <div class="side-pane" id="paneFinish"><div id="finishPanel" class="check-panel"></div></div>
+          <div class="side-pane" id="paneChat">
+            <details class="chat-guide"><summary>使い方</summary><ol>
+              <li>本文で直したい文をドラッグで選ぶ（選ばなければ本文全体が対象）</li>
+              <li>下の欄にどう直すかを書いて「送る」</li>
+              <li>直す前と直した後が並んで出る</li>
+              <li>「採用して本文に入れる」を押したときだけ本文が変わる</li>
+            </ol></details>
+            <div class="chat-target" id="chatTargetBox"><div class="ct-label">直す対象：<b id="chatTarget">本文全体</b> <button class="undo" id="clearSel" style="display:none" onclick="clearTarget()">選択を外す</button></div><div class="ct-quote" id="chatQuote" style="display:none"></div></div>
+            <div class="chat-log" id="chatLog"></div>
+            <div class="chat-input">
+              <textarea class="form-textarea" style="min-height:50px" id="chatIn" placeholder="例：保護者向けにやわらかく／もっと短く／具体例を1つ足して" onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){sendChat(document.getElementById('chatSend'))}"></textarea>
+              <div class="row" style="margin-top:4px"><button class="btn-ghost" id="chatSend" onclick="sendChat(this)">送る</button><span class="muted" style="font-size:11px">Ctrl＋Enter でも送れます</span></div><div class="cost chat-cost" id="chatCost">-</div>
+            </div>
           </div>
         </aside>
       </div>
@@ -390,29 +578,44 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
       </div>
       <div class="panel active" id="s1">
         <div class="muted" style="margin-bottom:6px">ここを変えると、これから押すAIのボタンに反映されます。作成ずみの記事は書き換わりません。</div>
-        <div class="card" style="max-width:820px" oninput="rulesChanged()">
-          <label class="form-label">共通の文章編集方針</label><textarea class="form-textarea" data-k="rulesCommon"></textarea>
-          <label class="form-label" style="margin-top:6px">塾長ブログの文体</label><textarea class="form-textarea" data-k="rulesJuku"></textarea>
-          <label class="form-label" style="margin-top:6px">情報発信ブログの文体</label><textarea class="form-textarea" data-k="rulesInfo"></textarea>
-          <label class="form-label" style="margin-top:6px">読みやすさとユーモア（塾長ブログは全部、情報発信ブログは1〜2か所だけ使う）</label><textarea class="form-textarea" data-k="rulesHumor"></textarea>
-          <label class="form-label" style="margin-top:6px">音声入力の誤変換リスト（1行に1つ「誤→正」。「記事を作る」のときに直します）</label><textarea class="form-textarea" style="min-height:90px" data-k="voiceFix"></textarea>
-          <label class="form-label" style="margin-top:6px">禁止表現</label><textarea class="form-textarea" style="min-height:50px" data-k="rulesNg"></textarea>
-          <label class="form-label" style="margin-top:6px">手本にする過去記事（WordPressの投稿ID。カンマ区切り・3本まで）</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <div style="flex:1;min-width:160px"><div class="muted">塾長ブログ</div><input class="form-input" data-k="exemplarJuku" placeholder="3285,3474"></div>
-            <div style="flex:1;min-width:160px"><div class="muted">情報発信ブログ</div><input class="form-input" data-k="exemplarInfo" placeholder="781,2257"></div>
+        <div oninput="rulesChanged()" style="max-width:860px">
+          <div class="card sec-card">
+            <h2><span class="sec-no">①</span>文体 <span class="sec-sub">AIが記事を書くときの書き方。全部の記事に使う方針と、ブログの種類ごとの書き方</span></h2>
+            <label class="form-label">共通の文章編集方針（どちらのブログにも使う）</label><textarea class="form-textarea" data-k="rulesCommon"></textarea>
+            <label class="form-label" style="margin-top:8px">塾長ブログの文体</label><textarea class="form-textarea" data-k="rulesJuku"></textarea>
+            <label class="form-label" style="margin-top:8px">情報発信ブログの文体</label><textarea class="form-textarea" data-k="rulesInfo"></textarea>
+            <label class="form-label" style="margin-top:8px">読みやすさとユーモア（塾長ブログは全部、情報発信ブログは1〜2か所だけ使う）</label><textarea class="form-textarea" data-k="rulesHumor"></textarea>
           </div>
-          <div class="muted">AIは手本の文体・文の長さ・運び方を真似ます。内容は真似しません。1本増やすと「記事を作る」1回あたり約1円上がります。</div>
-          <label class="form-label" style="margin-top:6px">使ってよいキーワード</label><textarea class="form-textarea" style="min-height:40px" data-k="keywords"></textarea>
-          <label class="form-label" style="margin-top:6px">塾長コメントの候補（1行に1つ）</label><textarea class="form-textarea" style="min-height:120px" data-k="comments"></textarea>
-          <div class="row" style="margin-top:8px"><button class="btn-primary" id="rulesSave" disabled onclick="saveRules(this)">AIの編集ルールを保存</button><span class="muted" id="rulesState">変更はありません</span></div>
+          <div class="card sec-card">
+            <h2><span class="sec-no">②</span>直す言葉・使わない言葉 <span class="sec-sub">音声入力の誤変換を直す表と、AIに使わせない言い回し</span></h2>
+            <label class="form-label">音声入力の誤変換リスト（1行に1つ「誤→正」。「記事を作る」のときに直します）</label><textarea class="form-textarea" style="min-height:90px" data-k="voiceFix"></textarea>
+            <label class="form-label" style="margin-top:8px">禁止表現（／で区切る）</label><textarea class="form-textarea" style="min-height:50px" data-k="rulesNg"></textarea>
+          </div>
+          <div class="card sec-card">
+            <h2><span class="sec-no">③</span>手本とキーワード <span class="sec-sub">AIが真似する過去の記事と、記事に入れてよい言葉</span></h2>
+            <label class="form-label">手本にする過去記事（WordPressの投稿ID。カンマ区切り・3本まで）</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <div style="flex:1;min-width:160px"><div class="muted">塾長ブログ</div><input class="form-input" data-k="exemplarJuku" placeholder="3285,3474"></div>
+              <div style="flex:1;min-width:160px"><div class="muted">情報発信ブログ</div><input class="form-input" data-k="exemplarInfo" placeholder="781,2257"></div>
+            </div>
+            <div class="muted">AIは手本の文体・文の長さ・運び方を真似ます。内容は真似しません。1本増やすと「記事を作る」1回あたり約1円上がります。</div>
+            <label class="form-label" style="margin-top:8px">使ってよいキーワード（自然に入るときだけ使う）</label><textarea class="form-textarea" style="min-height:40px" data-k="keywords"></textarea>
+          </div>
+          <div class="card sec-card">
+            <h2><span class="sec-no">④</span>塾長コメントの候補 <span class="sec-sub">記事の冒頭の吹き出しに入る一言。1行に1つ</span></h2>
+            <textarea class="form-textarea" style="min-height:140px" data-k="comments"></textarea>
+          </div>
+          <div class="save-bar"><button class="btn-primary" id="rulesSave" disabled onclick="saveRules(this)">AIの編集ルールを保存</button><span class="muted" id="rulesState">変更はありません</span><span class="muted" style="font-size:11px">この画面は自動では保存されません。変えたらこのボタンを押してください</span></div>
         </div>
       </div>
       <div class="panel" id="s2">
         <div class="card" style="max-width:900px">
           <h2>ボタンごとのAI料金 <span class="muted">今の設定での目安・概算</span> <span class="help" title="ボタンを1回押すたびにAIを呼びます。金額は、塾長ブログ1本（原稿1,200字・本文2,500字程度）を想定した試算です。実際の料金は記事一覧と記事の画面に、使った量から計算して表示します">?</span></h2>
           <table class="tbl" id="costTbl"><thead><tr><th>押すボタン</th><th>どこにあるか</th><th>使うモデル</th><th>1回あたり</th><th>1記事で押す回数</th><th>1記事あたり</th></tr></thead><tbody></tbody></table>
-          <div class="muted" style="margin-top:6px">「2 提案」「3 調査」「5 最終チェック」のボタンは第2段階で増えます。</div>
+          
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border)"><label class="form-label">仕上げチェックでネット検索する回数の上限</label>
+            <select class="form-select" id="searchMax" style="width:140px" onchange="settings.searchMax=Number(this.value);calcCost();modelsChanged()"><option value="2">2回</option><option value="3">3回</option><option value="4">4回</option><option value="5">5回</option><option value="6">6回</option></select>
+            <span class="muted" style="font-size:12px">多いほど多くの事実を確かめられますが、料金が上がります（1回あたり検索料 約2円＋読ませる量 約9千トークン）</span></div>
           <div class="row" style="margin-top:8px"><button class="btn-primary" id="modelSave" disabled onclick="saveModels(this)">モデルの設定を保存</button><span class="muted" id="modelState">変更はありません</span></div>
           <details class="unit"><summary>計算に使っている公式の単価（確認日 <span id="priceDate"></span>）</summary>
             <table class="tbl" style="margin-top:4px"><thead><tr><th>モデル</th><th>読ませる量（100万トークンあたり）</th><th>書かせる量（100万トークンあたり）</th></tr></thead><tbody id="priceBody"></tbody></table>
@@ -426,6 +629,17 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
           <div class="row"><span class="badge b-gray" id="wpState">まだ確かめていません</span><span class="muted">送信は専用ユーザー（blog-editor-tool・編集者）、作者は「川上」</span></div>
           <div class="muted" style="margin-top:6px">合い鍵（アプリケーションパスワード）は GAS 側に保存されていて、この画面には表示しません。</div>
           <button class="btn-ghost" style="margin-top:8px" onclick="testWp(this)">接続を確かめる</button>
+        </div>
+        <div class="card" style="max-width:760px">
+          <h2>記事の最後に入れる定型文</h2>
+          <div class="muted" style="font-size:12px">WordPress のパターン（「パターン」の画面にあるもの）の番号を、記事に並べたい順にカンマで区切って書きます。あわせて読みたいのすぐ後ろに入ります。</div>
+          <label class="form-label" style="margin-top:6px">パターン番号（上から順）</label>
+          <input class="form-input" id="tailRefs" oninput="tailChanged()" placeholder="3686,2711,2286,2712,2713,1564">
+          <div class="muted" style="font-size:12px;margin-top:2px">今の並び：3686 クロフネ紹介文 → 2711 LINE誘導① → 2286 LINEボタン（友だち追加） → 2712 LINE誘導② → 2713 LINE誘導③ → 1564 お問合せボタン</div>
+          <label class="form-label" style="margin-top:8px">送ったあとの確認に使う文字</label>
+          <input class="form-input" id="tailCheck" oninput="tailChanged()" style="max-width:260px" placeholder="横須賀市で唯一">
+          <div class="muted" style="font-size:12px;margin-top:2px">送った直後に WordPress の表示を読み、この文字があれば「定型文が出ている」とみなします。定型文に必ず入っている言葉にしてください。</div>
+          <div class="row" style="margin-top:8px"><button class="btn-primary" id="tailSave" disabled onclick="saveTail(this)">定型文の設定を保存</button><span class="muted" id="tailState">変更はありません</span></div>
         </div>
         <div class="card" style="max-width:760px">
           <h2>この端末</h2>
@@ -444,20 +658,28 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
   <button class="bottom-nav-item" data-v="settings" onclick="go('settings')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>設定</span></button>
 </nav>
 
+<!-- 記事の削除 -->
+<div class="modal-back" id="m-del"><div class="modal">
+  <h3>この記事を削除しますか？</h3>
+  <div id="delName" class="t-title" style="margin:4px 0 8px"></div>
+  <div class="muted">・記事一覧から消えます。</div>
+  <div class="muted">・「削除した記事」を押すと一覧が出て、いつでも元に戻せます。</div>
+  <div class="muted" id="delWp"></div>
+  <div class="modal-foot"><button class="btn-primary" id="delBtn" onclick="doTrash(this)">削除する</button><button class="btn-ghost" onclick="closeModal('m-del')">キャンセル</button></div>
+</div></div>
+
 <!-- 新しい記事 -->
 <div class="modal-back" id="m-new"><div class="modal">
   <h3>新しい記事を書く</h3>
   <label class="form-label">記事の種類</label>
   <div class="type-cards">
     <div class="type-card sel" data-t="juku" onclick="selType(this)"><b>塾長ブログ</b><span class="muted">日々の出来事・教室で感じたこと・教育の考え</span></div>
-    <div class="type-card" data-t="info" onclick="selType(this)"><b>情報発信ブログ</b><span class="muted">受験・学校・学習方法・制度（調査・最終チェックは第2段階）</span></div>
+    <div class="type-card" data-t="info" onclick="selType(this)"><b>情報発信ブログ</b><span class="muted">受験・学校・学習方法・制度</span></div>
   </div>
-  <label class="form-label" style="margin-top:10px">どこから始めるか</label>
-  <label class="start-opt"><input type="radio" name="startAt" value="0" checked><span><b>原稿から</b>（AIで記事にする）</span></label>
-  <label class="start-opt"><input type="radio" name="startAt" value="3"><span><b>本文ができているので編集から</b>（貼った文章をそのまま本文にする）</span></label>
-  <label class="form-label" style="margin-top:8px">原稿または本文（あとからでも貼れます）</label>
-  <textarea class="form-textarea" id="newText" placeholder="音声入力で作った文章や、できている本文を貼り付け"></textarea>
-  <div class="modal-foot"><button class="btn-primary" id="newBtn" onclick="createArticle(this)">この内容で記事を作る</button><button class="btn-ghost" onclick="closeModal('m-new')">キャンセル</button></div>
+  <label class="form-label" style="margin-top:10px">原稿または本文</label>
+  <textarea class="form-textarea" id="newText" oninput="newBtnLabel()" placeholder="音声入力で作った文章や、できている本文を貼り付け"></textarea>
+  <div class="muted" style="margin-top:4px">本文がもうできているときは「AIに書かせず、そのまま本文にする」を押すと、AIを使わずに編集から始められます（料金はかかりません）。</div>
+  <div class="modal-foot"><button class="btn-primary" id="newBtn" onclick="createArticle(this,'ai')">AIで記事にする</button><button class="btn-ghost" id="newDirect" onclick="createArticle(this,'direct')">AIに書かせず、そのまま本文にする</button><button class="btn-ghost" onclick="closeModal('m-new')">キャンセル</button></div>
 </div></div>
 
 <!-- 選んだ文をAIに直させる -->
@@ -478,16 +700,45 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
 </div></div>
 
 <!-- 本文全体の修正案 -->
-<div class="modal-back" id="m-whole"><div class="modal" style="max-width:820px">
-  <h3>本文全体を直す案</h3>
-  <div class="muted">採用すると本文がこの内容に入れ替わります。今の本文は履歴に残します。</div>
-  <div class="doc" id="wholePreview" style="min-height:200px;margin-top:8px;max-width:none"></div>
-  <div class="modal-foot"><button class="btn-primary" id="wholeAdopt" onclick="wholeAdopt()">この案を採用して本文に入れる</button><button class="btn-ghost" onclick="closeModal('m-whole')">閉じる</button></div>
+<div class="modal-back" id="m-whole"><div class="modal" style="max-width:1240px">
+  <h3>AIの案と今の本文を見比べる</h3>
+  <div class="muted" id="wholeInfo" style="line-height:1.7"></div>
+  <div class="cmp">
+    <div><div class="cmp-h">今の本文</div><div class="doc cmp-doc" id="wholeCur"></div></div>
+    <div><div class="cmp-h">AIの案</div><div class="doc cmp-doc" id="wholePreview"></div></div>
+  </div>
+  <div class="modal-foot" style="flex-wrap:wrap"><button class="btn-primary" id="wholeAdopt" onclick="wholeAdopt()">AIの案を採用する</button><button class="btn-ghost" id="wholeKeep" onclick="wholeKeep()">今の本文のままにする</button><button class="btn-ghost" id="wholeRetry" onclick="chatRetry(+this.getAttribute('data-i'), this)">同じ指示でもう一度作る</button><button class="btn-ghost" onclick="closeModal('m-whole')">あとで決める</button><span class="muted" style="font-size:11px">採用すると、今の本文は履歴に残してから入れ替えます</span></div>
+</div></div>
+
+<!-- 料金の確認 -->
+<div class="modal-back" id="m-ask"><div class="modal" style="max-width:460px">
+  <h3 id="askTitle"></h3>
+  <div id="askBody" style="font-size:13px;line-height:1.7"></div>
+  <div class="modal-foot"><button class="btn-primary" id="askOk" onclick="askGo()">送る</button><button class="btn-ghost" onclick="closeModal('m-ask')">やめる</button></div>
 </div></div>
 
 <!-- 送信前の確認 -->
+<div class="modal-back" id="m-rwpick"><div class="modal" style="max-width:820px">
+  <h3>公開済みの記事をリライトする</h3>
+  <div>
+    <div class="muted" style="margin-bottom:6px">リライトする記事を選んでください。URLを変えずに中身を新しくします。選ぶとツールに読み込むだけで、公開中の記事はまだ変わりません。</div>
+    <input class="form-input" id="rwQ" placeholder="言葉を入れると絞り込みます（例：自習室、追浜、令和）" oninput="rwQuery=this.value;renderRwPick()">
+    <div id="rwList" style="margin-top:8px;max-height:60vh;overflow:auto"></div>
+  </div>
+  <div class="modal-foot"><button class="btn-ghost" onclick="closeModal('m-rwpick')">閉じる</button></div>
+</div></div>
+
+<div class="modal-back" id="m-box"><div class="modal" style="max-width:720px">
+  <h3 id="boxEditH">箱の中の文字を直す</h3>
+  <div>
+    <div class="muted" style="margin-bottom:6px">吹き出しのアイコンや枠の色などの見た目はそのままで、文字だけを直して WordPress に送ります。改行やかたまりの数は変えられません（かたまりごとに直してください）。</div>
+    <div id="boxEdits" style="max-height:60vh;overflow:auto"></div>
+  </div>
+  <div class="modal-foot"><button class="btn-primary" onclick="applyBoxEdit(false)">決定</button><button class="btn-ghost" id="boxEditUndo" onclick="applyBoxEdit(true)">読み込んだときの文字に戻す</button><button class="btn-ghost" onclick="closeModal('m-box')">やめる</button></div>
+</div></div>
+
 <div class="modal-back" id="m-send"><div class="modal">
-  <h3>WordPressに下書きを送る前の確認</h3>
+  <h3 id="sendH">WordPressに下書きを送る前の確認</h3>
   <div id="sendBody"></div>
   <div class="modal-foot" id="sendFoot"><button class="btn-primary" id="sendBtn" disabled onclick="doSend(this, false)">このまま下書きを送る</button><button class="btn-ghost" onclick="closeModal('m-send')">戻って直す</button></div>
 </div></div>
@@ -503,10 +754,10 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
 <div id="toast"></div>
 <script>
 // ===== ブログエディター（第1段階） =====
-var APP_VERSION = 'v1.2（2026-10-10 誤変換リスト・読みやすさ）';
+var APP_VERSION = 'v2.7.7（2026-10-13 分ける案を一番上に・【要確認】の結びつけ・一覧はNo.の大きい順）';
 var GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9v4PW9op-Nx58BaRsGwk__KWzLecZtNQR7N5lu_N9O3nKQYRQhubBlQAQLf1WytWHWw/exec';
 var GAS_URL = (new URLSearchParams(location.search).get('gas')) || GAS_URL_DEFAULT;
-var STEP_NAMES = ['原稿入力中', '提案確認中', '調査中', '編集中', '最終チェック中', '送信準備中'];
+var STEP_NAMES = ['原稿入力中', '編集中', '編集中', '編集中', '仕上げチェック中', '送信準備中'];
 var SAVE_DELAY = 2500;   // 自動保存までの待ち（GASの往復より短くしない）
 var POLL_MS = 60000;     // ほかの端末の保存を確かめる間隔
 
@@ -514,7 +765,7 @@ var PASS = lsGet('be_pass') || '';
 var articles = [], monthUsd = 0, settings = null, listFilter = 'all', newType = 'juku';
 var cur = null;          // 開いている記事 { id, title, type, step, status, wpId, version, updatedAt, costUsd, skipped, content:{...} }
 var st = { dirty: false, saving: false, pending: false, editSeq: 0, snapshot: '', retryTimer: null, saveTimer: null, conflictServer: null, pollTimer: null };
-var savedRange = null, chatRanges = {}, wholeHtml = '';
+var savedRange = null, caretRange = null, chatRanges = {}, wholeHtml = '', pendingCheck = null, curSide = 'check';
 
 // ===== 小道具 =====
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -529,7 +780,7 @@ function busy(btn, label) { if (!btn) return function () { }; var tx = btn.inner
 
 // ===== GAS とのやりとり =====
 function api(action, payload) {
-  var body = Object.assign({ action: action, pass: PASS }, payload || {});
+  var body = Object.assign({ action: action, pass: PASS, app: APP_VERSION }, payload || {});
   return fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
     .then(function (r) { if (!r.ok) throw new Error('サーバーに接続できませんでした（' + r.status + '）'); return r.json(); })
     .then(function (j) {
@@ -579,38 +830,93 @@ function loadList(btn) {
   }).catch(function (e) { done(); document.getElementById('listLoading').innerHTML = '記事一覧を読み込めませんでした：' + esc(netMsg(e)) + ' <button class="btn-ghost" onclick="loadList(this)">もう一度読み込む</button>'; });
 }
 function statusBadge(a) {
-  if (a.status === 'sent') return '<span class="badge b-green">下書き送信済み</span>';
+  if (a.status === 'sent') return a.rewriteOf ? '<span class="badge b-rw">書き換え済み</span>' : '<span class="badge b-green">下書き送信済み</span>';
   if (a.status === 'pub') return '<span class="badge b-green">公開済み</span>';
   return '<span class="badge b-gray">' + (STEP_NAMES[a.step] || '原稿入力中') + '</span>';
 }
 function renderList() {
   document.getElementById('listLoading').style.display = 'none';
   var q = (document.getElementById('listQ').value || '').trim();
-  var rows = articles.filter(function (a) { return (listFilter === 'all' || a.type === listFilter) && (!q || String(a.title).indexOf(q) >= 0); });
+  var delMode = listFilter === 'deleted';
+  var src = delMode ? (deletedArticles || []) : articles;
+  var rows = src.filter(function (a) { return (listFilter === 'all' || delMode || (listFilter === 'rw' ? !!a.rewriteOf : a.type === listFilter)) && (!q || String(a.title).indexOf(q) >= 0); });
+  // 並びは No. の大きい順（新しく作った記事が上）。開いたり直したりしても順番は動かない（v2.7.7）
+  rows.sort(function (a, b) { return (Number(b.no) || 0) - (Number(a.no) || 0); });
   document.getElementById('listBody').innerHTML = rows.map(function (a) {
-    return '<tr class="click" onclick="openArticle(\'' + a.id + '\')"><td><div class="t-title">' + esc(a.title || '（タイトル未定）') + '</div><div class="t-sub">' + (a.wpId ? 'WordPress 下書き #' + a.wpId : '') + '</div></td>' +
-      '<td class="t-sub">' + (a.type === 'info' ? '情報発信ブログ' : '塾長ブログ') + '</td><td>' + statusBadge(a) + '</td><td class="t-sub">' + hm(a.updatedAt) + '</td><td class="t-sub">$' + (a.costUsd || 0).toFixed(2) + '</td></tr>';
+    return '<tr class="click" onclick="' + (delMode ? '' : 'openArticle(\'' + a.id + '\')') + '"><td class="t-no">' + (a.no ? 'No.' + a.no : '') + '</td><td><div class="t-title">' + (a.rewriteOf ? '<span class="rw-tag">リライト</span>' : '') + esc(a.title || '（タイトル未定）') + '</div><div class="t-sub">' + [a.rewriteOf ? '公開中の記事 #' + a.rewriteOf + ' を書き換える' : a.wpId ? 'WordPress 下書き #' + a.wpId : '', a.madeWith ? 'AIで作った版：' + esc(a.madeWith) : ''].filter(Boolean).join('　') + '</div></td>' +
+      '<td class="t-sub">' + (a.type === 'info' ? '情報発信ブログ' : '塾長ブログ') + '</td><td>' + statusBadge(a) + '</td><td class="t-sub">' + hm(a.updatedAt) + '</td><td class="t-sub">' + yen(a.costUsd) + '</td><td class="t-act">' + (delMode ? '<button class="btn-ghost" onclick="event.stopPropagation();doRestore(this,\'' + a.id + '\')">元に戻す</button>' : '<button class="btn-icon del-btn" title="削除" aria-label="この記事を削除" onclick="event.stopPropagation();askTrash(\'' + a.id + '\')">' + I_TRASH + '</button>') + '</td></tr>';
   }).join('');
   document.getElementById('listTbl').style.display = rows.length ? '' : 'none';
   var em = document.getElementById('listEmpty');
   em.style.display = rows.length ? 'none' : '';
-  em.textContent = articles.length ? '条件に合う記事がありません。検索語や絞り込みを変えてください。' : 'まだ記事がありません。「＋ 新しい記事を書く」から始めてください。';
-  document.getElementById('listCount').textContent = '全' + articles.length + '件中 ' + rows.length + '件表示';
+  em.textContent = delMode ? (deletedArticles === null ? '読み込み中…' : '削除した記事はありません。') : articles.length ? '条件に合う記事がありません。検索語や絞り込みを変えてください。' : 'まだ記事がありません。「＋ 新しい記事を書く」から始めてください。';
+  document.getElementById('listCount').textContent = delMode ? '削除した記事 ' + rows.length + '件' : '全' + articles.length + '件中 ' + rows.length + '件表示';
   document.getElementById('stWork').textContent = articles.filter(function (a) { return !a.status; }).length;
-  document.getElementById('stSent').textContent = articles.filter(function (a) { return a.status === 'sent'; }).length;
+  document.getElementById('stSent').textContent = articles.filter(function (a) { return a.status === 'sent' && !a.rewriteOf; }).length;
+  document.getElementById('stRw').textContent = articles.filter(function (a) { return a.status === 'sent' && a.rewriteOf; }).length;
 }
-function setListFilter(btn) { listFilter = btn.getAttribute('data-f'); btn.parentNode.querySelectorAll('[data-f]').forEach(function (b) { b.classList.toggle('on', b === btn); }); renderList(); }
+function setListFilter(btn) {
+  listFilter = btn.getAttribute('data-f'); btn.parentNode.querySelectorAll('[data-f]').forEach(function (b) { b.classList.toggle('on', b === btn); });
+  if (listFilter === 'deleted') {
+    deletedArticles = null; renderList();
+    api('list', { deleted: true }).then(function (j) { deletedArticles = j.articles || []; if (listFilter === 'deleted') renderList(); })
+      .catch(function (e) { deletedArticles = []; renderList(); toast('削除した記事を読み込めませんでした：' + netMsg(e), 4000); });
+    return;
+  }
+  renderList();
+}
+// ===== 記事の削除（一覧から外すだけ。元に戻せる） =====
+var deletedArticles = null, trashId = null;
+var I_TRASH = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+function askTrash(id) {
+  var a = articles.filter(function (x) { return x.id === id; })[0]; if (!a) return;
+  trashId = id;
+  document.getElementById('delName').textContent = a.title || '（タイトル未定）';
+  document.getElementById('delWp').textContent = a.wpId ? '・WordPress に送った下書き #' + a.wpId + ' は消えません。不要なら WordPress の「投稿」から消してください。' : '';
+  openModal('m-del');
+}
+function doTrash(btn) {
+  var id = trashId; if (!id) return;
+  var done = busy(btn, '削除中…');
+  api('trash', { id: id }).then(function () {
+    done(); closeModal('m-del');
+    var a = articles.filter(function (x) { return x.id === id; })[0];
+    articles = articles.filter(function (x) { return x.id !== id; });
+    renderList();
+    toast('「' + ((a && a.title) || '（タイトル未定）') + '」を削除しました。「削除した記事」から元に戻せます', 4000);
+  }).catch(function (e) { done(); toast('削除できませんでした：' + netMsg(e), 4000); });
+}
+function doRestore(btn, id) {
+  var done = busy(btn, '戻しています…');
+  api('restore', { id: id }).then(function (j) {
+    done();
+    var a = (deletedArticles || []).filter(function (x) { return x.id === id; })[0];
+    deletedArticles = (deletedArticles || []).filter(function (x) { return x.id !== id; });
+    if (a) { a.status = j.status; articles.unshift(a); }
+    renderList(); toast('「' + ((a && a.title) || '（タイトル未定）') + '」を記事一覧に戻しました');
+  }).catch(function (e) { done(); toast('元に戻せませんでした：' + netMsg(e), 4000); });
+}
 
 // ===== 新しい記事 =====
-function openNew() { document.getElementById('newText').value = ''; document.querySelector('input[name=startAt][value="0"]').checked = true; openModal('m-new'); }
+function newBtnLabel() {
+  var has = !!document.getElementById('newText').value.trim();
+  document.getElementById('newBtn').disabled = !has;
+  document.getElementById('newDirect').disabled = !has;
+}
+function openNew() { selType(document.querySelector('.type-card[data-t="juku"]')); document.getElementById('newText').value = ''; newBtnLabel(); openModal('m-new'); }
 function selType(el) { document.querySelectorAll('.type-card').forEach(function (c) { c.classList.toggle('sel', c === el); }); newType = el.getAttribute('data-t'); }
 function textToHtml(t) { return t.split(/\n+/).map(function (l) { return l.trim() ? '<p>' + esc(l.trim()) + '</p>' : ''; }).join(''); }
-function createArticle(btn) {
-  var start = +document.querySelector('input[name=startAt]:checked').value;
+function createArticle(btn, mode) {
   var text = document.getElementById('newText').value.trim();
-  var done = busy(btn, '作成中…');
+  var start = mode === 'direct' && text ? 3 : 0;
+  var done = busy(btn, '準備中…');
   api('create', { type: newType, step: start, draft: start === 0 ? text : '', doc: start === 3 && text ? textToHtml(text) : '', skipped: start === 3 ? { 1: true, 2: true } : {} })
-    .then(function (j) { done(); closeModal('m-new'); articles.unshift(j.article); renderList(); enterArticle(j.article); toast('記事を作りました'); })
+    .then(function (j) {
+      done(); closeModal('m-new'); articles.unshift(j.article); renderList(); enterArticle(j.article);
+      // 原稿を貼ってあれば、そのままAIに書かせる（「AIで記事を作る」をもう一度押さなくてよい）
+      if (start === 0 && text) { document.getElementById('draft').value = text; aiWrite(document.getElementById('btnWrite')); }
+      else toast('記事を作りました');
+    })
     .catch(function (e) { done(); toast('記事を作れませんでした：' + netMsg(e), 4000); });
 }
 
@@ -622,10 +928,10 @@ function openArticle(id) {
 function enterArticle(a) {
   cur = a; cur.content = cur.content || {}; cur.content.chat = cur.content.chat || [];
   st = { dirty: false, saving: false, pending: false, editSeq: 0, snapshot: '', retryTimer: null, saveTimer: null, conflictServer: null, pollTimer: null };
-  chatRanges = {}; savedRange = null;
+  chatRanges = {}; savedRange = null; caretRange = null;
   fillEditor();
   go('editor');
-  step(cur.status === 'sent' ? 5 : (cur.step === 1 || cur.step === 2 || cur.step === 4 ? 3 : cur.step || 0), true);
+  step(cur.status === 'sent' ? 5 : (cur.step === 1 || cur.step === 2 ? 3 : cur.step || 0), true);
   setSync('ok');
   startPoll();
   // この端末に、送れていない内容が残っていないか
@@ -637,13 +943,15 @@ function enterArticle(a) {
 }
 function fillEditor() {
   document.getElementById('edTitle').textContent = cur.title || '（タイトル未定）';
-  document.getElementById('edType').textContent = cur.type === 'info' ? '情報発信ブログ' : '塾長ブログ';
+  document.getElementById('edType').innerHTML = esc(cur.type === 'info' ? '情報発信ブログ' : '塾長ブログ') + (cur.content.rewrite ? ' <span class="rw-tag">リライト：公開中の記事 #' + esc(cur.content.rewrite.wpId) + '</span>' : '');
   document.getElementById('draft').value = cur.content.draft || ''; draftCount();
   setDoc(cur.content.doc || '');
   document.getElementById('titleInput').value = cur.title === '（タイトル未定）' ? '' : (cur.title || '');
   document.getElementById('slug').value = cur.content.slug || '';
   document.getElementById('excerpt').value = cur.content.excerpt || ''; exLen();
-  renderTitles(); renderChat(); renderComments(); updateArtCost(); renderSentInfo(); loadCategories();
+  renderTitles(); renderChat(); renderComments(); updateArtCost(); renderSentInfo(); loadCategories(); clearTarget(); pendingCheck = null; renderCheck(); renderFinish();
+  document.getElementById('eyecatch').value = cur.content.eyecatch || ''; renderSlugOpts(); renderRelated(); renderRwCard();
+  sideTab(cur.step === 4 ? 'finish' : checkLeft() ? 'check' : 'chat');
 }
 function leaveEditor() {
   if (st.dirty || st.saving) { flushSave(); toast('保存してから一覧に戻ります…'); }
@@ -653,20 +961,28 @@ function leaveEditor() {
 }
 
 // ===== 工程 =====
-function step(n, silent) {
+function step(n, silent, keepScroll) {
   if (!cur) return;
-  if ([1, 2, 4].indexOf(n) >= 0) return;
+  if (n === 1 || n === 2) n = 3;
+  var wasEdit = cur.step === 3 || cur.step === 4;
   var changed = cur.step !== n; cur.step = n;
+  var order = [0, 3, 4, 5];
   document.querySelectorAll('#steps .step').forEach(function (el, i) {
     el.classList.remove('cur', 'done');
-    if (el.classList.contains('later')) return;
-    if (i === n) el.classList.add('cur'); else if (i < n) el.classList.add('done');
+    if (order[i] === n) el.classList.add('cur'); else if (order[i] < n) el.classList.add('done');
   });
-  [0, 3, 5].forEach(function (i) { document.getElementById('p' + i).classList.toggle('active', i === n); });
-  document.getElementById('edBody').classList.toggle('no-chat', n !== 3);
+  document.getElementById('p0').classList.toggle('active', n === 0);
+  document.getElementById('p3').classList.toggle('active', n === 3 || n === 4);
+  document.getElementById('p5').classList.toggle('active', n === 5);
+  document.getElementById('edBody').classList.toggle('no-chat', n === 0 || n === 5);
+  if (n === 4) sideTab('finish'); else if (n === 3 && curSide === 'finish') sideTab(checkLeft() ? 'check' : 'chat');
+  actButtons();
   if (changed && !silent) markDirty();
-  window.scrollTo(0, 0);
+  if (!(keepScroll && wasEdit)) window.scrollTo(0, 0); measureTop();
 }
+function measureTop() { var t = document.querySelector('.ed-top'); if (t) document.documentElement.style.setProperty('--edtop', t.offsetHeight + 'px'); }
+try { new ResizeObserver(measureTop).observe(document.querySelector('.ed-top')); } catch (e) { }
+window.addEventListener('resize', measureTop);
 
 // ===== 原稿 =====
 function draftInput() { draftCount(); cur.content.draft = document.getElementById('draft').value; markDirty(); }
@@ -685,21 +1001,39 @@ function aiWrite(btn) {
   var draft = document.getElementById('draft').value.trim();
   if (!draft) { toast('先に原稿を貼り付けてください'); document.getElementById('draft').focus(); return; }
   flushSave();
-  var done = busy(btn, 'AIが記事を書いています…（30〜60秒）');
+  var done = busy(btn, 'AIが記事を書いています…');
+  var m = (settings.models || {}).write || '';
+  var exp = (20 + draft.length / 1000 * 12) * (/sonnet/.test(m) ? 0.6 : /haiku/.test(m) ? 0.4 : 1) * (cur.type === 'info' ? 1.2 : 1);
+  var prog = startProgress(btn.closest('.act-row'), 'write_' + m, exp);
   api('ai', { kind: 'write', id: cur.id, draft: draft }).then(function (j) {
-    done(); addCost(j.costUsd);
-    var r = j.result;
+    done(); prog(true); applyWriteResult(j);
+  }).catch(function (e) { done(); prog(false); toast('記事を作れませんでした：' + netMsg(e), 5000); });
+}
+function applyWriteResult(j) {
+    addCost(j.costUsd);
+    var r = j.result, rw = !!cur.content.rewrite, miss = 0;
     if (docText()) st.snapshot = 'AIで記事を作る前';
     cur.content.titleOptions = r.titles || [];
     cur.content.comments = r.comments || [];
+    cur.content.slugOptions = r.slugs || (r.slug ? [r.slug] : []);
     if (r.slug && !cur.content.slug) { cur.content.slug = r.slug; document.getElementById('slug').value = r.slug; }
-    if (r.excerpt && !cur.content.excerpt) { cur.content.excerpt = r.excerpt; document.getElementById('excerpt').value = r.excerpt; exLen(); }
-    setDoc(r.html); cur.content.doc = cleanDoc();
+    if (r.categoryId) { cur.content.catAI = r.categoryId; if (!cur.content.categoryId) cur.content.categoryId = String(r.categoryId); }
+    if (categories) fillCats(); renderSlugOpts();
+    cur.content.relatedAI = r.related || []; if (!(cur.content.related || []).length) cur.content.related = (r.related || []).slice(); renderRelated();
+    if (r.excerpt && (rw || !cur.content.excerpt)) { cur.content.excerpt = r.excerpt; document.getElementById('excerpt').value = r.excerpt; exLen(); }
+    var fk = fillKeeps(r.html); miss = fk.missing;
+    setDoc(fk.html); cur.content.doc = cleanDoc();
     if (!cur.title || cur.title === '（タイトル未定）') setTitle((r.titles || [])[0] || '', true);
     renderTitles(); renderComments();
     step(3); markDirty();
-    toast('記事ができました（' + yen(j.costUsd) + '）' + (j.truncated ? '。途中で切れている可能性があります' : ''), 3500);
-  }).catch(function (e) { done(); toast('記事を作れませんでした：' + netMsg(e), 5000); });
+    cur.content.check = { ver: 2, at: new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 16).replace('T', ' '), stale: false,
+      changes: (r.changes || []).map(function (c) { return { after: c.after, before: c.before, note: c.note, state: '' }; }),
+      confirm: (r.confirm || []).map(function (c) { return { kind: c.kind, where: c.where, note: c.note, done: false }; }) };
+    cur.content.eyecatch = r.eyecatch || ''; document.getElementById('eyecatch').value = cur.content.eyecatch;
+    cur.content.finish = null; renderFinish();
+    renderCheck(); clearTarget(); sideTab('check');
+    if (j.madeWith) { cur.madeWith = j.madeWith; articles.forEach(function (a) { if (a.id === cur.id) a.madeWith = j.madeWith; }); }
+    toast((rw ? 'リライトの案ができました' : '記事ができました') + '　料金 ' + yen(j.costUsd) + '　' + (rw ? '元の記事' : '原稿') + 'から変えた所 ' + cur.content.check.changes.length + '件・確かめる所 ' + cur.content.check.confirm.length + '件' + (miss ? '。AIが置かなかった動かせない箱 ' + miss + '個は、本文の最後に置きました（必要な場所へ移すか外してください）' : ''), miss ? 9000 : 4000);
 }
 
 // ===== タイトル =====
@@ -721,7 +1055,7 @@ function setDoc(html) {
   var d = document.getElementById('doc');
   d.innerHTML = html || '';
   decorateDoc();
-  if (!docText() && !d.querySelector('.ph,.balloon')) d.innerHTML = '<p><br></p>';
+  if (!docText() && !d.querySelector('.ph,.balloon,.keep')) d.innerHTML = '<p><br></p>';
 }
 function decorateDoc() {
   var d = document.getElementById('doc');
@@ -729,40 +1063,86 @@ function decorateDoc() {
     b.setAttribute('contenteditable', 'false');
     if (!b.querySelector('.ic')) { var ic = document.createElement('div'); ic.className = 'ic'; ic.textContent = '塾長'; b.insertBefore(ic, b.firstChild); }
   });
+  d.querySelectorAll('.keep').forEach(function (k) {
+    k.setAttribute('contenteditable', 'false');
+    if (!k.querySelector('.keep-tools')) {
+      var n = k.getAttribute('data-n'), b = (cur && cur.content.boxes || {})[n];
+      k.textContent = b ? b.label : (k.textContent || '（中身のない箱）');
+      var t = document.createElement('span'); t.className = 'keep-tools';
+      var canEdit = b && boxSegs(b.raw).segs.length;
+      t.innerHTML = '<span class="keep-tag">動かせない箱（WordPressの部品をそのまま戻します' + (b && b.orig ? '・文字は直しました' : '') + '）</span> ' + (canEdit ? '<button class="btn-ghost keep-edit" style="padding:1px 8px">文字を直す</button> ' : '') + '<button class="btn-ghost keep-del" style="padding:1px 8px">この箱を外す</button>';
+      k.insertBefore(t, k.firstChild);
+    }
+  });
   d.querySelectorAll('.ph').forEach(function (p) {
     p.setAttribute('contenteditable', 'false');
     if (!p.querySelector('.ph-tools')) {
       var t = document.createElement('span'); t.className = 'ph-tools';
-      t.innerHTML = ' <button class="btn-ghost ph-del" style="padding:1px 8px">この仮置きを消す</button>';
+      var pr = p.getAttribute('data-prompt'), sh = p.getAttribute('data-shot');
+      var al = p.getAttribute('data-alt'), fl = p.getAttribute('data-file');
+      t.innerHTML = (sh ? '<span class="ph-shot">撮る物：' + esc(sh) + '</span>' : '') + (pr ? ' <button class="btn-ghost ph-copy" style="padding:1px 8px">ChatGPT用のプロンプトをコピー</button>' : '') + ' <button class="btn-ghost ph-del" style="padding:1px 8px">この仮置きを消す</button>' +
+        '<span class="ph-alt">WordPress には画像の枠として入ります。WordPress で枠を選び「置換」で画像を差し替えてください' + (al ? '（alt「' + esc(al) + '」も一緒に入ります）' : '') + '</span>';
       p.appendChild(t);
     }
   });
 }
 function cleanDoc() {
   var w = document.createElement('div'); w.innerHTML = document.getElementById('doc').innerHTML;
-  w.querySelectorAll('.ph-tools,.balloon .ic').forEach(function (x) { x.remove(); });
+  w.querySelectorAll('.ph-tools,.balloon .ic,.keep-tools').forEach(function (x) { x.remove(); });
   w.querySelectorAll('[contenteditable]').forEach(function (x) { x.removeAttribute('contenteditable'); });
   w.querySelectorAll('.flash,.sel-target').forEach(function (x) { x.classList.remove('flash', 'sel-target'); });
   return w.innerHTML;
 }
 function docText() { return (document.getElementById('doc').textContent || '').trim(); }
+// 動かせない箱の中（表示用の要約）を除いた本文。箱は送るときに WordPress の元の部品に置き換わるので、【要確認】の有無はここで見る
+function docTextNoBox() { var c = document.getElementById('doc').cloneNode(true); c.querySelectorAll('.keep').forEach(function (k) { k.remove(); }); return (c.textContent || '').trim(); }
 function docChanged() { if (!cur) return; cur.content.doc = cleanDoc(); markDirty(); }
 document.addEventListener('click', function (e) {
+  var cp = e.target.closest ? e.target.closest('.ph-copy') : null;
+  if (cp) { copyText(cp.closest('.ph').getAttribute('data-prompt'), 'プロンプトをコピーしました。ChatGPTに貼って画像を作ってください'); return; }
+  var pc = e.target.closest ? e.target.closest('.ph-cp') : null;
+  if (pc) { copyText(pc.getAttribute('data-v'), 'コピーしました'); return; }
+  var ke = e.target.closest ? e.target.closest('.keep-edit') : null;
+  if (ke) { openBoxEdit(ke.closest('.keep').getAttribute('data-n')); return; }
+  var kd = e.target.closest ? e.target.closest('.keep-del') : null;
+  if (kd) { st.snapshot = st.snapshot || '動かせない箱を外す前'; kd.closest('.keep').remove(); docChanged(); toast('箱を外しました（送るとき、この部品は WordPress から消えます。外す前の本文は履歴に残ります）', 5000); return; }
   var b = e.target.closest ? e.target.closest('.ph-del') : null;
   if (!b) return;
   b.closest('.ph').remove(); docChanged(); toast('画像の仮置きを消しました');
 });
 document.addEventListener('selectionchange', function () {
-  var sel = window.getSelection(); var doc = document.getElementById('doc'); var t = document.getElementById('chatTarget');
-  if (!sel || !sel.rangeCount || !doc || !t) return;
-  var txt = sel.toString().trim();
-  if (txt && doc.contains(sel.anchorNode) && doc.contains(sel.focusNode)) {
-    savedRange = sel.getRangeAt(0).cloneRange();
-    t.textContent = '選んだ文「' + (txt.length > 24 ? txt.slice(0, 24) + '…' : txt) + '」';
-    document.getElementById('clearSel').style.display = '';
-  }
+  var sel = window.getSelection(); var doc = document.getElementById('doc');
+  if (!sel || !sel.rangeCount || !doc) return;
+  if (!(doc.contains(sel.anchorNode) && doc.contains(sel.focusNode))) return;
+  var r = sel.getRangeAt(0);
+  caretRange = r.cloneRange();
+  if (sel.toString().trim()) setTarget(r.cloneRange());
+  else if (savedRange) clearTarget();   // 本文の別の場所をクリックしたら、選んでいた文は外す
 });
-function clearTarget() { savedRange = null; document.getElementById('chatTarget').textContent = '本文全体'; document.getElementById('clearSel').style.display = 'none'; }
+// 直す対象（選んだ文）。本文の中でも黄色で示す
+function setTarget(r) {
+  savedRange = r; var txt = r.toString().trim();
+  document.getElementById('chatTarget').textContent = '選んだ文だけ（' + txt.length + '字）';
+  var q = document.getElementById('chatQuote'); q.style.display = ''; q.textContent = txt.length > 90 ? txt.slice(0, 90) + '…' : txt;
+  document.getElementById('clearSel').style.display = '';
+  paintTarget(); updateChatCost();
+}
+function clearTarget() {
+  savedRange = null;
+  var t = document.getElementById('chatTarget'); if (!t) return;
+  t.textContent = '本文全体' + (cur && docText() ? '（' + docText().length.toLocaleString() + '字）' : '');
+  document.getElementById('chatQuote').style.display = 'none';
+  document.getElementById('clearSel').style.display = 'none';
+  paintTarget(); updateChatCost();
+}
+function paintTarget() {
+  try {
+    if (!window.CSS || !CSS.highlights || typeof Highlight === 'undefined') return;
+    if (savedRange) CSS.highlights.set('be-target', new Highlight(savedRange)); else CSS.highlights.delete('be-target');
+    var pend = Object.keys(chatRanges).map(function (k) { return chatRanges[k]; });   // 採用を待っているAIの案の場所
+    if (pend.length) CSS.highlights.set('be-pending', new Highlight(...pend)); else CSS.highlights.delete('be-pending');
+  } catch (e) { }
+}
 function restoreSel() { if (!savedRange) return false; var s = window.getSelection(); s.removeAllRanges(); s.addRange(savedRange); return true; }
 function needSel() { if (!savedRange || !savedRange.toString().trim()) { toast('先に本文の文をドラッグで選んでください'); return false; } return true; }
 function fmt(kind) {
@@ -770,6 +1150,7 @@ function fmt(kind) {
   document.getElementById('doc').focus(); restoreSel();
   if (kind === 'bold') document.execCommand('bold');
   if (kind === 'h2') document.execCommand('formatBlock', false, 'h2');
+  if (kind === 'h3') document.execCommand('formatBlock', false, 'h3');
   if (kind === 'p') document.execCommand('formatBlock', false, 'p');
   if (kind === 'marker') { var sp = document.createElement('span'); sp.className = 'marker'; try { savedRange.surroundContents(sp); } catch (e) { toast('段落をまたいで選ぶとマーカーを付けられません'); return; } }
   if (kind === 'link') { document.getElementById('lkSrc').textContent = savedRange.toString(); document.getElementById('lkUrl').value = ''; openModal('m-link'); return; }
@@ -783,15 +1164,17 @@ function applyLink() {
 }
 function insertPh() {
   var what = '（何の画像か書いてください）';
-  var wrap = document.createElement('div'); wrap.innerHTML = '<div class="ph" data-what="' + what + '">画像の仮置き：' + what + '（種類：写真／用途：）</div>';
+  var wrap = document.createElement('div'); wrap.innerHTML = '<div class="ph" data-kind="写真" data-what="' + what + '">画像の仮置き：' + what + '（写真）</div>';
   var node = wrap.firstChild; var doc = document.getElementById('doc');
-  if (savedRange && doc.contains(savedRange.endContainer)) {
-    var blk = savedRange.endContainer.nodeType === 1 ? savedRange.endContainer : savedRange.endContainer.parentNode;
+  var at = savedRange || caretRange;
+  if (at && doc.contains(at.endContainer)) {
+    var blk = at.endContainer.nodeType === 1 ? at.endContainer : at.endContainer.parentNode;
     while (blk && blk.parentNode !== doc) blk = blk.parentNode;
     if (blk) blk.parentNode.insertBefore(node, blk.nextSibling); else doc.appendChild(node);
-  } else doc.appendChild(node);
+  } else { toast('本文の中にカーソルを置いてから押してください。その段落のすぐ下に入ります'); return; }
   decorateDoc(); node.scrollIntoView({ block: 'center' }); docChanged();
-  toast('画像の仮置きを入れました。中の文は送信前に「何の画像か」に書き換えてください');
+  node.classList.add('flash'); setTimeout(function () { node.classList.remove('flash'); }, 1600);
+  toast('画像の仮置きを入れました（黄色く光った所）。中の文は送信前に「何の画像か」に書き換えてください');
 }
 
 // ===== 選んだ文をAIに直させる =====
@@ -819,54 +1202,170 @@ function replaceRange(range, text) {
 function rewriteAdopt() { replaceRange(savedRange, document.getElementById('rwIns').textContent); closeModal('m-rewrite'); clearTarget(); docChanged(); toast('本文に反映しました'); }
 
 // ===== AIチャット =====
+function pendingIdx() {
+  var c = cur.content.chat;
+  for (var i = c.length - 1; i >= 0; i--) { var m = c[i]; if (!m.me && !m.none && !m.state && (m.whole || chatRanges[i])) return i; }
+  return -1;
+}
 function renderChat() {
-  var log = document.getElementById('chatLog');
-  var intro = '<div class="msg"><div class="who">使い方</div><div class="bubble muted">左の本文に対して指示します。文を選んでから指示するとその文だけ、選ばずに指示すると本文全体を直します。AIの案は「採用して本文に入れる」を押したときだけ本文に入ります。</div></div>';
-  log.innerHTML = intro + cur.content.chat.map(chatHtml).join('');
-  log.scrollTop = log.scrollHeight;
+  var log = document.getElementById('chatLog'), c = cur.content.chat;
+  if (!c.length) { log.innerHTML = '<div class="muted" style="font-size:12px">まだやり取りはありません。</div>'; paintTarget(); return; }
+  var p = pendingIdx(), pin = {}, html = '';
+  if (p >= 0) { pin[p] = 1; if (p > 0 && c[p - 1].me) pin[p - 1] = 1; }
+  var hist = [], last = [];
+  c.forEach(function (m, i) { if (!pin[i]) hist.push(i); });
+  // 決まっていない案がなければ、最後のやり取り（2件）は開いて見せる
+  if (p < 0) { last = hist.slice(-2); hist = hist.slice(0, Math.max(0, hist.length - 2)); }
+  if (hist.length) html += '<details class="chat-hist"><summary>これまでのやり取り（' + hist.length + '件）</summary>' + hist.map(function (i) { return chatHtml(c[i], i); }).join('') + '</details>';
+  html += last.map(function (i) { return chatHtml(c[i], i); }).join('');
+  if (p >= 0) html += '<div class="pin-box"><div class="pin-h">決まっていない案があります。採用するか決めてください</div>' + Object.keys(pin).map(Number).sort(function (a, b) { return a - b; }).map(function (i) { return chatHtml(c[i], i); }).join('') + '</div>';
+  log.innerHTML = html;
+  log.scrollTop = log.scrollHeight; paintTarget();
 }
 function chatHtml(m, i) {
-  if (m.me) return '<div class="msg me"><div class="who">あなた（対象：' + esc(m.target) + '）</div><div class="bubble">' + esc(m.text) + '</div></div>';
-  var acts;
+  if (m.me) { var lng = m.text.length > 60 || m.text.split('\n').length > 2; return '<div class="msg me"><div class="who">あなた（対象：' + esc(m.target) + (m.ck != null ? '・点検から' : '') + (m.retry ? '・同じ指示でもう一度' : '') + '）</div><div class="bubble' + (lng ? ' clamp' : '') + '">' + esc(m.text) + '</div>' + (lng ? '<button class="undo more" onclick="var b=this.previousElementSibling;b.classList.toggle(\'clamp\');this.textContent=b.classList.contains(\'clamp\')?\'全文を見る\':\'たたむ\'">全文を見る</button>' : '') + '</div>'; }
+  var acts, retry = '<button class="btn-ghost" onclick="chatRetry(' + i + ', this)">同じ指示でもう一度作る</button>';
   if (m.none) acts = '';
   else if (m.state === 'ok') acts = '<span class="state-ok">✓ 本文に入れた</span>';
-  else if (m.state === 'ng') acts = '<span class="state-ng">却下した</span>';
-  else if (m.whole) acts = '<button class="btn-ghost" onclick="openWhole(' + i + ')">案を見て採用する</button><button class="btn-ghost" onclick="chatReject(' + i + ')">却下</button>';
-  else if (chatRanges[i]) acts = '<button class="btn-ghost" onclick="chatAdopt(' + i + ')">採用して本文に入れる</button><button class="btn-ghost" onclick="chatReject(' + i + ')">却下</button><button class="btn-icon" onclick="chatShow(' + i + ')">本文のその場所を見る</button>';
+  else if (m.state === 'ng') acts = '<span class="state-ng">採用しなかった' + (m.auto ? '（新しい指示を送ったため）' : '') + '</span>';
+  else if (m.state === 'retry') acts = '<span class="state-ng">作り直した（下の新しい案を見てください）</span>';
+  else if (m.whole) acts = '<button class="btn-ghost ck-ai" onclick="openWhole(' + i + ')">今の本文と見比べる</button><button class="btn-ghost" onclick="chatReject(' + i + ')">採用しない</button>' + retry;
+  else if (chatRanges[i] && m.stale) acts = '<span class="state-ng">その文がもう書き換わっているので採用できません。</span>' + retry + '<button class="btn-ghost" onclick="chatReject(' + i + ')">採用しない</button>';
+  else if (chatRanges[i]) acts = '<button class="btn-ghost ck-ai" onclick="chatAdopt(' + i + ')">採用して本文に入れる</button><button class="btn-ghost" onclick="chatReject(' + i + ')">採用しない</button>' + retry + '<button class="btn-icon" onclick="chatShow(' + i + ')">本文のその場所を見る</button>';
   else acts = '<span class="state-ng">画面を開き直したため採用できません。もう一度指示してください</span>';
-  return '<div class="msg"><div class="who">AI</div><div class="bubble">' + m.html + (acts ? '<div class="row" style="margin-top:4px">' + acts + '</div>' : '') + '</div><div class="cost">' + esc(m.cost || '') + '</div></div>';
+  var html = m.whole && !m.state ? '<b class="wait">まだ本文は変わっていません。</b>「今の本文と見比べる」で並べて見て、採用するか決めてください。' : m.html;
+  return '<div class="msg"><div class="who">AI</div><div class="bubble">' + html + (acts ? '<div class="row" style="margin-top:4px;flex-wrap:wrap">' + acts + '</div>' : '') + '</div><div class="cost">' + esc(m.cost || '') + '</div></div>';
 }
+// 1回の料金の目安（選んだ文だけ／本文全体）
+function estChat(whole) {
+  var a = ACTS[1]; if (!settings) return 0;
+  if (!whole) return oneCost(a);
+  var k = docText().length * 1.6 / 1000; var m = (settings.models || {}).chat; var p = (settings.prices || {})[m] || [0, 0];
+  return ((5 + k) * p[0] + (k * 1.3) * p[1]) / 1000;
+}
+// 本文全体を直すときは、送る前に料金を確かめる
+var askOk = null;
+function askCost(title, body, okLabel, fn) {
+  document.getElementById('askTitle').textContent = title; document.getElementById('askBody').textContent = body;
+  document.getElementById('askOk').textContent = okLabel; askOk = fn; openModal('m-ask');
+}
+function askGo() { closeModal('m-ask'); var f = askOk; askOk = null; if (f) f(); }
 function sendChat(btn) {
   var inp = document.getElementById('chatIn'); var text = inp.value.trim();
   if (!text) { toast('AIへの指示を入力してください'); return; }
   if (!docText()) { toast('本文がまだありません'); return; }
   var range = savedRange && savedRange.toString().trim() ? savedRange.cloneRange() : null;
-  var src = range ? range.toString() : '';
-  cur.content.chat.push({ me: true, text: text, target: range ? '選んだ文' : '本文全体' }); inp.value = ''; renderChat();
-  var done = busy(btn, 'AIが考え中…');
-  var payload = range ? { kind: 'chat', id: cur.id, selected: src, instruction: text, context: docText() } : { kind: 'chat', id: cur.id, instruction: text, doc: cleanDoc() };
-  api('ai', payload).then(function (j) {
-    done(); addCost(j.costUsd); var r = j.result; var m;
-    if (r.noChange) m = { html: (range ? '選んだ文' : '本文') + 'は、このままで直す必要が見つかりませんでした。別の言い方で指示してみてください。', none: true };
-    else if (range) { m = { html: '選んだ文だけを直す案です。ほかの文は変わりません。<div class="diff" style="margin-top:4px"><del>' + esc(src) + '</del> <ins>' + esc(r.text) + '</ins></div>', to: r.text }; }
-    else m = { html: '本文全体を直す案ができました。「案を見て採用する」で中身を確かめられます。', whole: r.text };
-    m.cost = yen(j.costUsd);
-    cur.content.chat.push(m);
-    if (range) chatRanges[cur.content.chat.length - 1] = range;
-    clearTarget(); renderChat(); markDirty();
-  }).catch(function (e) { done(); cur.content.chat.push({ html: 'AIに接続できませんでした：' + esc(netMsg(e)) + '。もう一度送ってください。', none: true }); renderChat(); });
+  var p = pendingIdx();
+  var go = function () {
+    if (p >= 0) { cur.content.chat[p].state = 'ng'; cur.content.chat[p].auto = true; delete chatRanges[p]; }
+    var ci = pendingCheck; pendingCheck = null; inp.value = ''; runChat(text, range, ci, false, btn);
+  };
+  var head = p >= 0 ? '前の案がまだ決まっていません。新しく送ると、前の案は「採用しなかった」になります。\n' : '';
+  if (range && p < 0) go();
+  else if (range) askCost('前の案を採用しないで、新しく送りますか', head + '選んだ文だけを直します。1回 約' + yen(estChat(false)) + 'です。', '送る（約' + yen(estChat(false)) + '）', go);
+  else askCost(p >= 0 ? '前の案を採用しないで、本文全体を直させますか' : '本文全体をAIに直させますか', head + '本文全体（' + docText().length.toLocaleString() + '字）を読ませて書き直させるので、1回 約' + yen(estChat(true)) + 'かかります。選んだ文だけ直すと約' + yen(estChat(false)) + 'です。案が出ても、採用するまで本文は変わりません。', '送る（約' + yen(estChat(true)) + '）', go);
 }
-function chatAdopt(i) { var m = cur.content.chat[i]; replaceRange(chatRanges[i], m.to); m.state = 'ok'; delete chatRanges[i]; renderChat(); docChanged(); toast('本文に反映しました'); }
+function runChat(text, range, ci, isRetry, btn) {
+  var src = range ? range.toString() : '';
+  cur.content.chat.push({ me: true, text: text, target: range ? '選んだ文' : '本文全体', ck: ci, retry: isRetry || undefined }); renderChat();
+  var done = busy(btn, 'AIが考え中…');
+  var cm = (settings.models || {}).chat || '';
+  var prog = startProgress(btn.closest('.row') || btn.parentNode, 'chat_' + (range ? 'sel_' : 'all_') + cm, range ? 8 : 15 + docText().length / 1000 * 10);
+  var payload = range ? { kind: 'chat', id: cur.id, selected: src, instruction: text, context: docText() } : { kind: 'chat', id: cur.id, instruction: text, doc: cleanDoc() };
+  var baseHash = hashStr(cleanDoc());
+  api('ai', payload).then(function (j) {
+    done(); prog(true); addCost(j.costUsd); var r = j.result; var m;
+    if (r.noChange) m = { html: (range ? '選んだ文' : '本文') + 'は、このままで直す必要が見つかりませんでした。別の言い方で指示してみてください。', none: true };
+    else if (range) { m = { html: '選んだ文だけを直す案です。本文で緑の波線を引いた所が変わります。ほかの文は変わりません。<div class="diff2"><div class="lb">直す前</div><div class="bf">' + esc(src) + '</div><div class="lb">直した後</div><div class="af">' + esc(r.text) + '</div></div>', to: r.text }; }
+    else m = { html: '本文全体を直す案です。', whole: r.text };
+    m.cost = 'この1回の料金 ' + yen(j.costUsd); m.ins = text; if (ci != null) m.ck = ci;
+    if (m.whole) m.base = baseHash; if (range) m.src = src;
+    cur.content.chat.push(m); var idx = cur.content.chat.length - 1;
+    if (range) chatRanges[idx] = range;
+    clearTarget(); renderChat(); markDirty();
+    if (m.whole) openWhole(idx);   // 本文全体の案は、届いたらすぐ見比べる画面を開く
+    else if (r.noChange && document.getElementById('m-whole').classList.contains('show')) closeModal('m-whole');
+  }).catch(function (e) { done(); prog(false); cur.content.chat.push({ html: 'AIに接続できませんでした：' + esc(netMsg(e)) + '。もう一度送ってください。', none: true }); renderChat(); });
+}
+// 同じ指示でもう一度作る（前の案は「作り直した」にする）
+function chatRetry(i, btn) {
+  var m = cur.content.chat[i], text = m.ins;
+  if (!text) for (var k = i - 1; k >= 0; k--) if (cur.content.chat[k].me) { text = cur.content.chat[k].text; break; }
+  if (!text) { toast('元の指示が見つかりませんでした。指示を書いて送ってください'); return; }
+  var range = chatRanges[i] || null;
+  if (!m.whole && !range) { toast('画面を開き直したため作り直せません。文を選んで指示してください'); return; }
+  var go = function () {
+    m.state = 'retry'; delete chatRanges[i];
+    var b = document.getElementById('m-whole').classList.contains('show') ? document.getElementById('wholeRetry') : document.getElementById('chatSend');
+    runChat(text, range, m.ck != null ? m.ck : null, true, b);
+  };
+  if (range) go();
+  else askCost('同じ指示で、本文全体の案をもう一度作りますか', '前の案は使わずに、AIにもう一度書かせます。1回 約' + yen(estChat(true)) + 'かかります。', 'もう一度作る（約' + yen(estChat(true)) + '）', go);
+}
+function chatAdopt(i) {
+  var m = cur.content.chat[i], r = chatRanges[i], d = document.getElementById('doc');
+  if (!r || !d.contains(r.commonAncestorContainer) || (m.src != null && r.toString() !== m.src)) { m.stale = true; renderChat(); toast('その文がもう書き換わっているので、この案は採用できません。「同じ指示でもう一度作る」を押してください', 5000); return; }
+  replaceRange(chatRanges[i], m.to); m.state = 'ok'; delete chatRanges[i]; checkFromChat(m); renderChat(); docChanged(); toast('本文に反映しました'); }
+function checkFromChat(m) { }
 function chatReject(i) { cur.content.chat[i].state = 'ng'; delete chatRanges[i]; renderChat(); markDirty(); }
 function chatShow(i) { var r = chatRanges[i]; if (!r) return; var n = r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentNode; n.scrollIntoView({ block: 'center', behavior: 'smooth' }); n.classList.add('flash'); setTimeout(function () { n.classList.remove('flash'); }, 1800); }
-function openWhole(i) { wholeHtml = cur.content.chat[i].whole; document.getElementById('wholePreview').innerHTML = wholeHtml; document.getElementById('wholeAdopt').setAttribute('data-i', i); openModal('m-whole'); }
+// 段落ごとに見比べる：今の本文にしかない段落＝赤、案にしかない段落＝緑
+function blockKey(el) { return (el.textContent || '').replace(/\s+/g, '') + '|' + el.tagName; }
+function markDiff(a, b) {
+  var A = Array.prototype.slice.call(a.children), B = Array.prototype.slice.call(b.children);
+  var ka = A.map(blockKey), kb = B.map(blockKey), n = A.length, m = B.length, L = [], x, y;
+  for (x = 0; x <= n; x++) { L.push(new Array(m + 1).fill(0)); }
+  for (x = n - 1; x >= 0; x--) for (y = m - 1; y >= 0; y--) L[x][y] = ka[x] === kb[y] ? L[x + 1][y + 1] + 1 : Math.max(L[x + 1][y], L[x][y + 1]);
+  var keepA = {}, keepB = {}; x = 0; y = 0;
+  while (x < n && y < m) { if (ka[x] === kb[y]) { keepA[x] = keepB[y] = 1; x++; y++; } else if (L[x + 1][y] >= L[x][y + 1]) x++; else y++; }
+  var del = 0, add = 0;
+  A.forEach(function (el, k) { if (!keepA[k]) { el.classList.add('cmp-del'); del++; } });
+  B.forEach(function (el, k) { if (!keepB[k]) { el.classList.add('cmp-add'); add++; } });
+  return { del: del, add: add };
+}
+function plainLen(html) { var w = document.createElement('div'); w.innerHTML = html; return (w.textContent || '').replace(/\s+/g, '').length; }
+function openWhole(i) {
+  var m = cur.content.chat[i]; wholeHtml = m.whole;
+  var c = document.getElementById('wholeCur'), p = document.getElementById('wholePreview');
+  c.innerHTML = cleanDoc(); p.innerHTML = wholeHtml;
+  var d = markDiff(c, p);
+  var ins = m.ins || ''; if (!ins) for (var k = i - 1; k >= 0; k--) if (cur.content.chat[k].me) { ins = cur.content.chat[k].text; break; }
+  document.getElementById('wholeInfo').innerHTML = '指示：' + esc(ins.length > 80 ? ins.slice(0, 80) + '…' : ins) + '<br>今の本文 ' + plainLen(c.innerHTML).toLocaleString() + '字 → AIの案 ' + plainLen(wholeHtml).toLocaleString() + '字。<span class="cmp-del-l">赤</span>＝案では消える段落（' + d.del + '）、<span class="cmp-add-l">緑</span>＝案で増えた・書き変わった段落（' + d.add + '）。' + (m.state ? '' : '<b>まだ本文は変わっていません。</b>');
+  var dis = !!m.state, changed = !dis && m.base && m.base !== hashStr(cleanDoc());
+  if (changed) document.getElementById('wholeInfo').innerHTML += '<div class="stale-warn">この案を作ったあとに、本文が変わっています。採用すると、そのあとの変更は消えます。</div>';
+  document.getElementById('wholeAdopt').textContent = changed ? 'そのあとの変更も消して採用する' : 'AIの案を採用する';
+  document.getElementById('wholeAdopt').setAttribute('data-i', i); document.getElementById('wholeAdopt').disabled = dis;
+  document.getElementById('wholeKeep').disabled = dis;
+  var r = document.getElementById('wholeRetry'); r.setAttribute('data-i', i); r.disabled = dis; r.textContent = '同じ指示でもう一度作る（約' + yen(estChat(true)) + '）';
+  openModal('m-whole');
+  c.scrollTop = 0; p.scrollTop = 0;
+}
+function wholeKeep() { var i = +document.getElementById('wholeAdopt').getAttribute('data-i'); chatReject(i); closeModal('m-whole'); toast('今の本文のままにしました'); }
 function wholeAdopt() {
   var i = +document.getElementById('wholeAdopt').getAttribute('data-i');
-  st.snapshot = st.snapshot || 'AIチャットで本文全体を直す前';
+  st.snapshot = st.snapshot || 'AIで本文全体を直す前';
   setDoc(wholeHtml); cur.content.doc = cleanDoc(); cur.content.chat[i].state = 'ok';
+  checkFromChat(cur.content.chat[i]);
+  if (cur.content.check) { cur.content.check.stale = true; renderCheck(); }
   closeModal('m-whole'); renderChat(); markDirty(); toast('本文を入れ替えました（前の本文は履歴に残します）');
 }
 function toggleChat() { document.getElementById('edBody').classList.toggle('chat-closed'); }
+function sideTab(w) {
+  curSide = w; document.getElementById('edBody').classList.remove('chat-closed');
+  ['check', 'chat', 'finish'].forEach(function (k) {
+    var T = k.charAt(0).toUpperCase() + k.slice(1);
+    document.getElementById('tab' + T).classList.toggle('on', w === k); document.getElementById('pane' + T).classList.toggle('on', w === k);
+  });
+  if (w === 'chat') { var l = document.getElementById('chatLog'); l.scrollTop = l.scrollHeight; }
+  if (cur && w === 'finish' && cur.step === 3) step(4, false, true);
+  else if (cur && w !== 'finish' && cur.step === 4) step(3, false, true);
+}
+function focusChat() { sideTab('chat'); if (!savedRange) toast('本文で直したい文をドラッグで選んでから指示してください。選ばないと本文全体が対象です'); document.getElementById('chatIn').focus(); }
+// 送る前に、今の対象での1回の料金の目安を出す（本文全体は本文の長さで変わる）
+function updateChatCost() {
+  var el = document.getElementById('chatCost'); if (!el || !settings) return;
+  el.textContent = (savedRange ? '選んだ文だけ直す' : '本文全体を直す') + '：1回 約' + yen(estChat(!savedRange)) + '（送ったときだけかかります）';
+}
 
 // ===== 送信 =====
 var categories = null;
@@ -879,8 +1378,27 @@ function loadCategories() {
 function fillCats() {
   var sel = document.getElementById('cat');
   sel.innerHTML = '<option value="">（選んでください）</option>' + categories.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + '</option>'; }).join('');
+  // 塾長ブログで何も選んでいなければ「塾長ノート」にしておく
+  if (!cur.content.categoryId && cur.type !== 'info') {
+    var jk = categories.filter(function (c) { return c.name === '塾長ノート'; })[0];
+    // 保存は記事を開く処理（送れていない内容の確認）が終わってから行う。開いた直後に保存の印を付けると、新しい記事でも「送れていない内容が残っています」が出てしまうため
+    if (jk) { cur.content.categoryId = String(jk.id); var me = cur; setTimeout(function () { if (cur === me) markDirty(); }, 0); }
+  }
   sel.value = cur.content.categoryId || '';
+  catNote();
 }
+function catNote() {
+  var el = document.getElementById('catNote'); if (!el || !categories) return;
+  var ai = categories.filter(function (c) { return String(c.id) === String(cur.content.catAI || ''); })[0];
+  var v = document.getElementById('cat').value;
+  el.textContent = ai ? (String(ai.id) === v ? 'AIのおすすめと同じです' : 'AIのおすすめ：' + ai.name) : (cur.type !== 'info' ? '塾長ブログは「塾長ノート」が最初に入ります' : '');
+}
+function renderSlugOpts() {
+  var el = document.getElementById('slugOpts'); if (!el || !cur) return;
+  var opts = cur.content.slugOptions || [], v = document.getElementById('slug').value.trim();
+  el.innerHTML = opts.length ? '<span class="muted" style="font-size:11px">AIの案：</span>' + opts.map(function (o) { return '<button class="btn-ghost' + (o === v ? ' on' : '') + '" onclick="pickSlug(this)">' + esc(o) + '</button>'; }).join('') : '';
+}
+function pickSlug(btn) { document.getElementById('slug').value = btn.textContent; metaChanged(); renderSlugOpts(); toast('スラッグを変えました'); }
 function metaChanged() {
   cur.content.slug = document.getElementById('slug').value.trim();
   cur.content.excerpt = document.getElementById('excerpt').value;
@@ -888,17 +1406,24 @@ function metaChanged() {
   markDirty();
 }
 function exLen() { document.getElementById('exLen').textContent = '（' + document.getElementById('excerpt').value.length + '字）'; }
+var commentShuffle = null;
 function renderComments() {
   var all = String((settings && settings.comments) || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
   var pick = (cur.content.comments || []).filter(Boolean);
-  var list = pick.concat(all.filter(function (c) { return pick.indexOf(c) < 0; })).slice(0, 10);
+  var rest = all.filter(function (c) { return pick.indexOf(c) < 0; });
   var tx = document.querySelector('#doc .balloon .tx'); var curTx = tx ? tx.textContent : '';
-  document.getElementById('comments').innerHTML = list.length ? list.map(function (c, i) {
-    return '<button class="btn-ghost' + (c === curTx ? ' on' : '') + '" onclick="pickComment(this)">' + (i < pick.length ? '★ ' : '') + '<span>' + esc(c) + '</span></button>';
-  }).join('') + '<span class="muted">★＝AIのおすすめ</span>' : '<span class="muted">設定画面で塾長コメントの候補を入れてください</span>';
+  var btn = function (c) { return '<button class="btn-ghost' + (c === curTx ? ' on' : '') + '" onclick="pickComment(this)"><span>' + esc(c) + '</span></button>'; };
+  if (!all.length && !pick.length) { document.getElementById('comments').innerHTML = '<span class="muted">設定画面で塾長コメントの候補を入れてください</span>'; return; }
+  var html = '';
+  if (pick.length) html += '<div class="cm-row"><span class="cm-lb">AIのおすすめ<br>（この記事に合いそう）</span><div class="row">' + pick.map(btn).join('') + '</div></div>';
+  var inRest = rest.indexOf(curTx) >= 0;
+  html += '<div class="cm-row"><span class="cm-lb">ほかの候補<br>（全' + rest.length + '個）</span><select class="form-select" id="cmAll" style="max-width:640px' + (inRest ? ';background:#1e293b;color:#fff' : '') + '" onchange="pickCommentText(this.value)"><option value="">' + (inRest ? '' : '（ここから選ぶと本文の吹き出しが変わります）') + '</option>' + rest.map(function (c) { return '<option' + (c === curTx ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>';
+  html += '<div class="muted" style="font-size:11px">いま本文に入っているコメント：「' + esc(curTx || 'なし') + '」（黒くなっているもの）</div>';
+  document.getElementById('comments').innerHTML = html;
 }
-function pickComment(btn) {
-  var text = btn.querySelector('span').textContent;
+function pickComment(btn) { pickCommentText(btn.querySelector('span').textContent); }
+function pickCommentText(text) {
+  if (!text) return;
   var doc = document.getElementById('doc'); var tx = doc.querySelector('.balloon .tx');
   if (!tx) {
     var b = document.createElement('div'); b.className = 'balloon'; b.innerHTML = '<div class="tx"></div>';
@@ -906,36 +1431,149 @@ function pickComment(btn) {
     decorateDoc(); tx = b.querySelector('.tx');
   }
   tx.textContent = text;
-  btn.parentNode.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === btn); });
-  docChanged(); toast('本文の吹き出しを変えました');
+  docChanged(); renderComments(); toast('本文の吹き出しを変えました');
 }
 function renderSentInfo() {
   var el = document.getElementById('sentInfo');
-  el.innerHTML = cur.wpId ? 'WordPress 下書き #' + cur.wpId + ' に送信済み（もう一度送ると、その下書きを更新します）' : '';
+  var rw = cur.content.rewrite;
+  if (rw) { el.innerHTML = '公開中の記事 #' + rw.wpId + ' のリライト' + (cur.status === 'sent' ? '：書き換え済み（もう一度送ると、また書き換えます）' : '：まだ書き換えていません') + '　<a href="' + esc(rw.link) + '" target="_blank" rel="noopener">公開ページを開く</a>　<a href="' + esc(wpAdminUrl(rw.wpId)) + '" target="_blank" rel="noopener">WordPressで開く（リビジョンで元に戻せます）</a>' + (cur.sendCheck ? '<div class="stale-warn">' + esc(cur.sendCheck) + '</div>' : ''); return; }
+  el.innerHTML = cur.wpId ? 'WordPress 下書き #' + cur.wpId + ' に送信済み（もう一度送ると、その下書きを更新します）' + (cur.sendCheck ? '<div class="stale-warn">' + esc(cur.sendCheck) + '</div>' : '') : '';
 }
 /** 本文 → WordPress（SWELL）用のHTML */
+// WordPressに送る本文：段落・見出し・リスト・表・吹き出しを、ブロックエディタのブロックの形にする（クラシックブロックにならないように）
+function wpInline(el) {
+  var c = el.cloneNode(true);
+  c.querySelectorAll('.marker').forEach(function (m) { m.className = 'swl-marker mark_blue'; });
+  c.querySelectorAll('b,strong').forEach(function (b) { var sp = document.createElement('span'); sp.className = 'swl-format-1'; sp.innerHTML = b.innerHTML; b.parentNode.replaceChild(sp, b); });
+  c.querySelectorAll('.ai-add').forEach(function (a) { a.replaceWith(document.createTextNode(a.textContent)); });
+  c.querySelectorAll('[data-what],[data-kind],[data-prompt],[data-shot]').forEach(function (x) { ['data-what', 'data-kind', 'data-prompt', 'data-shot'].forEach(function (k) { x.removeAttribute(k); }); });
+  return c.innerHTML;
+}
+function wpPara(inner) { return '<!-- wp:paragraph -->\n<p>' + inner + '</p>\n<!-- /wp:paragraph -->'; }
+// 本文に入り込んだ「情報の確認日・出典」（WordPress から取り込んだとき等）を外す。送るときに作り直すので、2つにならないように（v2.7.3）
+function dropSrcSection(w) {
+  Array.prototype.slice.call(w.querySelectorAll('p')).forEach(function (p) { if (/^情報の確認日：.*出典：/.test((p.textContent || '').trim())) p.remove(); });
+  Array.prototype.slice.call(w.querySelectorAll('h2,h3')).forEach(function (h) {
+    if ((h.textContent || '').trim() !== '情報の確認日・出典') return;
+    var n = h.nextElementSibling;
+    while (n && ((n.tagName === 'P' && /^この記事の数字・制度は/.test((n.textContent || '').trim())) || n.tagName === 'UL' || n.tagName === 'OL')) { var nx = n.nextElementSibling; n.remove(); n = nx; }
+    h.remove();
+  });
+}
 function toWpHtml() {
   var w = document.createElement('div'); w.innerHTML = cleanDoc();
-  var s = settings || {};
-  w.querySelectorAll('.balloon').forEach(function (b) {
-    var t = (b.querySelector('.tx') || b).textContent.trim();
-    var attrs = JSON.stringify({ balloonIcon: s.balloonIcon, balloonName: s.balloonName || '塾長 川上', balloonCol: 'blue' });
-    var c = document.createComment(' wp:loos/balloon ' + attrs + ' '); var p = document.createElement('p'); p.textContent = t; var e = document.createComment(' /wp:loos/balloon ');
-    b.parentNode.insertBefore(c, b); b.parentNode.insertBefore(p, b); b.parentNode.insertBefore(e, b); b.remove();
+  dropSrcSection(w);
+  var s = settings || {}, out = [];
+  Array.prototype.forEach.call(w.childNodes, function (n) {
+    if (n.nodeType === 3) { if (n.nodeValue.trim()) out.push(wpPara(esc(n.nodeValue.trim()))); return; }
+    if (n.nodeType !== 1) return;
+    var tag = n.tagName.toLowerCase();
+    if (n.classList.contains('balloon')) {
+      var t = (n.querySelector('.tx') || n).textContent.trim();
+      var attrs = JSON.stringify({ balloonIcon: s.balloonIcon, balloonName: s.balloonName || '塾長 川上', balloonCol: 'blue' });
+      out.push('<!-- wp:loos/balloon ' + attrs + ' -->\n<p>' + esc(t) + '</p>\n<!-- /wp:loos/balloon -->'); return;
+    }
+    if (n.classList.contains('keep')) { var bx = (cur.content.boxes || {})[n.getAttribute('data-n')]; if (bx && bx.raw) out.push(bx.raw); return; }
+    if (n.classList.contains('ph')) {
+      // 画像のブロックとして送る（成績アップ紹介と同じ形）。WordPress で画像を選んで「置換」すれば差し替わる。src に何の画像かを書いておく
+      var what = (n.getAttribute('data-what') || n.textContent.replace(/^画像の仮置き：/, '').replace(/（(写真|イラスト|図解)）\s*$/, '')).trim();
+      out.push('<!-- wp:image {"sizeSlug":"large","linkDestination":"none"} -->\n<figure class="wp-block-image size-large"><img src="（画像を差し替え：' + esc(what) + '）" alt="' + esc(n.getAttribute('data-alt') || what) + '"/></figure>\n<!-- /wp:image -->');
+      return;
+    }
+    if (tag === 'p') { if (n.textContent.trim() || n.querySelector('img')) out.push(wpPara(wpInline(n))); return; }
+    if (tag === 'h2') { out.push('<!-- wp:heading -->\n<h2 class="wp-block-heading">' + wpInline(n) + '</h2>\n<!-- /wp:heading -->'); return; }
+    if (tag === 'h3' || tag === 'h4') { var lv = tag === 'h3' ? 3 : 4; out.push('<!-- wp:heading {"level":' + lv + '} -->\n<' + tag + ' class="wp-block-heading">' + wpInline(n) + '</' + tag + '>\n<!-- /wp:heading -->'); return; }
+    if (tag === 'ul' || tag === 'ol') {
+      var items = Array.prototype.map.call(n.querySelectorAll(':scope > li'), function (li) { return '<!-- wp:list-item -->\n<li>' + wpInline(li) + '</li>\n<!-- /wp:list-item -->'; }).join('\n');
+      out.push('<!-- wp:list' + (tag === 'ol' ? ' {"ordered":true}' : '') + ' -->\n<' + tag + ' class="wp-block-list">' + items + '</' + tag + '>\n<!-- /wp:list -->'); return;
+    }
+    if (tag === 'table') { out.push('<!-- wp:table -->\n<figure class="wp-block-table">' + wpInline({ cloneNode: function () { var d = document.createElement('div'); d.appendChild(n.cloneNode(true)); return d; } }) + '</figure>\n<!-- /wp:table -->'); return; }
+    if (tag === 'br') return;
+    if (n.textContent.trim()) out.push('<!-- wp:html -->\n' + n.outerHTML + '\n<!-- /wp:html -->');
   });
-  w.querySelectorAll('.marker').forEach(function (m) { m.className = 'swl-marker mark_blue'; });
-  w.querySelectorAll('b,strong').forEach(function (b) { var sp = document.createElement('span'); sp.className = 'swl-format-1'; sp.innerHTML = b.innerHTML; b.parentNode.replaceChild(sp, b); });
-  w.querySelectorAll('.ai-add').forEach(function (a) { a.replaceWith(document.createTextNode(a.textContent)); });
-  w.querySelectorAll('.ph').forEach(function (p) { var q = document.createElement('p'); q.textContent = '【画像の仮置き】' + p.textContent.replace(/^画像の仮置き：/, '').trim(); p.parentNode.replaceChild(q, p); });
-  w.querySelectorAll('[data-what]').forEach(function (x) { x.removeAttribute('data-what'); });
-  w.querySelectorAll('table').forEach(function (t) {
-    var f = document.createElement('figure'); f.className = 'wp-block-table';
-    t.parentNode.insertBefore(document.createComment(' wp:table '), t); t.parentNode.insertBefore(f, t); f.appendChild(t);
-    f.parentNode.insertBefore(document.createComment(' /wp:table '), f.nextSibling);
-  });
-  var html = w.innerHTML;
-  if (s.fixedBlockRef) html += '\n<!-- wp:block {"ref":' + Number(s.fixedBlockRef) + '} /-->';
-  return html;
+  var srcs = usedSources();
+  if (srcs.length) {
+    // 前の版で本文に入れた「（参考：〇〇）」は、最後の一覧にある出典なら外す（同じ出典が何度も出ないように）
+    var known = function (href, nm) { nm = decEnt(String(nm || '')).trim(); return srcs.some(function (x) { return (href && decEnt(href) === x.url) || (nm && nm === x.name); }); };
+    out = out.map(function (h) {
+      return h.replace(/（参考：(?:<a [^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>|([^）<]*))）/g, function (m, href, an, plain) { return known(href, an || plain) ? '' : m; });
+    });
+    // 見出しにせず、小さな字の注記1段落にする。SWELL の段落スタイル「左に縦線」（is-style-border_left）で参照らしく見せる（v2.7.5 川上さん案）（v2.7.4 川上さん：見出しだと、あとに続く「あわせて読みたい」や LINE の案内まで出典の中に見える）
+    out.push('<!-- wp:paragraph {"className":"is-style-border_left","fontSize":"small"} -->\n<p class="is-style-border_left has-small-font-size">情報の確認日：' + esc(jpDate(cur.content.finish && cur.content.finish.at)) + '　出典：' + srcs.map(function (x) { return '<a href="' + esc(x.url) + '">' + esc(x.name) + '</a>'; }).join('／') + '</p>\n<!-- /wp:paragraph -->');
+  }
+  (cur.content.related || []).forEach(function (id) { var b = postLinkBlock(id); if (b) out.push(b); });
+  tailRefs(s.fixedBlockRef).forEach(function (r) { out.push('<!-- wp:block {"ref":' + r + '} /-->'); });
+  return out.join('\n\n');
+}
+
+// SWELLのブログカード。公開記事（No.3597）と同じ linkData の形で書く（postId だけでは中身が空になる。2026-10-12 確認）
+function blockJson(o) { return JSON.stringify(o).replace(/--/g, '\\u002d\\u002d').replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026'); }
+function postLinkBlock(id) {
+  var p = postById(id); if (!p || !p.link) return '';
+  return '<!-- wp:loos/post-link ' + blockJson({ linkData: { title: String(p.title || ''), id: Number(p.id), url: String(p.link), kind: 'post-type', type: 'post' }, icon: 'link' }) + ' /-->';
+}
+// 記事の最後に入れるパターン番号（上から順・カンマ区切り）
+function tailRefs(v) { return String(v || '').split(/[,、\s]+/).filter(function (x) { return /^\d+$/.test(x); }).map(Number); }
+var TAIL_DEFAULT = '3686,2711,2286,2712,2713,1564', TAIL_CHECK = '横須賀市で唯一';
+// ===== あわせて読みたい（過去の記事を記事の最後に紹介する。SWELLのブログカード） =====
+var wpPostList = null, relQuery = '';
+function loadPosts(cb) {
+  if (wpPostList) { if (cb) cb(); return; }
+  api('wpPosts').then(function (j) { wpPostList = j.posts || []; if (cb) cb(); }).catch(function () { wpPostList = []; if (cb) cb(); });
+}
+function postById(id) { return (wpPostList || []).filter(function (x) { return Number(x.id) === Number(id); })[0]; }
+function catNames(p) { if (!p || !categories) return ''; return (p.categories || []).map(function (c) { var k = categories.filter(function (x) { return Number(x.id) === Number(c); })[0]; return k ? k.name : ''; }).filter(Boolean).join('・'); }
+function postTitle(id) { var p = postById(id); return p ? p.title : '記事 #' + id; }
+// この記事に近い記事：タイトル・見出しと、過去記事のタイトル・カテゴリに同じ言葉（2文字ずつ）が多い順（AIは使わない）
+function bigrams(t) { t = String(t || '').replace(/[\s「」『』【】（）()！!？?、。・：:～〜\-｜|0-9０-９]/g, ''); var s = {}; for (var i = 0; i < t.length - 1; i++) s[t.substr(i, 2)] = 1; return s; }
+function similarPosts(n) {
+  var d = document.getElementById('doc');
+  var src = (cur.title || '') + ' ' + Array.prototype.map.call(d ? d.querySelectorAll('h2,h3') : [], function (h) { return h.textContent; }).join(' ');
+  var A = bigrams(src), ka = Object.keys(A).length || 1, rel = cur.content.related || [];
+  return (wpPostList || []).filter(function (p) { return rel.indexOf(Number(p.id)) < 0; }).map(function (p) {
+    var B = bigrams(p.title + ' ' + catNames(p)), hit = 0, kb = Object.keys(B).length || 1;
+    Object.keys(B).forEach(function (k) { if (A[k]) hit++; });
+    return { p: p, score: hit / Math.sqrt(ka * kb) };
+  }).filter(function (x) { return x.score > 0; }).sort(function (a, b) { return b.score - a.score; }).slice(0, n).map(function (x) { return x.p; });
+}
+function relRow(p, act, pre) {
+  var meta = esc(p.date) + (catNames(p) ? '・' + esc(catNames(p)) : '');
+  return '<div class="rel-row">' + (pre || '') + '<div class="rel-main" title="' + esc(p.title) + '"><span class="rel-t">' + esc(p.title) + '</span><span class="rel-meta">' + meta + '</span></div>' + act + (p.link ? '<a href="' + esc(p.link) + '" target="_blank" rel="noopener" class="rel-open">開く</a>' : '') + '</div>';
+}
+function renderRelated() {
+  var el = document.getElementById('related'); if (!el || !cur) return;
+  if (!wpPostList) { el.innerHTML = '<span class="muted">公開済みの記事を読み込み中…</span>'; loadPosts(renderRelated); return; }
+  if (!categories) loadCategories();
+  var rel = cur.content.related || [], ai = cur.content.relatedAI || [], html = '';
+  html += '<div class="rel-sec rel-chosen"><div class="rel-h">選んでいる記事（' + rel.length + '／3本）' + (rel.length > 1 ? ' <span class="muted" style="font-weight:400">上から順に記事の最後に並びます。▲▼で入れ替え</span>' : '') + '</div>';
+  html += rel.length ? rel.map(function (id, i) {
+    var p = postById(id) || { id: id, title: '記事 #' + id, date: '', categories: [] };
+    var pre = '<span class="rel-no">' + (i + 1) + '</span><button class="btn-ghost rel-mv rel-up" title="1つ上へ" onclick="relMove(' + i + ',-1)"' + (i === 0 ? ' disabled' : '') + '>▲</button><button class="btn-ghost rel-mv rel-down" title="1つ下へ" onclick="relMove(' + i + ',1)"' + (i === rel.length - 1 ? ' disabled' : '') + '>▼</button>';
+    return relRow(p, (ai.indexOf(Number(id)) >= 0 ? '<span class="badge b-gray">AIのおすすめ</span>' : '') + '<button class="btn-ghost rel-btn" onclick="relDel(' + i + ')">外す</button>', pre);
+  }).join('') : '<div class="muted" style="font-size:12px">まだ選んでいません。選ばなければ、記事の最後に「あわせて読みたい」は出ません。</div>';
+  html += '</div>';
+  if (rel.length < 3) {
+    var sim = similarPosts(5);
+    if (sim.length) html += '<div class="rel-sec"><div class="rel-h">この記事に近い記事 <span class="muted" style="font-weight:400">タイトルや見出しに同じ言葉が多い順（AIは使いません）</span></div>' + sim.map(function (p) { return relRow(p, '<button class="btn-ghost rel-btn rel-add" onclick="relAdd(' + p.id + ')">＋ 選ぶ</button>'); }).join('') + '</div>';
+    var q = relQuery.trim().toLowerCase();
+    var list = wpPostList.filter(function (p) { return rel.indexOf(Number(p.id)) < 0 && (!q || (p.title + ' ' + catNames(p) + ' ' + p.date).toLowerCase().indexOf(q) >= 0); });
+    html += '<div class="rel-sec"><div class="rel-h">公開済みの記事から探す（全' + wpPostList.length + '本）</div><input class="form-input" id="relQ" placeholder="言葉を入れると絞り込みます（例：合格実績、内申、2025）" value="' + esc(relQuery) + '" oninput="relQuery=this.value;renderRelated();var e=document.getElementById(\'relQ\');e.focus();e.setSelectionRange(e.value.length,e.value.length)" style="max-width:520px">';
+    html += '<div class="rel-list">' + (list.length ? list.slice(0, q ? 50 : 8).map(function (p) { return relRow(p, '<button class="btn-ghost rel-btn rel-add" onclick="relAdd(' + p.id + ')">＋ 選ぶ</button>'); }).join('') + (!q && list.length > 8 ? '<div class="muted" style="font-size:12px;padding:4px 0">新しい順に8本だけ出しています。ほかは言葉を入れて探してください。</div>' : '') : '<div class="muted" style="font-size:12px;padding:4px 0">見つかりませんでした。</div>') + '</div></div>';
+  }
+  el.innerHTML = html;
+}
+function relAdd(id) { if (!id) return; var r = cur.content.related || []; if (r.length >= 3) { toast('3本まで選べます'); return; } cur.content.related = r.concat([Number(id)]); relQuery = ''; renderRelated(); markDirty(); }
+function relDel(i) { cur.content.related.splice(i, 1); renderRelated(); markDirty(); }
+function relMove(i, d) { var r = cur.content.related || [], j = i + d; if (j < 0 || j >= r.length) return; var t = r[i]; r[i] = r[j]; r[j] = t; renderRelated(); markDirty(); }
+// 送ったあと、WordPressで本当に出ているかを知らせる
+function sendCheckMsg(c) {
+  if (!c) return '';
+  if (c.error) return '送ったあとの確認ができませんでした（' + c.error + '）。WordPressで下書きを開いて確かめてください';
+  var bad = [];
+  if (c.classic) bad.push('本文がクラシックブロックになっています');
+  if (!c.fixed) bad.push('記事の最後の定型文（進学塾クロフネとは・LINE・お問合せ）が出ていません');
+  if (c.cards < c.cardsSent) bad.push('あわせて読みたいが ' + c.cardsSent + '件中 ' + c.cards + '件しか出ていません');
+  return bad.join('／');
 }
 function openSend() {
   metaChanged();
@@ -945,43 +1583,90 @@ function openSend() {
   if (!cur.title || cur.title === '（タイトル未定）') problems.push('タイトルが入っていません（「4 編集」で入れてください）');
   if (!docText()) problems.push('本文がありません');
   if (cur.content.slug && !/^[a-z0-9-]+$/.test(cur.content.slug)) problems.push('スラッグは英小文字・数字・ハイフンだけにしてください');
+  var rwb = cur.content.rewrite ? rwBlockers() : [];
+  if (rwb.length) {
+    b.innerHTML = '<div class="grp-title"><span class="badge b-red">送れません</span><span>公開中の記事なので、作業用の印が残っていると読者にそのまま見えます。次の ' + rwb.length + '件を直してから送ってください</span></div>' +
+      rwb.map(function (x, i) { return '<div class="rw-blk"><span>・' + esc(x.label) + '</span><button class="btn-ghost" onclick="gotoBlocker(' + i + ')">本文の場所を見る</button></div>'; }).join('') +
+      '<div class="muted" style="margin-top:6px">【要確認】は、確かめた内容に書き換えるか、その文を消してください。</div>';
+    document.getElementById('sendH').textContent = '公開中の記事を書き換える前の確認';
+    resetSendFoot(); document.getElementById('sendBtn').disabled = true; openModal('m-send'); return;
+  }
   if (problems.length) {
     b.innerHTML = '<div class="grp-title"><span class="badge b-red">送れません</span></div>' + problems.map(function (p) { return '<div class="muted">・' + esc(p) + '</div>'; }).join('');
     document.getElementById('sendBtn').disabled = true; openModal('m-send'); return;
   }
-  var todo = (docText().match(/【要(エピソード|確認)[^】]*】/g) || []);
+  var ckl = checkOpen();
+  if (ckl) html += '<div class="grp-title"><span class="badge b-amber">点検</span><span>人が確かめる所で、まだ片付いていないものが ' + ckl + '件あります（「2 編集」の右側「AIの点検」）。送ることはできます</span></div>';
+  if (!cur.content.finish) html += '<div class="grp-title"><span class="badge b-gray">仕上げ</span><span>仕上げチェック（出典・事実・誤字・個人情報）はまだしていません。送ることはできます</span></div>';
+  else if (finLeft()) html += '<div class="grp-title"><span class="badge b-amber">仕上げ</span><span>仕上げチェックの案で、まだ入れるか決めていないものが ' + finLeft() + '件あります</span></div>';
+  var todo = (docTextNoBox().match(/【要(エピソード|確認)[^】]*】/g) || []);
   if (todo.length) html += '<div class="grp-title"><span class="badge b-amber">未完成</span><span>AIが書けなかった箇所が ' + todo.length + '件あります：' + esc(todo.slice(0, 3).join(' ')) + (todo.length > 3 ? ' ほか' : '') + '。本文で「【要」を探して埋めてください</span></div>';
-  html += '<div class="grp-title"><span class="badge b-amber">注意</span><span>最終チェック（事実・誤字・個人情報の確認）は第2段階で入ります。送る前に本文を読み直してください</span></div>';
   html += '<div class="grp-title" style="margin-top:6px"><span class="badge b-gray">画像</span></div>';
-  html += ph ? '<div class="muted">・画像の仮置きが ' + ph + '件残っています。WordPress で差し替えてください</div>' : '<div class="muted">・画像の仮置きはありません</div>';
+  html += ph ? '<div class="muted">・画像の仮置き ' + ph + '件は、WordPress に画像の枠として入ります。WordPress で枠を選び「置換」で画像を差し替えてください' + (cur.content.rewrite ? '（差し替えるまで、公開ページでは画像の代わりに説明の文字が出ます）' : '') + '</div>' : '<div class="muted">・画像の仮置きはありません</div>';
+  var srcs = usedSources();
+  if (srcs.length) html += '<div class="muted">・本文の最後に小さな字で「情報の確認日・出典」（' + srcs.length + '件）を付けます</div>';
+  var bxN = document.querySelectorAll('#doc .keep').length;
+  if (bxN) html += '<div class="muted">・動かせない箱 ' + bxN + '個は、WordPress の元の部品のまま戻します</div>';
   html += '<label class="chk"><input type="checkbox" class="must" onchange="chkSend()"><span>写っている生徒の掲載許可を確認した（写真がない場合もチェック）</span></label>';
   var cat = document.getElementById('cat'); var catName = cat.value ? cat.options[cat.selectedIndex].text : '（なし）';
-  html += '<div class="muted" style="margin-top:6px">送り先：WordPress の下書き（' + (cur.wpId ? '#' + cur.wpId + ' を更新' : '新規') + '）／作者：川上／カテゴリ：' + esc(catName) + '</div>';
-  b.innerHTML = html; chkSend(); openModal('m-send');
+  var rw = cur.content.rewrite;
+  if (rw) {
+    html += '<div class="grp-title" style="margin-top:8px"><span class="badge b-red">公開中</span><span>送ると、公開中の記事 #' + rw.wpId + ' がすぐに書き換わります（URL・公開日・作者・スラッグは変えません）。元に戻すときは WordPress のリビジョンを使います</span></div>';
+    html += rwDiffHtml();
+    html += '<label class="chk"><input type="checkbox" class="must" onchange="chkSend()"><span>公開中のページがすぐ変わることを確認した</span></label>';
+    html += '<div class="muted" style="margin-top:6px">送り先：公開中の記事 #' + rw.wpId + '（<a href="' + esc(rw.link) + '" target="_blank" rel="noopener">公開ページ</a>）／カテゴリ：' + esc(catName) + '</div>';
+  } else html += '<div class="muted" style="margin-top:6px">送り先：WordPress の下書き（' + (cur.wpId ? '#' + cur.wpId + ' を更新' : '新規') + '）／作者：川上／カテゴリ：' + esc(catName) + '</div>';
+  document.getElementById('sendH').textContent = rw ? '公開中の記事を書き換える前の確認' : 'WordPressに下書きを送る前の確認';
+  b.innerHTML = html; resetSendFoot(); chkSend(); openModal('m-send');
+}
+// リライト（公開中の記事の書き換え）で、送る前に必ず消す作業用の印：【要確認】【要エピソード】（画像の仮置きは画像の枠として送り、WordPress で差し替える）
+function rwBlockers() {
+  var out = [];
+  (docTextNoBox().match(/【要(エピソード|確認)[^】]*】/g) || []).forEach(function (t) { out.push({ label: t.length > 46 ? t.slice(0, 45) + '…】' : t, text: t }); });
+  return out;
+}
+function gotoBlocker(i) {
+  var x = rwBlockers()[i]; closeModal('m-send'); if (!x) return;
+  if (cur.step !== 3 && cur.step !== 4) step(3);
+  setTimeout(function () {
+    if (x.ph != null) { var el = document.querySelectorAll('#doc .ph')[x.ph]; if (el) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.classList.add('flash'); setTimeout(function () { el.classList.remove('flash'); }, 1600); } }
+    else showText(x.text);
+  }, 80);
 }
 function chkSend() { var all = Array.prototype.every.call(document.querySelectorAll('#m-send .must'), function (c) { return c.checked; }); document.getElementById('sendBtn').disabled = !all; }
-function doSend(btn, overwrite) {
-  flushSave();
-  var done = busy(btn, '送信中…');
-  api('wpSend', { id: cur.id, title: cur.title, html: toWpHtml(), slug: cur.content.slug, excerpt: cur.content.excerpt, categoryId: cur.content.categoryId, overwrite: !!overwrite }).then(function (j) {
+// 自動保存が終わるまで待つ（保存と送信が同時に走ると、GAS のロック待ちで片方が落ちるため）
+function waitSaved(ms) {
+  return new Promise(function (res) {
+    var t0 = Date.now();
+    (function chk() { flushSave(); if (!st.saving && !st.dirty) return res(true); if (Date.now() - t0 > ms) return res(false); setTimeout(chk, 250); })();
+  });
+}
+function doSend(btn, overwrite, attempt) {
+  attempt = attempt || 0;
+  var done = busy(btn, attempt ? 'もう一度送っています…' : '送信中…');
+  var rw = cur.content.rewrite;
+  waitSaved(30000).then(function () { return api('wpSend', { id: cur.id, title: cur.title, html: toWpHtml(), slug: cur.content.slug, excerpt: cur.content.excerpt, categoryId: cur.content.categoryId, overwrite: !!overwrite, publishOk: !!rw }); }).then(function (j) {
     done();
     if (j.conflict) {
-      document.getElementById('sendBody').innerHTML = '<div class="grp-title"><span class="badge b-amber">確認</span><span>送ったあと、WordPress 側でこの下書きが直されています（' + esc(String(j.wpModified).replace('T', ' ')) + '）</span></div><div class="muted">このまま送ると、WordPress で直した内容は消えます。<a href="' + esc(j.link) + '" target="_blank" rel="noopener">WordPress の下書きを開く</a></div>';
-      document.getElementById('sendFoot').innerHTML = '<button class="btn-primary" onclick="doSend(this, true)">ツールの内容で上書きする</button><button class="btn-ghost" onclick="resetSendFoot();closeModal(\'m-send\')">やめる</button>';
+      document.getElementById('sendBody').innerHTML = '<div class="grp-title"><span class="badge b-amber">確認</span><span>' + (rw ? 'リライトを始めたあと、WordPress 側でこの記事が直されています' : '送ったあと、WordPress 側でこの下書きが直されています') + '（' + esc(String(j.wpModified).replace('T', ' ')) + '）</span></div><div class="muted">このまま送ると、WordPress で直した内容は消えます。<a href="' + esc(j.link) + '" target="_blank" rel="noopener">WordPress で開く</a></div>' +
+        '<div class="muted" style="margin-top:6px">「WordPress の今の中身を取り込む」を押すと、WordPress の本文をツールに入れます（写真などは動かせない箱になります。今の本文は履歴に残します）。</div>';
+      document.getElementById('sendFoot').innerHTML = '<button class="btn-primary" onclick="importFromWp(this)">WordPress の今の中身を取り込む</button><button class="btn-ghost" onclick="doSend(this, true)">ツールの内容で上書きする</button><button class="btn-ghost" onclick="resetSendFoot();closeModal(\'m-send\')">やめる</button>';
       return;
     }
     cur.wpId = j.wpId; cur.status = 'sent'; cur.version = j.version; cur.updatedAt = j.updatedAt; cur.step = 5;
-    resetSendFoot(); closeModal('m-send'); renderSentInfo(); setSync('ok');
-    toast(j.updated ? 'WordPress の下書き #' + j.wpId + ' を更新しました' : 'WordPress に下書き #' + j.wpId + ' を作りました', 3500);
+    resetSendFoot(); closeModal('m-send'); cur.sendCheck = sendCheckMsg(j.check); renderSentInfo(); setSync('ok');
+    toast((j.rewrite ? '公開中の記事 #' + j.wpId + ' を書き換えました' : j.updated ? 'WordPress の下書き #' + j.wpId + ' を更新しました' : 'WordPress に下書き #' + j.wpId + ' を作りました') + (cur.sendCheck ? '。ただし：' + cur.sendCheck : '。WordPressで正しく表示されることも確かめました'), cur.sendCheck ? 9000 : 4000);
   }).catch(function (e) {
     done();
     var m = netMsg(e);
+    // ロック待ちで落ちたときは、WordPress にはまだ何も送っていない。3秒おいて1回だけ自動で送り直す
+    if (!attempt && /ロックのタイムアウト|Lock timeout|ロック/.test(m)) { toast('ほかの保存が終わるのを待って、もう一度送ります', 3000); setTimeout(function () { doSend(btn, overwrite, 1); }, 3000); return; }
     if (/公開済み/.test(m)) { cur.status = 'pub'; }
     document.getElementById('sendBody').innerHTML = '<div class="grp-title"><span class="badge b-red">送れませんでした</span></div><div class="muted">' + esc(m) + '</div><div class="muted">記事はツールに残っています。直してからもう一度送ってください。</div>';
     resetSendFoot(); document.getElementById('sendBtn').disabled = true;
   });
 }
-function resetSendFoot() { document.getElementById('sendFoot').innerHTML = '<button class="btn-primary" id="sendBtn" disabled onclick="doSend(this, false)">このまま下書きを送る</button><button class="btn-ghost" onclick="closeModal(\'m-send\')">戻って直す</button>'; }
+function resetSendFoot() { document.getElementById('sendFoot').innerHTML = '<button class="btn-primary" id="sendBtn" disabled onclick="doSend(this, false)">' + (cur && cur.content.rewrite ? '公開中の記事を書き換える' : 'このまま下書きを送る') + '</button><button class="btn-ghost" onclick="closeModal(\'m-send\')">戻って直す</button>'; }
 
 // ===== 保存（版番号つき）・この端末への一時保存 =====
 function snapshotState() { return { title: cur.title, step: cur.step, content: JSON.parse(JSON.stringify(cur.content)) }; }
@@ -989,7 +1674,7 @@ function writeBackup() { if (!cur) return; var s = snapshotState(); s.baseVersio
 function readBackup(id) { try { var b = JSON.parse(lsGet('be_bk_' + id) || 'null'); return b; } catch (e) { return null; } }
 function markDirty() {
   if (!cur) return;
-  st.dirty = true; st.editSeq++; writeBackup();
+  st.dirty = true; st.editSeq++; writeBackup(); ckRefreshSoon();
   setSync('dirty');
   clearTimeout(st.saveTimer); st.saveTimer = setTimeout(doSave, SAVE_DELAY);
 }
@@ -1090,50 +1775,56 @@ function checkServer(open) {
 window.addEventListener('beforeunload', function (e) { if (st && (st.dirty || st.saving)) { writeBackup(); e.preventDefault(); e.returnValue = ''; } });
 
 // ===== 料金 =====
-function yen(d) { var fx = Number((settings && settings.fx) || 150); return '約' + Math.round((d || 0) * fx) + '円'; }
-function addCost(usd) { usd = usd || 0; if (cur) cur.costUsd = (cur.costUsd || 0) + usd; monthUsd += usd; updateArtCost(); updateMonth(); }
-function updateArtCost() { if (!cur) return; document.getElementById('artCost').textContent = '$' + (cur.costUsd || 0).toFixed(2); document.getElementById('artCostYen').textContent = yen(cur.costUsd); }
+// 料金の表示はすべて「$0.65（約104円）」の形にそろえる（ドルと円の両方）
+function yen(d) { d = d || 0; var fx = Number((settings && settings.fx) || 160); return '$' + (d > 0 && d < 0.01 ? d.toFixed(3) : d.toFixed(2)) + '（約' + Math.round(d * fx) + '円）'; }
+function addCost(usd) { usd = usd || 0; if (cur) { cur.costUsd = (cur.costUsd || 0) + usd; articles.forEach(function (a) { if (a !== cur && a.id === cur.id) a.costUsd = cur.costUsd; }); } monthUsd += usd; updateArtCost(); updateMonth(); }
+function updateArtCost() { if (!cur) return; document.getElementById('artCost').textContent = yen(cur.costUsd); }
 function updateMonth() {
-  document.querySelectorAll('.js-month').forEach(function (el) { el.textContent = '$' + monthUsd.toFixed(2); });
-  document.querySelectorAll('.js-month-yen').forEach(function (el) { el.textContent = '（' + yen(monthUsd) + '）'; });
-  document.querySelectorAll('.js-month-yen2').forEach(function (el) { el.textContent = yen(monthUsd); });
+  document.querySelectorAll('.js-month').forEach(function (el) { el.textContent = yen(monthUsd); });
 }
 // 1回あたりの目安（千トークン。試作の実測：日本語1文字≒1.2トークン）
 // 塾長ブログ：本文2,500字前後／情報発信ブログ：本文4,000字前後（試作 test2 の実測：3,327字で書かせた量 4,029）
 var ACTS = [
-  { key: 'write', name: 'AIで記事を作る（手本の過去記事2本を含む）', where: '記事 › 1 原稿', inK: 15, outK: 3.5, n: 1, infoIn: 17, infoOut: 5.5, infoN: 1 },
-  { key: 'chat', name: 'AIチャットの「送る」／選んだ文をAIに直させる', where: '記事 › 右のAIチャット', inK: 5, outK: 0.5, n: 5, infoIn: 7, infoOut: 0.6, infoN: 10 }
+  { key: 'write', name: 'AIで記事を作る（手本の過去記事2本・点検・画像のプロンプトを含む）', where: '記事 › 1 原稿', inK: 13, outK: 20, n: 1, infoIn: 14, infoOut: 23, infoN: 1 },
+  { key: 'chat', name: 'AIで部分修正の「送る」（選んだ文だけを直す）', where: '記事 › 2 編集 › 右の「AIで部分修正」', inK: 5, outK: 0.5, n: 5, infoIn: 7, infoOut: 0.6, infoN: 10 },
+  { key: 'finish', name: '仕上げチェック（出典・事実・誤字・個人情報。ネット検索あり）', where: '記事 › 3 仕上げチェック', inK: 8, outK: 10, search: 'max', perSearchK: 9, n: 1, infoIn: 10, infoOut: 12, infoN: 1 }
 ];
 // 第2段階で増えるボタンの目安（調査は試作 test1b の実測 約$0.14、最終チェックは試算）
-var LATER_INFO_USD = 0.14 + 0.35;
+
 var MODEL_LABEL = { 'claude-opus-5-5': 'Opus 5.5', 'claude-sonnet-5-5': 'Sonnet 5.5', 'claude-haiku-5-5': 'Haiku 5.5' };
-function oneCost(a, info) { var m = (settings.models || {})[a.key]; var p = (settings.prices || {})[m] || [0, 0]; return ((info ? a.infoIn : a.inK) * p[0] + (info ? a.infoOut : a.outK) * p[1]) / 1000; }
+function oneCost(a, info) { var m = (settings.models || {})[a.key] || 'claude-sonnet-5-5'; var p = (settings.prices || {})[m] || [0, 0]; var ns = a.search === 'max' ? (Number(settings.searchMax) || 4) : (a.search || 0); return (((info ? a.infoIn : a.inK) + ns * (a.perSearchK || 0)) * p[0] + (info ? a.infoOut : a.outK) * p[1]) / 1000 + ns * (Number(settings.searchUsd) || 0.01); }
 function calcCost() {
   if (!settings) return;
-  var fxIn = document.getElementById('fx'); if (fxIn.value) settings.fx = Number(fxIn.value) || 150;
+  var fxIn = document.getElementById('fx'); if (fxIn.value) settings.fx = Number(fxIn.value) || 160;
   var html = '', tot = 0, totInfo = 0;
   ACTS.forEach(function (a, i) {
     var c = oneCost(a); tot += c * a.n; totInfo += oneCost(a, true) * a.infoN;
     var opts = Object.keys(settings.prices || {}).map(function (m) { return '<option value="' + m + '"' + (m === settings.models[a.key] ? ' selected' : '') + '>' + (MODEL_LABEL[m] || m) + '</option>'; }).join('');
     html += '<tr><td class="t-title">' + a.name + '</td><td class="t-sub">' + a.where + '</td><td><select class="form-select" style="width:140px" onchange="settings.models[\'' + a.key + '\']=this.value;calcCost();modelsChanged()">' + opts + '</select></td>' +
-      '<td><b>' + yen(c) + '</b> <span class="t-sub">$' + c.toFixed(3) + '（情報発信ブログ ' + yen(oneCost(a, true)) + '）</span></td><td class="t-sub">' + a.n + '回（情報発信ブログ ' + a.infoN + '回）</td><td>' + yen(c * a.n) + '<span class="t-sub">（情報発信ブログ ' + yen(oneCost(a, true) * a.infoN) + '）</span></td></tr>';
+      '<td><b>' + yen(c) + '</b> <span class="t-sub">情報発信ブログ ' + yen(oneCost(a, true)) + '</span></td><td class="t-sub">' + a.n + '回（情報発信ブログ ' + a.infoN + '回）</td><td>' + yen(c * a.n) + '<span class="t-sub">　情報発信ブログ ' + yen(oneCost(a, true) * a.infoN) + '</span></td></tr>';
     document.querySelectorAll('[data-cost="' + a.key + '"]').forEach(function (el) { el.textContent = yen(c); });
   });
   document.querySelector('#costTbl tbody').innerHTML = html;
   document.querySelectorAll('.js-art-juku-yen').forEach(function (el) { el.textContent = yen(tot); });
   document.querySelectorAll('.js-art-info-yen').forEach(function (el) { el.textContent = yen(totInfo); });
-  document.querySelectorAll('.js-art-info-full-yen').forEach(function (el) { el.textContent = yen(totInfo + LATER_INFO_USD); });
-  document.getElementById('priceBody').innerHTML = Object.keys(settings.prices || {}).map(function (m) { var p = settings.prices[m]; return '<tr><td>' + (MODEL_LABEL[m] || m) + '</td><td>$' + p[0] + '</td><td>$' + p[1] + '</td></tr>'; }).join('');
+  document.getElementById('priceBody').innerHTML = Object.keys(settings.prices || {}).map(function (m) { var p = settings.prices[m]; var fx = Number(settings.fx) || 160; return '<tr><td>' + (MODEL_LABEL[m] || m) + '</td><td>$' + p[0] + '（約' + Math.round(p[0] * fx) + '円）</td><td>$' + p[1] + '（約' + Math.round(p[1] * fx) + '円）</td></tr>'; }).join('');
   document.getElementById('priceDate').textContent = settings.priceCheckedAt || '';
-  updateMonth(); updateArtCost();
+  updateMonth(); updateArtCost(); updateChatCost();
 }
 
 // ===== 設定 =====
 function loadSettings() {
   return api('getSettings').then(function (j) {
     settings = j.settings;
+    settings.models = settings.models || {}; if (!settings.models.finish) settings.models.finish = 'claude-sonnet-5-5';
+    // 1回だけ：仕上げチェックの検索の上限を、初期値の6回から4回にする（2026-10-11 川上さんの判断。設定の「モデル・料金」で変えられる）
+    if (Number(settings.searchMax || 6) === 6 && !lsGet('be_search4')) { lsSet('be_search4', '1'); settings.searchMax = 4; api('saveSettings', { settings: { searchMax: 4 } }).catch(function () { lsDel('be_search4'); }); }
+    var sm = document.getElementById('searchMax'); if (sm) sm.value = String(settings.searchMax || 4);
+    // 1回だけ：記事の最後を「1564（お問合せボタン）だけ」から、No.3619 と同じ並びのパターンにする（2026-10-12 川上さんの判断）
+    if (String(settings.fixedBlockRef || '') === '1564' && String(settings.fixedCheckText || '') === '横須賀市唯一' && !lsGet('be_tail25')) { lsSet('be_tail25', '1'); settings.fixedBlockRef = TAIL_DEFAULT; settings.fixedCheckText = TAIL_CHECK; api('saveSettings', { settings: { fixedBlockRef: TAIL_DEFAULT, fixedCheckText: TAIL_CHECK } }).catch(function () { lsDel('be_tail25'); }); }
+    var tr = document.getElementById('tailRefs'); if (tr) tr.value = settings.fixedBlockRef || ''; var tc = document.getElementById('tailCheck'); if (tc) tc.value = settings.fixedCheckText || '';
     document.querySelectorAll('#s1 [data-k]').forEach(function (t) { t.value = settings[t.getAttribute('data-k')] || ''; });
-    document.getElementById('fx').value = settings.fx || 150;
+    document.getElementById('fx').value = settings.fx || 160;
     calcCost(); if (cur) renderComments();
   }).catch(function (e) { toast('設定を読み込めませんでした：' + netMsg(e), 4000); });
 }
@@ -1148,7 +1839,14 @@ function saveRules(btn) {
 function modelsChanged() { document.getElementById('modelSave').disabled = false; document.getElementById('modelState').textContent = '保存していない変更があります'; }
 function saveModels(btn) {
   var done = busy(btn, '保存中…');
-  api('saveSettings', { settings: { models: settings.models, fx: Number(document.getElementById('fx').value) || 150 } }).then(function (j) { done(); settings = j.settings; btn.disabled = true; document.getElementById('modelState').textContent = '✓ 保存しました'; calcCost(); toast('モデルの設定を保存しました'); })
+  api('saveSettings', { settings: { models: settings.models, fx: Number(document.getElementById('fx').value) || 160, searchMax: Number(document.getElementById('searchMax').value) || 4 } }).then(function (j) { done(); settings = j.settings; btn.disabled = true; document.getElementById('modelState').textContent = '✓ 保存しました'; calcCost(); toast('モデルの設定を保存しました'); })
+    .catch(function (e) { done(); toast('保存できませんでした：' + netMsg(e), 4000); });
+}
+function tailChanged() { document.getElementById('tailSave').disabled = false; document.getElementById('tailState').textContent = '保存していない変更があります'; }
+function saveTail(btn) {
+  var refs = tailRefs(document.getElementById('tailRefs').value).join(','), chk = document.getElementById('tailCheck').value.trim();
+  var done = busy(btn, '保存中…');
+  api('saveSettings', { settings: { fixedBlockRef: refs, fixedCheckText: chk } }).then(function (j) { done(); settings = j.settings; btn.disabled = true; document.getElementById('tailRefs').value = settings.fixedBlockRef || ''; document.getElementById('tailState').textContent = '✓ 保存しました。次に送る記事から使われます'; toast('記事の最後の定型文を保存しました'); })
     .catch(function (e) { done(); toast('保存できませんでした：' + netMsg(e), 4000); });
 }
 function testWp(btn) {
@@ -1172,6 +1870,641 @@ document.addEventListener('keydown', function (e) {
 
 // ===== 起動 =====
 if (PASS) { startApp(); } else { showLogin(''); }
+
+// ===== ？マーク：マウスを乗せたらすぐ説明を出す（スマホは押すと出る） =====
+var helpPinned = false;
+function closeHelp() { var p = document.getElementById('helpPop'); if (p) p.remove(); helpPinned = false; }
+function initHelp() {
+  document.querySelectorAll('.help[title]').forEach(function (h) {
+    h.setAttribute('data-tip', h.getAttribute('title')); h.removeAttribute('title');
+    h.setAttribute('role', 'button'); h.setAttribute('tabindex', '0'); h.setAttribute('aria-label', '説明を見る');
+  });
+}
+function showHelp(h) {
+  var cur = document.getElementById('helpPop');
+  if (cur && cur.getAttribute('data-for') === h.dataset.hid) return;
+  if (cur) cur.remove();
+  if (!h.dataset.hid) h.dataset.hid = String(Math.random()).slice(2);
+  var p = document.createElement('div'); p.id = 'helpPop'; p.className = 'help-pop'; p.setAttribute('data-for', h.dataset.hid);
+  p.textContent = h.getAttribute('data-tip'); document.body.appendChild(p);
+  var r = h.getBoundingClientRect(); var w = p.offsetWidth;
+  var left = Math.min(Math.max(8, r.left + window.scrollX - w / 2 + 8), window.scrollX + document.documentElement.clientWidth - w - 8);
+  p.style.left = left + 'px'; p.style.top = (r.bottom + window.scrollY + 6) + 'px';
+}
+document.addEventListener('mouseover', function (e) { var h = e.target.closest && e.target.closest('.help[data-tip]'); if (h) showHelp(h); });
+document.addEventListener('mouseout', function (e) { var h = e.target.closest && e.target.closest('.help[data-tip]'); if (h && !helpPinned && !(e.relatedTarget && h.contains(e.relatedTarget))) closeHelp(); });
+document.addEventListener('click', function (e) {
+  var h = e.target.closest ? e.target.closest('.help[data-tip]') : null;
+  if (!h) { closeHelp(); return; }
+  var cur = document.getElementById('helpPop');
+  if (cur && helpPinned && cur.getAttribute('data-for') === h.dataset.hid) { closeHelp(); return; }
+  showHelp(h); helpPinned = true;
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeHelp();
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('help')) { e.preventDefault(); e.target.click(); }
+});
+window.addEventListener('scroll', function () { closeHelp(); }, true);
+initHelp();
+
+// ===== AIの進み具合（目安） =====
+// AIは1回の通信で全部を返すので、本当の進み具合は取れない。経過時間と「目安の時間」から出す。
+// 目安は、この端末で前回までにかかった時間を覚えて合わせていく（be_eta_<種類>）。
+function startProgress(anchor, key, baseSec) {
+  if (!anchor) return function () { };
+  var k = 'be_eta_' + key, ratio = 1;
+  try { ratio = Number(localStorage.getItem(k)) || 1; } catch (e) { }
+  var exp = Math.max(5, Math.round(baseSec * ratio));
+  var box = document.createElement('div'); box.className = 'ai-prog';
+  box.innerHTML = '<div class="ai-prog-bar"><span></span></div><div class="ai-prog-tx muted"></div>';
+  anchor.parentNode.insertBefore(box, anchor.nextSibling);
+  var bar = box.querySelector('span'), tx = box.querySelector('.ai-prog-tx'), t0 = Date.now();
+  function tick() {
+    var sec = (Date.now() - t0) / 1000;
+    var pct = sec < exp ? sec / exp * 90 : 90 + 9 * (1 - Math.exp(-(sec - exp) / exp));
+    bar.style.width = pct.toFixed(1) + '%';
+    tx.textContent = sec < exp
+      ? '約' + Math.floor(pct) + '%（' + Math.floor(sec) + '秒経過／目安 ' + exp + '秒・あと約' + Math.ceil(exp - sec) + '秒）'
+      : '目安の' + exp + '秒を過ぎました。まだ書いています（' + Math.floor(sec) + '秒経過）。長い記事は3分ほどかかることがあります';
+  }
+  tick(); var timer = setInterval(tick, 500);
+  return function (ok) {
+    clearInterval(timer);
+    var sec = (Date.now() - t0) / 1000;
+    if (ok && sec > 2) { try { localStorage.setItem(k, String(Math.round((ratio * 0.5 + (sec / baseSec) * 0.5) * 100) / 100)); } catch (e) { } }
+    if (ok) { bar.style.width = '100%'; tx.textContent = '完了（' + Math.round(sec) + '秒）'; setTimeout(function () { box.remove(); }, 1500); }
+    else box.remove();
+  };
+}
+
+
+// ===== AIの点検（記事を作るときに一緒に出す。済にしたものから消していく） =====
+// ===== 本文の中の文を探す・入れ替える（AIを呼ばない） =====
+// 本文のテキストをつなげて str を探し、その範囲（Range）を返す。太字やマーカーをまたいでいてもよい
+function findTextRange(str, root) {
+  root = root || document.getElementById('doc'); str = String(str || ''); if (!str) return null;
+  var nodes = [], all = '', w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return n.parentNode.closest && n.parentNode.closest('.ph-tools,.balloon .ic,.keep') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } }), n;
+  while ((n = w.nextNode())) { nodes.push({ n: n, s: all.length }); all += n.nodeValue; }
+  var k = all.indexOf(str);
+  if (k < 0) { var t = str.replace(/^[「『]|[」』]$/g, ''); if (t !== str) { k = all.indexOf(t); str = t; } }
+  if (k < 0) return null;
+  var e = k + str.length, r = document.createRange(), a = null, b = null;
+  for (var i = 0; i < nodes.length; i++) {
+    var x = nodes[i], end = x.s + x.n.nodeValue.length;
+    // 境目では、前の文字のかたまりの終わりではなく、次のかたまりの頭に合わせる（吹き出しなどの中に範囲が入らないように）
+    if (!a && k >= x.s && k < end) { r.setStart(x.n, k - x.s); a = 1; }
+    if (a && e > x.s && e <= end) { r.setEnd(x.n, e - x.s); b = 1; break; }
+  }
+  return a && b ? r : null;
+}
+function replaceText(from, to) {
+  var r = findTextRange(from); if (!r) return false;
+  if (to) replaceRange(r, to); else { r.deleteContents(); }
+  return true;
+}
+function showText(str) {
+  var r = findTextRange(str); if (!r) { toast('本文の中に見つかりませんでした（もう直したのかもしれません）'); return false; }
+  var n = r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentNode;
+  var blk = n.closest ? n.closest('p,h2,h3,li,td,th,div') : n;
+  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  if (blk) { blk.scrollIntoView({ block: 'center', behavior: 'smooth' }); blk.classList.add('flash'); setTimeout(function () { blk.classList.remove('flash'); }, 1600); }
+  return true;
+}
+function copyText(t, msg) {
+  t = String(t || ''); if (!t) { toast('コピーする文がありません'); return; }
+  var done = function () { toast(msg || 'コピーしました'); };
+  try { navigator.clipboard.writeText(t).then(done, function () { fallbackCopy(t); done(); }); } catch (e) { fallbackCopy(t); done(); }
+}
+function fallbackCopy(t) { var a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); } catch (e) { } a.remove(); }
+
+// ===== 点検（記事を作ったときに一緒に出る。①AIが原稿から変えた所 ②人が確かめる所） =====
+// 古い形（v1.9まで：items）は②として扱う
+function ckData() {
+  var ck = cur && cur.content.check; if (!ck) return null;
+  if (!ck.ver) { ck.ver = 2; ck.changes = []; ck.confirm = (ck.items || []).map(function (c) { return { kind: c.kind, where: c.where, note: c.note, done: !!c.done }; }); delete ck.items; }
+  return ck;
+}
+// ② の項目と本文の【要確認】を結びつける（最初に場所が見つかったとき、その段落の【要…】を覚える）。本文からその【要…】が消えたら自動で片付いた扱い
+function ckBind(ck) {
+  var txt = docTextNoBox();
+  (ck.confirm || []).forEach(function (c) {
+    if (c.mk !== undefined || !c.where || isBoxRef(c.where)) return;
+    var r = findTextRange(c.where); if (!r) return;
+    var n = r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentNode;
+    var blk = n.closest ? n.closest('p,h2,h3,li,td,th') : null;
+    c.mk = blk ? ckPickMk(blk.textContent || '', c.where, txt) : '';
+  });
+  // v2.7.7 より前に、同じ段落の別の【要確認】に結びついてしまった項目を1回だけ結び直す（その【要確認】がまだ本文にあるときだけ）
+  if (!ck.mkv) {
+    ck.mkv = 2;
+    var cnt = {}; (ck.confirm || []).forEach(function (c) { if (c.mk) cnt[c.mk] = (cnt[c.mk] || 0) + 1; });
+    (ck.confirm || []).forEach(function (c) {
+      if (!c.mk || cnt[c.mk] < 2 || txt.indexOf(c.mk) < 0 || !c.where || isBoxRef(c.where)) return;
+      var r = findTextRange(c.where); if (!r) return;
+      var n = r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentNode;
+      var blk = n.closest ? n.closest('p,h2,h3,li,td,th') : null;
+      if (blk) c.mk = ckPickMk(blk.textContent || '', c.where, txt);
+    });
+  }
+}
+// 段落の中で、引用した場所のすぐ後ろにある【要…】を選ぶ（後ろになければ、前にある一番近いもの）
+function ckPickMk(t, where, txt) {
+  var re = /【要(確認|エピソード)[^】]*】/g, m, list = [];
+  while ((m = re.exec(t))) list.push({ s: m.index, v: m[0] });
+  if (!list.length) return '';
+  var at = t.indexOf(where), end = at < 0 ? 0 : at + where.length, pick = null;
+  for (var i = 0; i < list.length; i++) if (list[i].s >= (at < 0 ? 0 : at)) { pick = list[i]; break; }
+  if (!pick) pick = list[list.length - 1];
+  if (at >= 0 && pick.s > end + 80) { for (var j = list.length - 1; j >= 0; j--) if (list[j].s < at) { pick = list[j]; break; } }
+  return txt.indexOf(pick.v) >= 0 ? pick.v : '';
+}
+function ckAuto(c) { return !!(c.mk && docTextNoBox().indexOf(c.mk) < 0); }
+function ckIsDone(c) { return !!c.done || ckAuto(c); }
+function isBoxRef(t) { return /^\s*</.test(String(t || '')) || /class="keep/.test(String(t || '')); }
+function ckCanFwd(c) { return !/^(長さ|分ける案|個人情報)$/.test(String(c.kind || '')) && !isBoxRef(c.where); }
+function ckUnsorted(c) { return !ckIsDone(c) && !c.fwd; }
+// 仕上げチェックに回したが、仕上げチェックの案を全部決めたあとも片付いていない項目
+function ckFwdMiss(c) { var f = cur && cur.content.finish; return !!(c.fwd && !ckIsDone(c) && f && f.ms && c.fwdMs && f.ms > c.fwdMs && !finLeft()); }
+function checkLeft() { var ck = ckData(); return ck ? (ck.confirm || []).filter(ckUnsorted).length : 0; }
+function checkOpen() { var ck = ckData(); return ck ? (ck.confirm || []).filter(function (c) { return !ckIsDone(c); }).length : 0; }
+function renderCheck() {
+  var el = document.getElementById('checkPanel'); if (!el) return;
+  el.className = 'check-panel';
+  var ck = ckData(), n = document.getElementById('tabCheckN');
+  if (!ck) { el.innerHTML = '<div class="ck-lead">この記事にはAIの点検がありません。点検は「AIで記事を作る」を押したときに一緒に作られます（原稿をそのまま本文にした記事にはありません）。</div>'; n.textContent = ''; return; }
+  ckBind(ck);
+  var rw = !!cur.content.rewrite, src = rw ? '元の記事' : '原稿';
+  var ch = ck.changes || [], cf = ck.confirm || [], left = checkLeft();
+  // ① には【要確認】を付けただけの項目を出さない（② に出ているため）
+  var chShow = []; ch.forEach(function (c, i) { if (!/【要(確認|エピソード)/.test(c.after || '')) chShow.push(i); });
+  n.textContent = left ? String(left) : '';
+  var html = '<div class="ck-lead">AIが記事を作ったとき（' + esc(ck.at || '') + '）の点検です。ここからAIを呼ぶことはありません（料金はかかりません）。</div>';
+  if (ck.stale) html += '<div class="ck-lead">本文全体をAIで直したあとなので、場所が見つからない項目があるかもしれません。</div>';
+  // 分ける案は、ほかの点検より先に決めること（分けるなら、ほかの確認は作り直した記事でやればよい）なので一番上に出す（v2.7.7）
+  cf.forEach(function (c, i) {
+    if (c.kind !== '分ける案' || ckIsDone(c)) return;
+    html += '<div class="ck-split" id="cf' + i + '"><div class="ck-split-h">まず決めること：この記事を2本に分けるか</div>' +
+      '<div class="ck-note">' + esc(c.note).replace(/／\s*(後半)/, '<br>$1') + '</div>' +
+      '<div class="muted" style="font-size:12px;margin:4px 0 6px">分けるなら、ほかの確認はしなくて大丈夫です。前半（または後半）の見出しの範囲の原稿で「新しい記事」を作り直してください。</div>' +
+      '<div class="ck-acts">' + (c.where ? '<button class="btn-ghost ck-where" onclick="showText(cur.content.check.confirm[' + i + '].where)">切れ目の見出しを見る</button>' : '') +
+      '<button class="btn-ghost ck-ai" onclick="ckDone(' + i + ', true)">1本のまま進める</button></div></div>';
+  });
+  html += '<div class="ck-sec">① AIが' + src + 'から変えた所（' + chShow.length + '件）<span class="muted">本文にはもう入っています。気に入らなければ「元に戻す」</span></div>';
+  if (!chShow.length) html += '<div class="muted" style="font-size:12px;margin-bottom:8px">ありません。</div>';
+  chShow.forEach(function (i) {
+    var c = ch[i], rev = c.state === 'reverted';
+    html += '<div class="ck-item' + (rev ? ' ck-rev' : '') + '" id="cc' + i + '"><div class="ck-note">' + esc(c.note || '') + (rev ? '<span class="badge b-gray" style="margin-left:6px">元に戻した</span>' : '') + '</div>' +
+      '<div class="diff2"><div class="lb">AIが書いた文</div><div class="' + (rev ? 'bf' : 'af') + '">' + esc(c.after) + '</div><div class="lb">' + src + 'の言い方</div><div class="' + (rev ? 'af' : 'bf0') + '">' + (c.before ? esc(c.before) : '（' + src + 'にはない。元に戻すと、この文を消します）') + '</div></div>' +
+      '<div class="ck-acts"><button class="btn-ghost ck-where" onclick="showText(cur.content.check.changes[' + i + '].' + (rev ? 'before' : 'after') + ')">本文の場所を見る</button>' +
+      (rev ? (c.before ? '<button class="btn-ghost" onclick="ckRevert(' + i + ', false)">AIの文に戻す</button>' : '') : '<button class="btn-ghost" onclick="ckRevert(' + i + ', true)">元に戻す</button>') + '</div></div>';
+  });
+  var splitOpen = cf.filter(function (c) { return c.kind === '分ける案' && !ckIsDone(c); }).length;
+  html += '<div class="ck-sec">② 人が確かめる・決める所（未仕分け ' + (left - splitOpen) + '件／全' + (cf.length - splitOpen) + '件）<span class="muted">調べれば分かることは「仕上げチェックへ回す」。自分で直したら「対応した」（本文の【要確認】を直すか消すと自動で片付きます）</span></div>';
+  if (!cf.length) html += '<div class="muted" style="font-size:12px">ありません。</div>';
+  else if (!checkOpen()) html += '<div class="ck-all-done">すべて片付きました。</div>';
+  else if (!(left - splitOpen)) html += '<div class="ck-all-done">すべて仕分けました。残りは「3 仕上げチェック」で調べます。</div>';
+  var item = function (c, i) {
+    var auto = ckAuto(c), done = ckIsDone(c), box = isBoxRef(c.where);
+    var where = !c.where ? '' : box ? '<span class="ck-box">動かせない箱の中：本文のその箱の「文字を直す」で直してください（写真や地図なら WordPress で直す）</span>' :
+      '<button class="btn-ghost ck-where" onclick="showText(cur.content.check.confirm[' + i + '].where)">本文の場所を見る：「' + esc(c.where.length > 14 ? c.where.slice(0, 14) + '…' : c.where) + '」</button>';
+    var act = auto ? '<span class="muted" style="font-size:12px">本文の【要確認】が消えたので片付きました</span>' : c.done ? '<button class="undo" onclick="ckDone(' + i + ', false)">戻す</button>' :
+      c.fwd ? (ckFwdMiss(c) ? '<span class="ck-miss">仕上げチェックでは分からなかった。手で直すか消してください</span> ' : '') + '<button class="undo" onclick="ckFwd(' + i + ', false)">戻す</button>' + (ckFwdMiss(c) ? '<button class="btn-ghost ck-ai" onclick="ckDone(' + i + ', true)">対応した</button>' : '') :
+      (ckCanFwd(c) ? '<button class="btn-ghost ck-fwd" onclick="ckFwd(' + i + ', true)">仕上げチェックへ回す</button>' : '') + '<button class="btn-ghost ck-ai" onclick="ckDone(' + i + ', true)">対応した</button>';
+    return '<div class="ck-item' + (done ? ' ck-done-item' : '') + '" id="cf' + i + '"><div class="ck-top"><span class="badge b-gray">' + esc(c.kind) + '</span>' + (done ? '<span class="badge b-green">片付いた</span>' : c.fwd ? '<span class="badge b-blue">仕上げチェックで調べる</span>' : '') + '</div>' +
+      '<div class="ck-note">' + esc(c.note) + '</div><div class="ck-acts">' + where + act + '</div></div>';
+  };
+  var doneHtml = '', doneN = 0, fwdHtml = '', fwdN = 0;
+  cf.forEach(function (c, i) { if (ckIsDone(c)) { doneN++; doneHtml += item(c, i); } else if (c.kind === '分ける案') return; else if (c.fwd) { fwdN++; fwdHtml += item(c, i); } else html += item(c, i); });
+  if (fwdN) html += '<div class="ck-sub">仕上げチェックで調べる ' + fwdN + '件<span class="muted">「3 仕上げチェック」を押すと、ここの項目をネットで調べます</span></div>' + fwdHtml;
+  if (doneN) html += '<details class="ck-fold"' + (ckFoldOpen ? ' open' : '') + ' ontoggle="ckFoldOpen=this.open"><summary>片付いた ' + doneN + '件</summary>' + doneHtml + '</details>';
+  el.innerHTML = html;
+}
+var ckFoldOpen = false, ckTimer = null;
+function ckRefreshSoon() { var ck = cur && cur.content.check; if (!ck || !(ck.confirm || []).some(function (c) { return c.mk; })) return; clearTimeout(ckTimer); ckTimer = setTimeout(renderCheck, 600); }
+function ckRevert(i, toBefore) {
+  var c = cur.content.check.changes[i];
+  var ok = toBefore ? replaceText(c.after, c.before) : replaceText(c.before, c.after);
+  if (!ok) { toast('本文の中にその文が見つかりませんでした。もう書き換えたのかもしれません。手で直してください', 4000); return; }
+  c.state = toBefore ? 'reverted' : ''; renderCheck(); docChanged(); toast(toBefore ? (cur.content.rewrite ? '元の記事の言い方に戻しました' : '原稿の言い方に戻しました') : 'AIの文に戻しました');
+}
+function ckDone(i, on) { cur.content.check.confirm[i].done = on; renderCheck(); markDirty(); }
+function ckFwd(i, on) { var c = cur.content.check.confirm[i]; c.fwd = on; c.fwdMs = on ? Date.now() : 0; renderCheck(); markDirty(); }
+
+// ===== 3 仕上げチェック（出典・事実／誤字／個人情報／表現を1回で調べ、案をまとめて選んで入れる） =====
+var FIN_KIND_ORDER = { '事実': 0, '個人情報': 1, '誤字': 2, '表現': 3 };
+function finLeft() { var f = cur && cur.content.finish; return f ? (f.items || []).filter(function (x) { return !x.state && x.after; }).length : 0; }
+function docPlain() {
+  var w = document.createElement('div'); w.innerHTML = cleanDoc();
+  w.querySelectorAll('.balloon').forEach(function (b) { b.remove(); });
+  // 動かせない箱は中身の要約しか持っていない（途中で切ってある）。AIが「文が切れている」と誤って指摘しないよう、箱だと分かる形にする
+  w.querySelectorAll('.keep').forEach(function (k) { k.textContent = '［動かせない箱：' + (k.textContent || '').trim() + '…（WordPressの部品のまま送る。中身は確かめなくてよい）］'; });
+  var out = []; Array.prototype.forEach.call(w.children, function (el) { var t = (el.textContent || '').trim(); if (t) out.push(t); });
+  return out.join('\n');
+}
+function finEst() { var a = ACTS[2]; return oneCost(a, cur && cur.type === 'info'); }
+function renderFinish() {
+  var el = document.getElementById('finishPanel'); if (!el || !cur) return;
+  var f = cur.content.finish, n = document.getElementById('tabFinishN');
+  n.textContent = finLeft() ? String(finLeft()) : '';
+  var html = '<div class="ck-lead">直し終えた本文を、<b>出典・事実／誤字／個人情報／表現</b>の4つでまとめて調べます（ネット検索あり）。結果は「直す前→直した後」の一覧で出ます。入れるものを選んで、最後にまとめて本文に入れます（入れるときはAIを呼びません）。</div>';
+  html += '<div class="row" style="margin:4px 0 8px"><button class="btn-primary" id="finBtn" onclick="runFinish(this)">' + (f ? 'AIでもう一度チェックする' : 'AIで仕上げチェックをする') + '</button><span class="cost">1回 約' + yen(finEst()) + '・1〜2分</span></div>';
+  if (!f) { el.innerHTML = html + '<div class="muted" style="font-size:12px">まだチェックしていません。しなくても「4 送信へ進む」で先に進めます（データの話がない記事なら、しなくてかまいません）。</div>'; actButtons(); return; }
+  var items = f.items || [];
+  html += '<div class="ck-sec">チェックした日時 ' + esc(f.at || '') + '・' + items.length + '件' + (f.changedAfter ? '<span class="muted">（チェックのあとに本文が変わっています。見つからない項目は手で直してください）</span>' : '') + '</div>';
+  if (!items.length) html += '<div class="ck-all-done">直す所は見つかりませんでした。</div>';
+  items.forEach(function (x, i) {
+    var st = x.state === 'done' ? '<span class="badge b-green">入れた</span>' : x.state === 'skip' ? '<span class="badge b-gray">入れなかった</span>' : x.state === 'notfound' ? '<span class="badge b-red">本文に見つからない（手で直す）</span>' : '';
+    var can = !x.state && x.after;
+    html += '<div class="ck-item' + (x.state ? ' ck-done-item' : '') + '" id="fi' + i + '"><div class="ck-top">' +
+      (can ? '<label class="fin-pick"><input type="checkbox" ' + (x.pick !== false ? 'checked' : '') + ' onchange="cur.content.finish.items[' + i + '].pick=this.checked;finCount()"> 入れる</label>' : '') +
+      '<span class="badge ' + (x.kind === '事実' ? 'b-amber' : x.kind === '個人情報' ? 'b-red' : 'b-gray') + '">' + esc(x.kind) + '</span>' + st + '</div>' +
+      '<div class="diff2"><div class="lb">直す前</div><div class="bf">' + esc(x.before) + '</div>' + (x.after ? '<div class="lb">直した後</div><div class="af">' + esc(x.after) + '</div>' : '<div class="lb">直した後</div><div class="muted" style="font-size:12px">（AIでは確かめられませんでした。手で確かめてください）</div>') + '</div>' +
+      (x.reason ? '<div class="ck-note" style="margin-top:4px">理由：' + esc(x.reason) + '</div>' : '') +
+      (x.srcUrl ? '<div class="ck-note">出典：<a href="' + esc(x.srcUrl) + '" target="_blank" rel="noopener">' + esc(x.srcName || x.srcUrl) + '</a></div>' : '') +
+      '<div class="ck-acts"><button class="btn-ghost ck-where" onclick="showText(cur.content.finish.items[' + i + '].' + (x.state === 'done' ? 'after' : 'before') + ')">本文の場所を見る</button></div></div>';
+  });
+  if (finLeft()) html += '<div class="fin-foot"><button class="btn-primary" id="finApply" onclick="applyFinish()">選んだものをまとめて本文に入れる</button><span class="muted" id="finCnt"></span></div>';
+  if ((f.sources || []).length) html += '<details class="ck-done-list"><summary>調べたページ（' + f.sources.length + '件・ツールの記録用。記事には載せません）</summary>' + f.sources.map(function (s) { return '<div class="ck-done"><a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.title || s.url) + '</a></div>'; }).join('') + '</details>';
+  el.innerHTML = html; finCount(); actButtons();
+}
+function finCount() {
+  var c = document.getElementById('finCnt'); if (!c) return;
+  var items = cur.content.finish.items, pick = items.filter(function (x) { return !x.state && x.after && x.pick !== false; }).length, all = finLeft();
+  c.textContent = '入れる ' + pick + '件・入れない ' + (all - pick) + '件';
+}
+function runFinish(btn) {
+  if (!docText()) { toast('本文がまだありません'); return; }
+  var go = function () {
+    flushSave();
+    var done = busy(btn, 'AIが調べています…');
+    var cm = (settings.models || {}).finish || '';
+    var prog = startProgress(btn.closest('.row'), 'finish_' + cm, 60 + docText().length / 1000 * 8);
+    var ck = ckData(), open = ck ? (ck.confirm || []).filter(function (c) { return !ckIsDone(c); }) : [], fw = open.filter(function (c) { return c.fwd; }), confirm = (fw.length ? fw : open).map(function (c) { return { kind: c.kind, where: c.where, note: c.note }; });
+    api('ai', { kind: 'finish', id: cur.id, text: docPlain(), confirm: confirm }).then(function (j) {
+      done(); prog(true); addCost(j.costUsd);
+      var r = j.result;
+      var items = (r.items || []).map(function (x) { return { kind: x.kind, before: x.before, after: x.after, reason: x.reason, srcName: x.srcName, srcUrl: x.srcUrl, pick: true, state: '' }; });
+      items.sort(function (a, b) { return (FIN_KIND_ORDER[a.kind] == null ? 9 : FIN_KIND_ORDER[a.kind]) - (FIN_KIND_ORDER[b.kind] == null ? 9 : FIN_KIND_ORDER[b.kind]); });
+      cur.content.finish = { at: r.at, ms: Date.now(), items: items, sources: r.sources || [], base: hashStr(cleanDoc()) };
+      var all = cur.content.sources || [], seen = {}; all.forEach(function (s) { seen[s.url] = 1; });
+      (r.sources || []).forEach(function (s) { if (!seen[s.url]) { all.push({ url: s.url, title: s.title, at: r.at }); seen[s.url] = 1; } });
+      cur.content.sources = all;
+      renderFinish(); markDirty(); sideTab('finish');
+      toast('仕上げチェックが終わりました　料金 ' + yen(j.costUsd) + '　' + items.length + '件', 4000);
+    }).catch(function (e) { done(); prog(false); toast('仕上げチェックができませんでした：' + netMsg(e) + '。本文は変えていません', 5000); });
+  };
+  askCost('仕上げチェックをしますか', '本文（' + docText().length.toLocaleString() + '字）を読ませ、ネットで調べながら確かめるので、1回 約' + yen(finEst()) + 'かかります（検索の回数で変わります）。1〜2分かかります。結果が出ても、選んで入れるまで本文は変わりません。', 'チェックする（約' + yen(finEst()) + '）', go);
+}
+// 選んだ案を本文に入れる（AIは呼ばない）。出典は本文に「（参考：〇〇）」を足さず、記事の最後の「情報の確認日・出典」に1回だけ並べる（v2.7.2）。
+// 文の中に出典の名前が出てくるときだけ、その名前にリンクを張る
+function insertWithSource(range, text, name, url) {
+  range.deleteContents();
+  text = String(text || '').replace(/（参考：[^）]*）/g, '');
+  var frag = document.createDocumentFragment(), mk = function (t) { return document.createTextNode(t); };
+  var k = url && name ? text.indexOf(name) : -1;
+  if (k >= 0) {
+    var a = document.createElement('a'); a.href = url; a.textContent = name;
+    frag.appendChild(mk(text.slice(0, k))); frag.appendChild(a); frag.appendChild(mk(text.slice(k + name.length)));
+  } else frag.appendChild(mk(text));
+  var first = frag.firstChild; range.insertNode(frag);
+  var blk = first && first.parentNode && first.parentNode.closest ? first.parentNode.closest('p,h2,h3,li,td,th') : null;
+  if (blk) { blk.classList.add('flash'); setTimeout(function () { blk.classList.remove('flash'); }, 1600); }
+}
+function applyFinish() {
+  var f = cur.content.finish, ok = 0, miss = 0, skip = 0;
+  if (hashStr(cleanDoc()) !== f.base) f.changedAfter = true;
+  st.snapshot = st.snapshot || '仕上げチェックの案を入れる前';
+  f.items.forEach(function (x) {
+    if (x.state || !x.after) return;
+    if (x.pick === false) { x.state = 'skip'; skip++; return; }
+    var r = findTextRange(x.before);
+    if (!r) { x.state = 'notfound'; miss++; return; }
+    insertWithSource(r, x.after, x.srcUrl ? x.srcName : '', x.srcUrl); x.state = 'done'; ok++;
+  });
+  cur.content.doc = cleanDoc(); renderFinish(); markDirty();
+  toast('本文に ' + ok + '件入れました' + (skip ? '・入れなかった ' + skip + '件' : '') + (miss ? '・本文に見つからなかった ' + miss + '件（手で直してください）' : ''), 5000);
+}
+function hashStr(s) { var h = 0; s = String(s || ''); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return String(h); }
+
+// 本文の下のボタン：「3 仕上げチェックへ進む」と「4 送信へ進む」。仕上げチェックが済むまでは送信へ進むを白いボタンにする（押せば進める）
+function actButtons() {
+  if (!cur) return; var n = cur.step, done = !!cur.content.finish;
+  var af = document.getElementById('actFinish'), as = document.getElementById('actSend');
+  af.style.display = n === 4 ? 'none' : ''; af.textContent = '3 仕上げチェックへ進む';
+  as.textContent = n === 4 ? (done ? '4 送信へ進む（WordPressに送る準備）' : '仕上げチェックをせずに 4 送信へ進む') : '仕上げチェックをせずに 4 送信へ進む';
+  as.className = (n === 4 && done) ? 'btn-primary' : 'btn-ghost';
+}
+
+// ===== リライト・WordPressの中身の取り込み（v2.6） =====
+// WordPress の本文（ブロックの形）をツールの本文に変える。扱えない部品は「動かせない箱」として元のコードのまま預かる
+var TAIL_STATIC = [1564, 2711, 2712, 2713, 2286, 3686];
+function pj(s) { try { return s && s.trim() ? JSON.parse(s.trim()) : {}; } catch (e) { return {}; } }
+function stripTags(h) { var d = document.createElement('div'); d.innerHTML = String(h || ''); return (d.textContent || '').replace(/\s+/g, ' ').trim(); }
+function parseBlocks(raw) {
+  raw = String(raw || '');
+  var re = /<!--\s*(\/?)wp:([a-z0-9\/-]+)((?:\s+\{[\s\S]*?\})?)\s*(\/?)-->/g, m, depth = 0, start = 0, top = null, last = 0, out = [];
+  var gap = function (t) { if (t.trim()) out.push({ name: 'freeform', attrs: {}, raw: t, inner: t }); };
+  while ((m = re.exec(raw))) {
+    var closing = m[1] === '/', self = m[4] === '/';
+    if (depth === 0 && !closing) gap(raw.slice(last, m.index));
+    if (self) { if (depth === 0) { out.push({ name: m[2], attrs: pj(m[3]), raw: m[0], inner: '' }); last = re.lastIndex; } continue; }
+    if (!closing) { if (depth === 0) { start = m.index; top = { name: m[2], attrs: pj(m[3]), innerStart: re.lastIndex }; } depth++; }
+    else if (depth > 0) { depth--; if (depth === 0 && top) { out.push({ name: top.name, attrs: top.attrs, raw: raw.slice(start, re.lastIndex), inner: raw.slice(top.innerStart, m.index) }); top = null; last = re.lastIndex; } }
+  }
+  if (depth === 0) gap(raw.slice(last));
+  else if (top) out.push({ name: 'html', attrs: {}, raw: raw.slice(start), inner: raw.slice(top.innerStart) });  // 閉じていないブロックは丸ごと箱に
+  return out;
+}
+// 段落などの中身：太字・青マーカー・リンク・改行だけを残し、ほかの飾り（文字の色・大きさなど）は外して数える
+function inlineFromWp(html, stat) {
+  var d = document.createElement('div'); d.innerHTML = String(html || '');
+  var walk = function (node) {
+    var out = '';
+    Array.prototype.forEach.call(node.childNodes, function (c) {
+      if (c.nodeType === 3) { out += esc(c.nodeValue); return; }
+      if (c.nodeType !== 1) return;
+      var t = c.tagName.toLowerCase(), cls = c.getAttribute('class') || '';
+      if (t === 'br') { out += '<br>'; return; }
+      if (t === 'strong' || t === 'b' || /swl-format-1/.test(cls)) { out += '<b>' + walk(c) + '</b>'; return; }
+      if (t === 'mark' || /swl-marker/.test(cls)) { out += '<span class="marker">' + walk(c) + '</span>'; return; }
+      if (t === 'a') { out += '<a href="' + esc(c.getAttribute('href') || '') + '">' + walk(c) + '</a>'; return; }
+      if (stat && (cls || c.getAttribute('style') || t === 'em' || t === 'i' || t === 'u' || t === 'span')) stat.styleLoss++;
+      out += walk(c);
+    });
+    return out;
+  };
+  return walk(d).replace(/^(\s|<br>)+|(\s|<br>)+$/g, '');
+}
+function firstEl(html, sel) { var d = document.createElement('div'); d.innerHTML = String(html || ''); return d.querySelector(sel); }
+function hasMedia(el) { return !!(el && el.querySelector('img,iframe,video,audio,figure,picture,svg,script,form')); }
+function convertBlock(b, stat) {
+  var a = b.attrs || {}, el;
+  if (b.name === 'paragraph') {
+    el = firstEl(b.inner, 'p');
+    if (!el) return stripTags(b.inner) ? null : '';
+    if (a.className || a.align || a.style || a.backgroundColor || a.textColor || a.fontSize || el.getAttribute('class') || hasMedia(el)) return null;
+    var x = inlineFromWp(el.innerHTML, stat); return stripTags(x) ? '<p>' + x + '</p>' : '';
+  }
+  if (b.name === 'image') {
+    var ps = /src="（画像を差し替え：([^"]*)）"/.exec(b.raw || b.inner || ''), pa = /alt="([^"]*)"/.exec(b.raw || b.inner || '');
+    if (ps) { var pw = firstEl('<i>' + ps[1] + '</i>', 'i').textContent; return '<div class="ph" data-what="' + esc(pw) + '"' + (pa ? ' data-alt="' + esc(firstEl('<i>' + pa[1] + '</i>', 'i').textContent) + '"' : '') + '>画像の仮置き：' + esc(pw) + '</div>'; }
+    return null;
+  }
+  if (b.name === 'heading') {
+    el = firstEl(b.inner, 'h1,h2,h3,h4,h5,h6'); if (!el || hasMedia(el)) return null;
+    var lv = Number(a.level) || Number(el.tagName.slice(1)) || 2; var tg = lv <= 2 ? 'h2' : 'h3';
+    var hx = inlineFromWp(el.innerHTML, stat); return stripTags(hx) ? '<' + tg + '>' + hx + '</' + tg + '>' : '';
+  }
+  if (b.name === 'list') {
+    el = firstEl(b.inner, 'ul,ol'); if (!el || el.querySelector('ul ul,ul ol,ol ul,ol ol,li ul,li ol') || hasMedia(el)) return null;
+    var tag = a.ordered || el.tagName.toLowerCase() === 'ol' ? 'ol' : 'ul';
+    var lis = Array.prototype.map.call(el.querySelectorAll('li'), function (li) { return '<li>' + inlineFromWp(li.innerHTML.replace(/<!--[\s\S]*?-->/g, ''), stat) + '</li>'; }).join('');
+    return lis ? '<' + tag + '>' + lis + '</' + tag + '>' : '';
+  }
+  if (b.name === 'table') {
+    el = firstEl(b.inner, 'table'); if (!el || hasMedia(el)) return null;
+    var rows = Array.prototype.map.call(el.querySelectorAll('tr'), function (tr) { return '<tr>' + Array.prototype.map.call(tr.querySelectorAll('th,td'), function (c) { var t = c.tagName.toLowerCase(); return '<' + t + '>' + inlineFromWp(c.innerHTML, stat) + '</' + t + '>'; }).join('') + '</tr>'; }).join('');
+    return rows ? '<table>' + rows + '</table>' : '';
+  }
+  if (b.name === 'loos/balloon') {
+    if (!/川上|塾長/.test(String(a.balloonName || ''))) return null;
+    var bt = stripTags(b.inner); return bt ? '<div class="balloon"><div class="tx">' + esc(bt) + '</div></div>' : '';
+  }
+  return null;
+}
+function boxLabel(b) {
+  var a = b.attrs || {}, full = stripTags(b.inner || b.raw), txt = full.length > 34 ? full.slice(0, 34) + '…' : full;
+  if (b.name === 'image') { var al = /alt="([^"]*)"/.exec(b.raw), src = /src="([^"]*)"/.exec(b.raw); return '写真：' + ((al && al[1]) || (src && decodeURIComponent(src[1].split('/').pop())) || '（説明なし）'); }
+  if (b.name === 'gallery') return '写真（複数）' + (txt ? '：' + txt : '');
+  if (b.name === 'loos/button') return 'ボタン「' + txt + '」';
+  if (b.name === 'loos/columns' || b.name === 'columns') return '2列以上の並び：' + txt;
+  if (/embed/.test(b.name)) return '埋め込み：' + (a.url || txt);
+  if (b.name === 'html') return 'HTML：' + (txt || '（文字なし）');
+  if (b.name === 'paragraph') return '飾り付きの段落：' + txt;
+  if (b.name === 'heading') return '飾り付きの見出し：' + txt;
+  if (b.name === 'loos/balloon') return '吹き出し' + (a.balloonName ? '（' + a.balloonName + '）' : '') + '：' + txt;
+  if (b.name === 'group') return 'SWELLの枠：' + txt;
+  if (b.name === 'separator') return '区切り線';
+  if (b.name === 'block') return '同期パターン #' + a.ref;
+  if (b.name === 'list') return '入れ子の箇条書き：' + txt;
+  return b.name.replace(/^loos\//, 'SWELL：') + (txt ? '：' + txt : '');
+}
+// freeform（ブロックの印がない昔の本文）を、要素ごとのかたまりに分ける。改行だけの本文は段落に直す
+function splitFreeform(t) {
+  var d = document.createElement('div');
+  d.innerHTML = /<(p|h[1-6]|ul|ol|table|div|figure)\b/i.test(t) ? t : String(t).split(/\n\s*\n/).map(function (x) { return x.trim() ? '<p>' + x.trim().replace(/\n/g, '<br>') + '</p>' : ''; }).join('');
+  var out = [];
+  Array.prototype.forEach.call(d.childNodes, function (c) {
+    if (c.nodeType === 3) { if (c.nodeValue.trim()) out.push({ name: 'paragraph', attrs: {}, inner: '<p>' + esc(c.nodeValue.trim()) + '</p>', raw: '' }); return; }
+    if (c.nodeType !== 1) return;
+    var tg = c.tagName.toLowerCase(), oh = c.outerHTML;
+    var nm = tg === 'p' ? 'paragraph' : /^h[1-6]$/.test(tg) ? 'heading' : tg === 'ul' || tg === 'ol' ? 'list' : tg === 'table' ? 'table' : 'html';
+    out.push({ name: nm, attrs: nm === 'heading' ? { level: Number(tg.slice(1)) } : {}, inner: oh, raw: '<!-- wp:html -->\n' + oh + '\n<!-- /wp:html -->' });
+  });
+  return out;
+}
+function wpToDoc(raw, startN) {
+  var list = []; parseBlocks(raw).forEach(function (b) { if (b.name === 'freeform') list = list.concat(splitFreeform(b.raw)); else list.push(b); });
+  // ツールが付けた「情報の確認日・出典」（見出し・確認日の段落・一覧）は取り込まない（送るときに作り直す）
+  for (var si = 0; si < list.length; si++) {
+    if (list[si].name === 'paragraph' && /^情報の確認日：.*出典：/.test(stripTags(list[si].inner))) { list.splice(si, 1); si--; continue; }
+    if (list[si].name === 'heading' && stripTags(list[si].inner) === '情報の確認日・出典') {
+      var sj = si + 1;
+      while (sj < list.length && ((list[sj].name === 'paragraph' && /^この記事の数字・制度は/.test(stripTags(list[sj].inner))) || list[sj].name === 'list')) sj++;
+      list.splice(si, sj - si); si--;
+    }
+  }
+  var stat = { styleLoss: 0 }, boxes = {}, n = startN || 0, html = [], related = [], dropped = 0;
+  var tailSet = tailRefs(settings && settings.fixedBlockRef).concat(TAIL_STATIC);
+  var cut = list.length;
+  for (var i = Math.max(0, list.length - 15); i < list.length; i++) { if (/クロフネは、横須賀市/.test(stripTags(list[i].inner || list[i].raw))) { cut = i; break; } }
+  list.forEach(function (b, i) {
+    if (b.name === 'loos/post-link') { var id = Number(((b.attrs || {}).linkData || {}).id || (b.attrs || {}).postId || 0); if (id && related.indexOf(id) < 0) related.push(id); return; }
+    if (i >= cut) { dropped++; return; }
+    if (b.name === 'block' && tailSet.indexOf(Number((b.attrs || {}).ref)) >= 0) { dropped++; return; }
+    var h = convertBlock(b, stat);
+    if (h === null) {
+      if (!b.raw) b.raw = '<!-- wp:html -->\n' + (b.inner || '') + '\n<!-- /wp:html -->';
+      n++; boxes[n] = { raw: b.raw.trim(), label: boxLabel(b) };
+      html.push('<div class="keep" data-n="' + n + '">' + esc(boxes[n].label) + '</div>');
+    } else if (h) html.push(h);
+  });
+  return { doc: html.join(''), boxes: boxes, related: related.slice(0, 3), dropped: dropped, boxN: n - (startN || 0), styleLoss: stat.styleLoss };
+}
+// AIが返した本文の箱に、預かった中身の要約を戻す。AIが置かなかった箱は本文の最後に置く
+function fillKeeps(html) {
+  var boxes = (cur && cur.content.boxes) || {}, w = document.createElement('div'); w.innerHTML = String(html || '');
+  var seen = {};
+  w.querySelectorAll('.keep').forEach(function (k) {
+    var n = k.getAttribute('data-n');
+    if (!boxes[n] || seen[n]) { k.remove(); return; }
+    seen[n] = 1; k.textContent = boxes[n].label;
+  });
+  var missing = 0;
+  if (cur && cur.content.rewrite) Object.keys(boxes).forEach(function (n) {
+    if (seen[n]) return;
+    if (cur.content.doc && cur.content.doc.indexOf('data-n="' + n + '"') < 0) return;   // 人が外した箱は戻さない
+    var k = document.createElement('div'); k.className = 'keep'; k.setAttribute('data-n', n); k.textContent = boxes[n].label; w.appendChild(k); missing++;
+  });
+  return { html: w.innerHTML, missing: missing };
+}
+// ===== 箱の中の文字だけを直す（タグ・ブロックの印・属性は1文字も変えない） =====
+function decEnt(t) { var x = document.createElement('textarea'); x.innerHTML = t; return x.value; }
+function encEnt(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function boxSegs(raw) {
+  var parts = String(raw || '').split(/(<!--[\s\S]*?-->|<[^>]*>)/), segs = [], skip = false;
+  parts.forEach(function (p, i) {
+    if (i % 2) { if (/^<(script|style)\b/i.test(p)) skip = true; else if (/^<\/(script|style)/i.test(p)) skip = false; return; }
+    if (!skip && p.trim()) segs.push({ i: i, text: decEnt(p.trim()) });
+  });
+  return { parts: parts, segs: segs };
+}
+var boxEditN = null;
+function openBoxEdit(n) {
+  var b = (cur.content.boxes || {})[n]; if (!b) return;
+  boxEditN = n; var sg = boxSegs(b.raw).segs;
+  document.getElementById('boxEditH').textContent = '箱の中の文字を直す：' + b.label.replace(/：.*$/, '');
+  document.getElementById('boxEdits').innerHTML = sg.map(function (x, k) { return '<label class="box-seg"><span class="muted">' + (k + 1) + '</span><textarea class="form-input" rows="' + Math.min(6, Math.max(1, Math.ceil(x.text.length / 40))) + '" data-k="' + k + '">' + esc(x.text) + '</textarea></label>'; }).join('');
+  document.getElementById('boxEditUndo').style.display = b.orig ? '' : 'none';
+  openModal('m-box');
+}
+function boxNewLabel(old, txt) {
+  var t = txt.length > 34 ? txt.slice(0, 34) + '…' : txt;
+  if (/^ボタン「/.test(old)) return 'ボタン「' + t + '」';
+  var m = /^[^：]*：/.exec(old); return (m ? m[0] : '') + t;
+}
+function applyBoxEdit(undo) {
+  var n = boxEditN, b = (cur.content.boxes || {})[n]; if (!b) return;
+  var raw;
+  if (undo) raw = b.orig;
+  else {
+    var bs = boxSegs(b.raw), vals = Array.prototype.map.call(document.querySelectorAll('#boxEdits textarea'), function (t) { return t.value.replace(/\s+$/, ''); });
+    bs.segs.forEach(function (x, k) {
+      var v = vals[k]; if (v == null || v === x.text) return;
+      var p = bs.parts[x.i], lead = /^\s*/.exec(p)[0], trail = /\s*$/.exec(p)[0];
+      bs.parts[x.i] = lead + encEnt(v) + trail;
+    });
+    raw = bs.parts.join('');
+  }
+  if (raw !== b.raw) {
+    if (!undo && !b.orig) b.orig = b.raw;
+    b.raw = raw; if (undo) delete b.orig;
+    b.label = boxNewLabel(b.label, boxSegs(raw).segs.map(function (x) { return x.text; }).join(' '));
+    var k = document.querySelector('#doc .keep[data-n="' + n + '"]');
+    if (k) { k.innerHTML = ''; k.textContent = b.label; decorateDoc(); }
+    docChanged();
+    toast(undo ? '箱の文字を元に戻しました' : '箱の文字を直しました（見た目はそのままで、文字だけ WordPress に送ります）');
+  }
+  closeModal('m-box');
+}
+function maxBoxN() { return Object.keys((cur && cur.content.boxes) || {}).reduce(function (m, k) { return Math.max(m, Number(k) || 0); }, 0); }
+function wpAdminUrl(id) { var o = ''; try { o = new URL(cur.content.rewrite.link).origin; } catch (e) { } return o + '/wp-admin/post.php?post=' + id + '&action=edit'; }
+function jpDate(at) { var m = /(\d{4})-(\d{2})-(\d{2})/.exec(String(at || '')); var d = m ? [m[1], Number(m[2]), Number(m[3])] : (function () { var t = new Date(Date.now() + 9 * 3600e3).toISOString(); return [t.slice(0, 4), Number(t.slice(5, 7)), Number(t.slice(8, 10))]; })(); return d[0] + '年' + d[1] + '月' + d[2] + '日'; }
+// 仕上げチェックで本文に入れた案のうち、出典つきのもの（同じURLは1つに）
+function usedSources() {
+  var f = cur && cur.content.finish, seen = {}, out = [];
+  ((f && f.items) || []).forEach(function (x) { if (x.state === 'done' && x.srcUrl && !seen[x.srcUrl]) { seen[x.srcUrl] = 1; out.push({ name: x.srcName || x.srcUrl, url: x.srcUrl }); } });
+  return out;
+}
+
+// --- 公開済みの記事を選ぶ ---
+var rwQuery = '';
+function openRwPick() { rwQuery = ''; document.getElementById('rwQ').value = ''; renderRwPick(); openModal('m-rwpick'); setTimeout(function () { document.getElementById('rwQ').focus(); }, 50); }
+function renderRwPick() {
+  var el = document.getElementById('rwList');
+  if (!wpPostList) { el.innerHTML = '<div class="muted">公開済みの記事を読み込み中…</div>'; loadPosts(renderRwPick); if (!categories) loadCategories(); return; }
+  var q = rwQuery.trim().toLowerCase();
+  var doing = {}; articles.forEach(function (a) { if (a.rewriteOf) doing[a.rewriteOf] = a; });
+  var list = wpPostList.filter(function (p) { return !q || (p.title + ' ' + catNames(p) + ' ' + p.date).toLowerCase().indexOf(q) >= 0; });
+  el.innerHTML = list.length ? list.slice(0, q ? 60 : 30).map(function (p) {
+    var d = doing[p.id];
+    return relRow(p, d ? '<button class="btn-ghost rel-btn" onclick="closeModal(\'m-rwpick\');openArticle(\'' + d.id + '\')">リライト中の記事を開く</button>' : '<button class="btn-ghost rel-btn rel-add" onclick="pickRewrite(' + p.id + ', this)">この記事をリライトする</button>');
+  }).join('') + (!q && list.length > 30 ? '<div class="muted" style="font-size:12px;padding:4px 0">新しい順に30本だけ出しています。ほかは言葉を入れて探してください。</div>' : '') : '<div class="muted">見つかりませんでした。</div>';
+}
+function pickRewrite(id, btn) {
+  var done = busy(btn, '読み込み中…');
+  api('wpPost', { wpId: id }).then(function (j) {
+    var p = j.post;
+    if (p.status !== 'publish') { done(); toast('この記事は公開されていません（状態：' + p.status + '）。リライトは公開中の記事だけです', 5000); return; }
+    var conv = wpToDoc(p.raw, 0);
+    var cn = catNames({ categories: p.categories });
+    var rw = { wpId: p.id, link: p.link, title: p.title, date: p.date, modified: p.modified, origDoc: conv.doc, origTitle: p.title, origExcerpt: p.excerpt, dropped: conv.dropped, styleLoss: conv.styleLoss, boxN: conv.boxN };
+    return api('create', { type: /塾長/.test(cn) ? 'juku' : 'info', step: 0, title: p.title, doc: conv.doc, slug: p.slug, excerpt: p.excerpt, categoryId: String((p.categories || [])[0] || ''), related: conv.related, boxes: conv.boxes, rewrite: rw }).then(function (k) {
+      done(); closeModal('m-rwpick'); articles.unshift(k.article); renderList(); enterArticle(k.article);
+      toast('元の記事を読み込みました（動かせない箱 ' + conv.boxN + '個）', 4000);
+    });
+  }).catch(function (e) { done(); toast('記事を読み込めませんでした：' + netMsg(e), 5000); });
+}
+// --- 1 原稿の画面（リライトのとき） ---
+function renderRwCard() {
+  var rw = cur && cur.content.rewrite, card = document.getElementById('rwCard');
+  ['draftCard', 'draftAct', 'draftNote'].forEach(function (id) { var e = document.getElementById(id); if (e) e.style.display = rw ? 'none' : ''; });
+  var ob = document.getElementById('btnOpenSend'); if (ob) ob.textContent = rw ? '公開中の記事を書き換える' : 'WordPressに下書きを送る';
+  var sb = document.getElementById('sendSub'); if (sb) sb.textContent = rw ? 'リライトは公開中の記事をそのまま書き換えます（送る前に変わる所を見比べます）' : 'いつも「下書き」として送ります。公開はWordPressで行ってください';
+  if (!card) return; card.style.display = rw ? '' : 'none'; if (!rw) return;
+  var len = stripTags(rw.origDoc).length;
+  document.getElementById('rwInfo').innerHTML = '<div>元の記事：<a href="' + esc(rw.link) + '" target="_blank" rel="noopener">' + esc(rw.origTitle || rw.title) + '</a>（公開 ' + esc(rw.date) + '・WordPress #' + rw.wpId + '）</div>' +
+    '<div class="muted">読み込んだ本文 ' + len.toLocaleString() + '字・動かせない箱 ' + (rw.boxN || 0) + '個' + (rw.dropped ? '・外した末尾の定型文など ' + rw.dropped + '個（送るときに今の定型文を付けます）' : '') + (rw.styleLoss ? '・文字の色や大きさなどの飾り ' + rw.styleLoss + 'か所は外れます' : '') + '</div>';
+  document.getElementById('rwCost').textContent = '1回 約' + yen(writeEst());
+}
+function writeEst() { return oneCost(ACTS[0], cur && cur.type === 'info'); }
+function aiRewrite(btn) {
+  var rw = cur.content.rewrite; if (!rw) return;
+  var html = cleanDoc(); if (!stripTags(html)) html = rw.origDoc;
+  askCost('AIでリライトしますか', '元の記事（' + stripTags(html).length.toLocaleString() + '字）を読ませて今の書き方に直すので、1回 約' + yen(writeEst()) + 'かかります。結果は本文に入りますが、公開中の記事は「4 送信」で送るまで変わりません。今の本文は履歴に残します。', 'リライトする（約' + yen(writeEst()) + '）', function () {
+    flushSave();
+    var done = busy(btn, 'AIがリライトしています…');
+    var m = (settings.models || {}).write || '';
+    var prog = startProgress(btn.closest('.act-row'), 'write_' + m, (20 + stripTags(html).length / 1000 * 12) * (/sonnet/.test(m) ? 0.6 : 1));
+    api('ai', { kind: 'write', id: cur.id, draft: '', html: html, rewrite: { title: rw.origTitle || rw.title, date: rw.date } }).then(function (j) {
+      done(); prog(true); st.snapshot = 'AIでリライトする前'; applyWriteResult(j);
+    }).catch(function (e) { done(); prog(false); toast('リライトできませんでした：' + netMsg(e) + '。本文は変えていません', 5000); });
+  });
+}
+// --- 送る前に「変わる所」を見比べる ---
+function blockTexts(html) {
+  var w = document.createElement('div'); w.innerHTML = String(html || '');
+  w.querySelectorAll('.ph-tools,.keep-tools,.balloon .ic').forEach(function (x) { x.remove(); });
+  return Array.prototype.map.call(w.children, function (c) { var t = (c.textContent || '').replace(/\s+/g, ' ').trim(); return c.classList.contains('keep') ? '［箱］' + t : c.classList.contains('balloon') ? '［吹き出し］' + t : /^H[23]$/.test(c.tagName) ? '［見出し］' + t : t; }).filter(Boolean);
+}
+function diffLines(a, b) {
+  var n = a.length, m = b.length, dp = [], i, j;
+  for (i = 0; i <= n; i++) { dp.push(new Array(m + 1).fill(0)); }
+  for (i = n - 1; i >= 0; i--) for (j = m - 1; j >= 0; j--) dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  var out = []; i = 0; j = 0;
+  while (i < n && j < m) { if (a[i] === b[j]) { out.push(['=', a[i]]); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) { out.push(['-', a[i]]); i++; } else { out.push(['+', b[j]]); j++; } }
+  while (i < n) out.push(['-', a[i++]]); while (j < m) out.push(['+', b[j++]]);
+  return out;
+}
+function rwDiffHtml() {
+  var rw = cur.content.rewrite; if (!rw) return '';
+  var ops = diffLines(blockTexts(rw.origDoc), blockTexts(cleanDoc()));
+  var same = ops.filter(function (o) { return o[0] === '='; }).length, del = ops.filter(function (o) { return o[0] === '-'; }).length, add = ops.filter(function (o) { return o[0] === '+'; }).length;
+  var h = '<details class="rw-diff" open><summary>変わる所（本文：そのまま ' + same + '・消える ' + del + '・増える ' + add + ' のかたまり）</summary>';
+  if ((rw.origTitle || '') !== (cur.title || '')) h += '<div class="rw-row"><span class="lb">題名</span><div><div class="d-del">' + esc(rw.origTitle) + '</div><div class="d-add">' + esc(cur.title) + '</div></div></div>';
+  else h += '<div class="rw-row"><span class="lb">題名</span><div class="muted">変わりません</div></div>';
+  if ((rw.origExcerpt || '') !== (cur.content.excerpt || '')) h += '<div class="rw-row"><span class="lb">抜粋</span><div><div class="d-del">' + esc(rw.origExcerpt || '（なし）') + '</div><div class="d-add">' + esc(cur.content.excerpt || '（なし）') + '</div></div></div>';
+  h += '<div class="rw-body">' + ops.filter(function (o) { return o[0] !== '='; }).slice(0, 80).map(function (o) { return '<div class="' + (o[0] === '-' ? 'd-del' : 'd-add') + '">' + (o[0] === '-' ? '－ ' : '＋ ') + esc(o[1].slice(0, 160)) + '</div>'; }).join('') + (del + add > 80 ? '<div class="muted">（ほか ' + (del + add - 80) + 'か所）</div>' : '') + (del + add === 0 ? '<div class="muted">本文は変わりません</div>' : '') + '</div></details>';
+  return h;
+}
+// --- WordPress の今の中身を取り込む ---
+function importFromWp(btn) {
+  var wpId = cur.wpId || (cur.content.rewrite && cur.content.rewrite.wpId); if (!wpId) return;
+  var done = busy(btn, '取り込み中…');
+  api('wpPost', { wpId: wpId, id: cur.id, adopt: true }).then(function (j) {
+    done();
+    var p = j.post, conv = wpToDoc(p.raw, maxBoxN());
+    st.snapshot = 'WordPressの中身を取り込む前';
+    cur.content.boxes = Object.assign({}, cur.content.boxes || {}, conv.boxes);
+    setDoc(conv.doc); cur.content.doc = cleanDoc();
+    if (conv.related.length) { cur.content.related = conv.related; renderRelated(); }
+    if (p.title) setTitle(p.title, true);
+    if (p.excerpt) { cur.content.excerpt = p.excerpt; document.getElementById('excerpt').value = p.excerpt; exLen(); }
+    if (cur.content.rewrite) { cur.content.rewrite.modified = p.modified; cur.content.rewrite.origDoc = conv.doc; cur.content.rewrite.origTitle = p.title; cur.content.rewrite.origExcerpt = p.excerpt; }
+    markDirty(); resetSendFoot(); closeModal('m-send'); step(3);
+    toast('WordPress の今の中身を取り込みました（動かせない箱 ' + conv.boxN + '個）。直してから、もう一度送ってください', 6000);
+  }).catch(function (e) { done(); toast('取り込めませんでした：' + netMsg(e), 5000); });
+}
 
 </script>
 </body>
