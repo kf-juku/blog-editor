@@ -438,6 +438,7 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 .pv-head h3 { margin-right: auto !important; font-size: 16px; }
 .pv-sw { display: inline-flex; gap: 4px; } .pv-sw .on { background: #334155; color: #fff; border-color: #334155; }
 .pv-note { font-size: 12px; margin: 6px 0 8px; }
+.pv-state { color: #2271b1; font-weight: 700; }
 .pv-stage { flex: 1; min-height: 0; background: #e5e7eb; border-radius: 8px; display: flex; justify-content: center; overflow: auto; padding: 8px; }
 #pvFrame { border: 0; background: #fff; height: 100%; width: 100%; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
 /* スマホ幅の一覧：タイトル・担当・進行状況・削除だけ出す（v2.8。前は v6 モックの列の並びのままで、タイトルが隠れていた） */
@@ -827,9 +828,8 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 <div class="modal-back pv-back" id="m-preview"><div class="modal pv-modal">
   <div class="pv-head"><h3 style="margin:0">WordPressプレビュー（疑似）</h3>
     <span class="pv-sw"><button class="btn-ghost btn-sm on" data-w="pc" onclick="pvSetWidth('pc')">パソコン幅</button><button class="btn-ghost btn-sm" data-w="sp" onclick="pvSetWidth('sp')">スマホ幅</button></span>
-    <button class="btn-ghost btn-sm" onclick="renderPreview()">今の本文で描き直す</button>
     <button class="btn-primary btn-sm" onclick="closeModal('m-preview')">閉じる</button></div>
-  <div class="muted pv-note">サイトのデザインで表示していますが、本物とは少し違います（画像・アイキャッチ・ブログカードの写真は灰色の枠、目次は位置だけ）。WordPress には送っていません。<b>段落をクリックすると、編集画面のその段落へ移ります。</b> <span id="pvState"></span></div>
+  <div class="muted pv-note"><b>文字はこの画面で直せます。</b>段落・見出し・箇条書き・吹き出しをクリックして打ち直すと、段落から外れたときに本文に入り、自動で保存します（段落の中の改行は Shift+Enter）。見出しにする・太字・マーカー・画像・段落を足す消すは、段落の右上の「編集画面で開く」から。<br>サイトのデザインで表示していますが、本物とは少し違います（画像・アイキャッチ・ブログカードの写真は灰色の枠、目次は位置だけ）。WordPress には送っていません。 <span id="pvState" class="pv-state"></span></div>
   <div class="pv-stage"><iframe id="pvFrame" title="WordPressプレビュー"></iframe></div>
 </div></div>
 
@@ -859,7 +859,7 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 <div id="toast"></div>
 <script>
 // ===== ブログエディター（第1段階） =====
-var APP_VERSION = 'v2.10.1（2026-10-27 WordPressプレビューのボタンを見分けやすく）';
+var APP_VERSION = 'v2.11.0（2026-10-27 WordPressプレビューの中で文字を直せる）';
 var GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9v4PW9op-Nx58BaRsGwk__KWzLecZtNQR7N5lu_N9O3nKQYRQhubBlQAQLf1WytWHWw/exec';
 var GAS_URL = (new URLSearchParams(location.search).get('gas')) || GAS_URL_DEFAULT;
 var STEP_NAMES = ['原稿入力中', '編集中', '編集中', '編集中', '仕上げチェック中', '送信準備中'];
@@ -880,7 +880,11 @@ function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function 
 function hm(iso) { if (!iso) return ''; var t = String(iso); var d = t.slice(5, 10).replace('-', '/'); var today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(5, 10).replace('-', '/'); return (d === today ? '今日 ' : d + ' ') + t.slice(11, 16); }
 function toast(msg, ms) { var el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(function () { el.classList.remove('show'); }, ms || 2400); }
 function openModal(id) { document.getElementById(id).classList.add('show'); }
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function closeModal(id) {
+  // WordPressプレビューで打っている途中なら、閉じる前に確定させて本文に入れる（v2.11）
+  if (id === 'm-preview') { try { var fd = document.getElementById('pvFrame').contentDocument, ae = fd && fd.activeElement; if (ae && ae !== fd.body && ae.blur) ae.blur(); } catch (e) { } }
+  document.getElementById(id).classList.remove('show');
+}
 function busy(btn, label) { if (!btn) return function () { }; var tx = btn.innerHTML; var dark = btn.classList.contains('btn-ghost') || btn.classList.contains('btn-icon'); btn.disabled = true; btn.innerHTML = '<span class="spin' + (dark ? ' dark' : '') + '"></span><span>' + (label || '処理中…') + '</span>'; return function () { btn.disabled = false; btn.innerHTML = tx; }; }
 
 // ===== GAS とのやりとり =====
@@ -1636,11 +1640,10 @@ function dropSrcSection(w) {
     h.remove();
   });
 }
-function toWpHtml() {
-  var w = document.createElement('div'); w.innerHTML = cleanDoc();
-  dropSrcSection(w);
-  var s = settings || {}, out = [];
-  Array.prototype.forEach.call(w.childNodes, function (n) {
+/** 本文の1つのかたまり（段落・見出し・吹き出しなど）→ WordPress に送る形。かたまりにならないものは ''（v2.10.2：プレビューで段落ごとに使うため toWpHtml から分けた） */
+function wpBlock(n, s) {
+  var out = [];
+  (function () {
     if (n.nodeType === 3) { if (n.nodeValue.trim()) out.push(wpPara(esc(n.nodeValue.trim()))); return; }
     if (n.nodeType !== 1) return;
     var tag = n.tagName.toLowerCase();
@@ -1666,7 +1669,12 @@ function toWpHtml() {
     if (tag === 'table') { out.push('<!-- wp:table -->\n<figure class="wp-block-table">' + wpInline({ cloneNode: function () { var d = document.createElement('div'); d.appendChild(n.cloneNode(true)); return d; } }) + '</figure>\n<!-- /wp:table -->'); return; }
     if (tag === 'br') return;
     if (n.textContent.trim()) out.push('<!-- wp:html -->\n' + n.outerHTML + '\n<!-- /wp:html -->');
-  });
+  })();
+  return out.join('\n\n');
+}
+/** 本文のあとに付けるもの（情報の確認日・出典／あわせて読みたい／記事の最後の定型文） */
+function wpExtras(out) {
+  var s = settings || {};
   var srcs = usedSources();
   if (srcs.length) {
     // 前の版で本文に入れた「（参考：〇〇）」は、最後の一覧にある出典なら外す（同じ出典が何度も出ないように）
@@ -1679,7 +1687,15 @@ function toWpHtml() {
   }
   (cur.content.related || []).forEach(function (id) { var b = postLinkBlock(id); if (b) out.push(b); });
   tailRefs(s.fixedBlockRef).forEach(function (r) { out.push('<!-- wp:block {"ref":' + r + '} /-->'); });
-  return out.join('\n\n');
+  return out;
+}
+
+function toWpHtml() {
+  var w = document.createElement('div'); w.innerHTML = cleanDoc();
+  dropSrcSection(w);
+  var s = settings || {}, out = [];
+  Array.prototype.forEach.call(w.childNodes, function (n) { var h = wpBlock(n, s); if (h) out.push(h); });
+  return wpExtras(out).join('\n\n');
 }
 
 // SWELLのブログカード。公開記事（No.3597）と同じ linkData の形で書く（postId だけでは中身が空になる。2026-10-12 確認）
@@ -2103,7 +2119,9 @@ function wpToFront(html, kit) {
     return '<div class="pv-box">記事の最後の定型文（パターン #' + r + '）' + (kit ? '：読み込めませんでした' : '：読み込み中…') + '</div>';
   });
   html = html.replace(/<img src="（画像を差し替え：([^"]*)）"[^>]*\/?>/g, function (m, what) { return '<span class="pv-ph">画像：' + what + '</span>'; });
-  html = html.replace(/<h2 class="wp-block-heading">/g, function (m) { if (!firstH2) return m; firstH2 = false; return '<div class="pv-box pv-toc">目次（WordPress が最初の見出しの前に自動で入れます）</div>' + m; });
+  // 編集画面の何番目のかたまりかの印（<!--pi:番号-->）を、そのかたまりのいちばん外の要素に data-pi として付ける（v2.11）
+  html = html.replace(/<!--pi:(\d+)-->((?:\s*<!--[\s\S]*?-->)*)\s*<([a-zA-Z0-9]+)/g, function (m, i, cm, tag) { return cm + '<' + tag + ' data-pi="' + i + '"'; });
+  html = html.replace(/<h2\b[^>]*\bclass="wp-block-heading"[^>]*>/g, function (m) { if (!firstH2) return m; firstH2 = false; return '<div class="pv-box pv-toc">目次（WordPress が最初の見出しの前に自動で入れます）</div>' + m; });
   html = html.replace(/<!--[\s\S]*?-->/g, '');
   return html;
 }
@@ -2111,12 +2129,13 @@ function previewDoc() {
   var kit = pvKit, links = (kit && kit.links && kit.links.length ? kit.links : PV_FALLBACK_LINKS);
   var wrap = String((kit && kit.wrapClass) || 'single single-post -body-solid').replace(/-sidebar-on/g, '-sidebar-off').replace(/\b(logged-in|admin-bar)\b/g, '');
   var now = new Date(Date.now() + 9 * 3600e3), y = now.getUTCFullYear(), md = (now.getUTCMonth() + 1) + '/' + String(now.getUTCDate()).padStart(2, '0');
-  var body = wpToFront(toWpHtml(), kit);
+  var body = wpToFront(previewWpHtml(), kit);
   var css = '.pv-ph{display:flex;align-items:center;justify-content:center;min-height:180px;background:#e5e7eb;color:#4b5563;font-size:14px;border-radius:4px;padding:12px;text-align:center}' +
     '.pv-box{border:1px dashed #9ca3af;color:#6b7280;font-size:13px;padding:10px 12px;margin:1.5em 0;border-radius:4px;background:#f9fafb}' +
     '.pv-tail{display:contents}' +
     '.pv-eye{aspect-ratio:16/5;background:#e5e7eb;color:#4b5563;display:flex;align-items:center;justify-content:center;font-size:14px;margin:0 0 2em}' +
-    '.post_content>*{cursor:pointer}.post_content>*:hover{outline:2px dashed #60a5fa;outline-offset:4px}.pv-tail,.swell-block-postLink{cursor:default}' +
+    '[contenteditable=true]{cursor:text;border-radius:2px}[contenteditable=true]:hover{outline:2px dashed #93c5fd;outline-offset:4px}[contenteditable=true]:focus{outline:2px solid #2271b1;outline-offset:4px}' +
+    '#pvJump{position:absolute;z-index:50;display:none;background:#2271b1;color:#fff;border:0;border-radius:999px;font-size:12px;padding:3px 10px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2);font-family:sans-serif}' +
     'body{background:#fff}';
   return '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
     // サイトの幅などの値の控え（実際の記事で確かめた値 2026-10-27）。サイトの設定（GAS の材料）が読めれば、そちらで上書きされる。読めないと本文の幅が0になる
@@ -2127,21 +2146,86 @@ function previewDoc() {
     '<div class="p-articleHead c-postTitle"><h1 class="c-postTitle__ttl">' + esc(cur.title && cur.title !== '（タイトル未定）' ? cur.title : '（タイトル未定）') + '</h1><time class="c-postTitle__date u-thin"><span class="__y">' + y + '</span><span class="__md">' + md + '</span></time></div>' +
     '<div class="pv-eye">アイキャッチ画像（WordPress で設定します）</div>' +
     '<div class="post_content">' + body + '</div></article></main></div></div>' +
-    '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(a)e.preventDefault();var b=e.target.closest(".post_content > *");if(!b||b.matches(".pv-tail,.swell-block-postLink,.pv-toc"))return;try{parent.previewJump(b.textContent)}catch(x){}});</scr' + 'ipt></body></html>';
+    '<button id="pvJump" type="button">編集画面で開く</button>' +
+    '<scr' + 'ipt>(' + pvFrameScript.toString() + ')();</scr' + 'ipt></body></html>';
 }
 function renderPreview() {
   var f = document.getElementById('pvFrame'); if (!f || !cur) return;
   f.srcdoc = previewDoc(); pvSetWidth(pvWidth);
 }
-/** プレビューでクリックした段落を、編集画面で見せる */
-function previewJump(text) {
-  var key = String(text || '').replace(/\s+/g, '').slice(0, 24);
+/** プレビュー用：本文のかたまりごとに、編集画面で何番目かの印（<!--pi:番号-->）を付けて WordPress に送る形にする */
+function previewWpHtml() {
+  var d = document.getElementById('doc'), w = document.createElement('div'), s = settings || {}, out = [];
+  Array.prototype.forEach.call(d.childNodes, function (n, i) { var c = n.cloneNode(true); if (c.nodeType === 1 && !c.classList.contains('keep') && !c.classList.contains('ph')) c.setAttribute('data-pi', String(Array.prototype.indexOf.call(d.children, n))); w.appendChild(c); });  // 動かせない箱・画像の仮置きは直さない（印を付けない）
+  w.querySelectorAll('.ph-tools,.balloon .ic,.keep-tools').forEach(function (x) { x.remove(); });
+  w.querySelectorAll('[contenteditable]').forEach(function (x) { x.removeAttribute('contenteditable'); });
+  w.querySelectorAll('.flash,.sel-target').forEach(function (x) { x.classList.remove('flash', 'sel-target'); });
+  dropSrcSection(w);
+  Array.prototype.forEach.call(w.childNodes, function (n) {
+    var pi = n.nodeType === 1 ? n.getAttribute('data-pi') : null; if (pi !== null) n.removeAttribute('data-pi');
+    var h = wpBlock(n, s); if (h) out.push((pi !== null ? '<!--pi:' + pi + '-->' : '') + h);
+  });
+  return wpExtras(out).join('\n\n');
+}
+/** iframe の中で動く処理（文字を直せるようにする・直したら親に知らせる・「編集画面で開く」） */
+function pvFrameScript() {
+  var jump = document.getElementById('pvJump'), cur = null, hideT = null;
+  var sel = '.post_content [data-pi]';
+  document.querySelectorAll(sel).forEach(function (b) {
+    var t = b.tagName, ed = null;
+    if (/^(P|H2|H3|H4|UL|OL)$/.test(t)) ed = b;
+    else if (b.classList.contains('swell-block-balloon')) ed = b.querySelector('.c-balloon__text p');
+    if (!ed) return;
+    ed.setAttribute('contenteditable', 'true'); ed.setAttribute('spellcheck', 'false'); ed.setAttribute('data-was', ed.innerHTML);
+    ed.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey && !/^(UL|OL)$/.test(ed.tagName)) { e.preventDefault(); document.execCommand('insertLineBreak'); }
+    });
+    ed.addEventListener('paste', function (e) { e.preventDefault(); var tx = (e.clipboardData || window.clipboardData).getData('text/plain'); document.execCommand('insertText', false, tx); });
+    ed.addEventListener('blur', function () {
+      if (ed.innerHTML === ed.getAttribute('data-was')) return;
+      var ok = false; try { ok = parent.previewEdit(+b.getAttribute('data-pi'), b.classList.contains('swell-block-balloon') ? 'balloon' : ed.tagName, ed.innerHTML, ed.textContent); } catch (x) { }
+      if (ok) ed.setAttribute('data-was', ed.innerHTML);
+    });
+  });
+  function show(b) {
+    clearTimeout(hideT); cur = b; var r = b.getBoundingClientRect();
+    jump.style.display = 'block'; jump.style.top = (window.scrollY + r.top - 26) + 'px'; jump.style.left = (window.scrollX + r.right - jump.offsetWidth) + 'px';
+  }
+  document.addEventListener('mouseover', function (e) { var b = e.target.closest && e.target.closest(sel); if (b) show(b); else if (e.target !== jump) { clearTimeout(hideT); hideT = setTimeout(function () { jump.style.display = 'none'; }, 400); } });
+  document.addEventListener('focusin', function (e) { var b = e.target.closest && e.target.closest(sel); if (b) show(b); });
+  jump.addEventListener('mouseover', function () { clearTimeout(hideT); });
+  jump.addEventListener('mousedown', function (e) { e.preventDefault(); });
+  jump.addEventListener('click', function () { if (!cur) return; var a = document.activeElement; if (a && a.blur) a.blur(); try { parent.previewJump(+cur.getAttribute('data-pi')); } catch (x) { } });
+  document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a'); if (a) e.preventDefault(); });
+}
+/** プレビューの文字の直し → 編集画面の同じかたまりに入れる。かたまりの種類が合わないとき（本文がほかで変わったとき）は入れずに描き直す */
+function previewEdit(pi, kind, html, text) {
+  var el = document.getElementById('doc').children[pi];
+  var okType = el && (kind === 'balloon' ? el.classList.contains('balloon') : el.tagName === kind);
+  if (!okType) { document.getElementById('pvState').textContent = '本文の並びが変わっていたので、直した所を入れられませんでした。描き直したので、もう一度直してください'; renderPreview(); return false; }
+  var t = document.createElement('div'); t.innerHTML = html;
+  t.querySelectorAll('.swl-format-1').forEach(function (x) { var b = document.createElement('b'); b.innerHTML = x.innerHTML; x.replaceWith(b); });
+  t.querySelectorAll('.swl-marker').forEach(function (x) { x.className = 'marker'; });
+  t.querySelectorAll('[contenteditable],[data-was],[data-pi],[spellcheck]').forEach(function (x) { ['contenteditable', 'data-was', 'data-pi', 'spellcheck'].forEach(function (k) { x.removeAttribute(k); }); });
+  t.querySelectorAll('li').forEach(function (li) { li.removeAttribute('class'); });
+  if (kind === 'balloon') { var tx = el.querySelector('.tx'); if (!tx) { tx = document.createElement('span'); tx.className = 'tx'; el.appendChild(tx); } tx.textContent = String(text || '').trim(); }
+  else el.innerHTML = t.innerHTML;
+  st.snapshot = st.snapshot || 'WordPressプレビューで直す前';
+  docChanged();
+  var now = new Date(Date.now() + 9 * 3600e3).toISOString().slice(11, 16);
+  document.getElementById('pvState').textContent = '直した所を本文に入れました（' + now + '）。自動で保存します';
+  return true;
+}
+/** 「編集画面で開く」：そのかたまりを編集画面で見せる（番号で探す。見つからなければ文字で探す） */
+function previewJump(pi) {
   closeModal('m-preview');
-  if (!key) return;
   if (cur.step !== 3 && cur.step !== 4) step(3);
-  var hit = null;
-  Array.prototype.some.call(document.querySelectorAll('#doc > *'), function (el) { var t = el.textContent.replace(/\s+/g, ''); if (t && (t.indexOf(key) >= 0 || key.indexOf(t.slice(0, 24)) === 0)) { hit = el; return true; } return false; });
-  if (!hit) { toast('この部分は本文の中に見つかりませんでした（記事の最後の定型文・出典・ブログカードなどは本文ではありません）', 4000); return; }
+  var hit = typeof pi === 'number' ? document.getElementById('doc').children[pi] : null;
+  if (!hit && typeof pi === 'string') {
+    var key = pi.replace(/\s+/g, '').slice(0, 24);
+    Array.prototype.some.call(document.querySelectorAll('#doc > *'), function (el) { var t = el.textContent.replace(/\s+/g, ''); if (t && t.indexOf(key) >= 0) { hit = el; return true; } return false; });
+  }
+  if (!hit) { toast('この部分は本文の中に見つかりませんでした', 4000); return; }
   hit.scrollIntoView({ block: 'center' }); hit.classList.add('flash'); setTimeout(function () { hit.classList.remove('flash'); }, 1800);
 }
 
