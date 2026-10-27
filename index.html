@@ -430,6 +430,14 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 .btn-danger { background: #b91c1c !important; }
 .rv-bar .btn-primary { background: #334155; }
 @media (max-width: 820px) { .rv-in { width: 100%; } .rv-act { margin-left: 0; } }
+/* WordPress での見え方（v2.10） */
+.pv-back .pv-modal { max-width: none; width: calc(100vw - 32px); height: calc(100vh - 32px); max-height: none; display: flex; flex-direction: column; padding: 12px 14px; }
+.pv-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-right: 44px; }
+.pv-head h3 { margin-right: auto !important; font-size: 16px; }
+.pv-sw { display: inline-flex; gap: 4px; } .pv-sw .on { background: #334155; color: #fff; border-color: #334155; }
+.pv-note { font-size: 12px; margin: 6px 0 8px; }
+.pv-stage { flex: 1; min-height: 0; background: #e5e7eb; border-radius: 8px; display: flex; justify-content: center; overflow: auto; padding: 8px; }
+#pvFrame { border: 0; background: #fff; height: 100%; width: 100%; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
 /* スマホ幅の一覧：タイトル・担当・進行状況・削除だけ出す（v2.8。前は v6 モックの列の並びのままで、タイトルが隠れていた） */
 @media (max-width: 640px) {
   #v-list table.tbl th, #v-list table.tbl td { display: none; }
@@ -507,6 +515,7 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
           <span class="ed-title" id="edTitle">（タイトル未定）</span>
           <span class="muted" id="edType"></span>
           <select class="form-input ed-owner" id="edOwner" onchange="changeOwner(this)" title="この記事の担当者"></select>
+          <button class="btn-ghost btn-sm" id="btnPreview" onclick="openPreview()" title="WordPress の記事ページに似せた見た目で表示します。WordPress には送りません">WordPressでの見え方</button>
           <span class="sync ok" id="sync" onclick="syncClick()" title="この画面の内容とサーバーに保存されている内容が同じかを表示します"><span class="dot"></span><span id="syncTx">-</span></span>
           <span class="muted">この記事のAI料金 <span id="artCost">$0.00（約0円）</span> <span class="help" title="AIを呼ぶたびに、実際に使った量から計算した金額を足しています。概算です">?</span></span>
         </div>
@@ -555,7 +564,7 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
               <button onclick="fmt('h3')" title="大見出しの中の小さな区切り">小見出し（H3）</button>
               <button onclick="fmt('p')">見出しをやめる</button>
               <button onclick="fmt('bold')" title="WordPressにはSWELLの太字（swl-format-1）で送ります。strongは使いません"><b>太字（SWELLの太字）</b></button>
-              <button onclick="fmt('marker')">青マーカー</button>
+              <button onclick="fmt('marker')" title="選んだ文に青マーカーを引きます。マーカーの付いた所を選んで押すと外れます">青マーカー</button>
               <button onclick="fmt('link')">リンク</button>
               <button onclick="insertPh()">画像の仮置きを入れる</button>
               <button onclick="focusChat()">選んだ文をAIで直す</button>
@@ -812,6 +821,16 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
   <div class="modal-foot"><button class="btn-primary btn-danger" id="rvGo" onclick="doReview(this, 'back')">差し戻す</button><button class="btn-ghost" onclick="closeModal('m-review')">やめる</button></div>
 </div></div>
 
+<!-- WordPress での見え方（v2.10） -->
+<div class="modal-back pv-back" id="m-preview"><div class="modal pv-modal">
+  <div class="pv-head"><h3 style="margin:0">WordPress での見え方（疑似プレビュー）</h3>
+    <span class="pv-sw"><button class="btn-ghost btn-sm on" data-w="pc" onclick="pvSetWidth('pc')">パソコン幅</button><button class="btn-ghost btn-sm" data-w="sp" onclick="pvSetWidth('sp')">スマホ幅</button></span>
+    <button class="btn-ghost btn-sm" onclick="renderPreview()">今の本文で描き直す</button>
+    <button class="btn-primary btn-sm" onclick="closeModal('m-preview')">閉じる</button></div>
+  <div class="muted pv-note">サイトのデザインで表示していますが、本物とは少し違います（画像・アイキャッチ・ブログカードの写真は灰色の枠、目次は位置だけ）。WordPress には送っていません。<b>段落をクリックすると、編集画面のその段落へ移ります。</b> <span id="pvState"></span></div>
+  <div class="pv-stage"><iframe id="pvFrame" title="WordPress での見え方"></iframe></div>
+</div></div>
+
 <!-- 保留にする（v2.9） -->
 <div class="modal-back" id="m-hold"><div class="modal" style="max-width:520px">
   <h3>この記事を保留にする</h3>
@@ -838,7 +857,7 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 <div id="toast"></div>
 <script>
 // ===== ブログエディター（第1段階） =====
-var APP_VERSION = 'v2.9.0（2026-10-27 保留：一覧のいちばん下に灰色・保留中は送らない）';
+var APP_VERSION = 'v2.10.0（2026-10-27 WordPressでの見え方（疑似プレビュー））';
 var GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9v4PW9op-Nx58BaRsGwk__KWzLecZtNQR7N5lu_N9O3nKQYRQhubBlQAQLf1WytWHWw/exec';
 var GAS_URL = (new URLSearchParams(location.search).get('gas')) || GAS_URL_DEFAULT;
 var STEP_NAMES = ['原稿入力中', '編集中', '編集中', '編集中', '仕上げチェック中', '送信準備中'];
@@ -1283,6 +1302,10 @@ function paintTarget() {
     if (pend.length) CSS.highlights.set('be-pending', new Highlight(...pend)); else CSS.highlights.delete('be-pending');
   } catch (e) { }
 }
+/** 選んだ範囲が、その要素の文字に1文字でもかかっているか（境目に触れているだけなら false） */
+function rangeOverlapsText(r, el) {
+  try { var e = document.createRange(); e.selectNodeContents(el); return r.compareBoundaryPoints(Range.START_TO_END, e) > 0 && r.compareBoundaryPoints(Range.END_TO_START, e) < 0 && !!(r.toString() && e.toString()); } catch (x) { return true; }
+}
 function restoreSel() { if (!savedRange) return false; var s = window.getSelection(); s.removeAllRanges(); s.addRange(savedRange); return true; }
 function needSel() { if (!savedRange || !savedRange.toString().trim()) { toast('先に本文の文をドラッグで選んでください'); return false; } return true; }
 function fmt(kind) {
@@ -1292,6 +1315,17 @@ function fmt(kind) {
   if (kind === 'h2') document.execCommand('formatBlock', false, 'h2');
   if (kind === 'h3') document.execCommand('formatBlock', false, 'h3');
   if (kind === 'p') document.execCommand('formatBlock', false, 'p');
+  // 青マーカー：選んだ所にマーカーがかかっていれば外す（太字と同じく、もう一度押すと外れる。v2.9.1。前は付けることしかできなかった）
+  if (kind === 'marker') {
+    var docEl = document.getElementById('doc'), hit = [];
+    docEl.querySelectorAll('.marker').forEach(function (m) { if (savedRange.intersectsNode(m) && rangeOverlapsText(savedRange, m)) hit.push(m); });
+    var anc = savedRange.commonAncestorContainer; anc = anc.nodeType === 1 ? anc : anc.parentNode;
+    var am = anc && anc.closest ? anc.closest('.marker') : null; if (am && docEl.contains(am) && hit.indexOf(am) < 0) hit.push(am);
+    if (hit.length) {
+      hit.forEach(function (m) { while (m.firstChild) m.parentNode.insertBefore(m.firstChild, m); m.parentNode.removeChild(m); });
+      docEl.normalize(); clearTarget(); docChanged(); toast('青マーカーを外しました'); return;
+    }
+  }
   if (kind === 'marker') { var sp = document.createElement('span'); sp.className = 'marker'; try { savedRange.surroundContents(sp); } catch (e) { toast('段落をまたいで選ぶとマーカーを付けられません'); return; } }
   if (kind === 'link') { document.getElementById('lkSrc').textContent = savedRange.toString(); document.getElementById('lkUrl').value = ''; openModal('m-link'); return; }
   docChanged();
@@ -2027,6 +2061,88 @@ function doReview(btn, kind) {
       toast(kind === 'ok' ? 'OK にしました。担当者が送信できるようになりました' : '差し戻しました。担当者の一覧に理由が出ます', 4000);
     }).catch(function (e) { done(); if (kind === 'back') rvError(netMsg(e)); else toast('OK にできませんでした：' + netMsg(e), 5000); });
 }
+// ===== WordPress での見え方（疑似プレビュー。v2.10）=====
+// ツールの本文を WordPress に送る形（toWpHtml）にしてから、サイトの記事ページと同じ部品（SWELL の吹き出し・ブログカードなど）の HTML に組み立て、
+// サイトのデザイン（GAS の previewKit が公開中の記事ページから読み取る CSS）で iframe に出す。WordPress には何も送らない
+var PV_SITE = 'https://kurofune-school.com';
+var PV_FALLBACK_LINKS = ['/wp-content/themes/swell/build/css/swell-icons.css', '/wp-content/themes/swell/build/css/main.css', '/wp-content/themes/swell/build/css/blocks.css', '/wp-content/themes/swell/build/css/modules/page/single.css', '/wp-content/themes/kurofune/style.css'].map(function (x) { return PV_SITE + x; });
+var pvKit = null, pvKitLoading = false, pvWidth = 'pc';
+// ブログカードの写真の代わり（灰色の四角）。SWELL のカードは data-type="type1" で枠が付く（実際の記事で確かめた 2026-10-27）
+var PV_GRAY = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22180%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23e5e7eb%22/%3E%3C/svg%3E';
+function openPreview() {
+  if (!cur) return;
+  openModal('m-preview'); renderPreview();
+  if (!pvKit && !pvKitLoading) {
+    pvKitLoading = true; document.getElementById('pvState').textContent = 'サイトのデザインを読み込んでいます…';
+    api('previewKit').then(function (j) { pvKitLoading = false; pvKit = j; document.getElementById('pvState').textContent = j.error ? j.error + '（簡易のデザインで表示しています）' : ''; if (document.getElementById('m-preview').classList.contains('show')) renderPreview(); })
+      .catch(function (e) { pvKitLoading = false; document.getElementById('pvState').textContent = 'サイトのデザインを読み込めませんでした（' + netMsg(e) + '）。簡易のデザインで表示しています'; });
+  }
+}
+function pvSetWidth(w) { pvWidth = w; document.querySelectorAll('#m-preview [data-w]').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-w') === w); }); document.getElementById('pvFrame').style.width = w === 'sp' ? '390px' : '100%'; }
+function pvAttr(s) { return esc(s).replace(/'/g, '&#39;'); }
+/** WordPress に送る形の本文 → 公開ページの記事本文に近い HTML */
+function wpToFront(html, kit) {
+  var s = settings || {}, tails = {};
+  ((kit && kit.tails) || []).forEach(function (t) { tails[t.ref] = t; });
+  var firstH2 = true;
+  // 段落に wp-block-paragraph を付ける（公開ページと同じ）。吹き出しの中の段落には付けないので、吹き出しより先に行う
+  html = html.replace(/(<!-- wp:paragraph[^>]*-->\s*)<p( class="([^"]*)")?>/g, function (m, c, a, cls) { return c + '<p class="wp-block-paragraph' + (cls ? ' ' + cls : '') + '">'; });
+  html = html.replace(/<!-- wp:loos\/balloon (\{[\s\S]*?\}) -->\s*<p>([\s\S]*?)<\/p>\s*<!-- \/wp:loos\/balloon -->/g, function (m, js, tx) {
+    var a = {}; try { a = JSON.parse(js); } catch (e) { }
+    return '<div class="swell-block-balloon"><div class="c-balloon -bln-left" data-col="' + pvAttr(a.balloonCol || 'blue') + '"><div class="c-balloon__icon -circle">' + (a.balloonIcon ? '<img src="' + pvAttr(a.balloonIcon) + '" alt="" class="c-balloon__iconImg" width="80px" height="80px">' : '') + '<span class="c-balloon__iconName">' + esc(a.balloonName || s.balloonName || '') + '</span></div><div class="c-balloon__body -speaking -border-none"><div class="c-balloon__text"><p>' + tx + '</p><span class="c-balloon__shapes"><span class="c-balloon__before"></span><span class="c-balloon__after"></span></span></div></div></div></div>';
+  });
+  html = html.replace(/<!-- wp:loos\/post-link (\{[\s\S]*?\}) \/-->/g, function (m, js) {
+    var a = {}; try { a = JSON.parse(js); } catch (e) { } var ld = a.linkData || {};
+    return '<div class="swell-block-postLink"><div class="p-blogCard -internal" data-type="type1"><div class="p-blogCard__inner"><span class="p-blogCard__caption">あわせて読みたい</span><div class="p-blogCard__thumb c-postThumb"><figure class="c-postThumb__figure"><img class="c-postThumb__img u-obf-cover" alt="" src="' + PV_GRAY + '"></figure></div><div class="p-blogCard__body"><a class="p-blogCard__title">' + esc(ld.title || '（記事）') + '</a><span class="p-blogCard__excerpt"></span></div></div></div></div>';
+  });
+  html = html.replace(/<!-- wp:block \{"ref":(\d+)\} \/-->/g, function (m, r) {
+    var t = tails[r];
+    if (t && t.raw) return '<div class="pv-tail" data-ref="' + r + '">' + t.raw + '</div>';
+    return '<div class="pv-box">記事の最後の定型文（パターン #' + r + '）' + (kit ? '：読み込めませんでした' : '：読み込み中…') + '</div>';
+  });
+  html = html.replace(/<img src="（画像を差し替え：([^"]*)）"[^>]*\/?>/g, function (m, what) { return '<span class="pv-ph">画像：' + what + '</span>'; });
+  html = html.replace(/<h2 class="wp-block-heading">/g, function (m) { if (!firstH2) return m; firstH2 = false; return '<div class="pv-box pv-toc">目次（WordPress が最初の見出しの前に自動で入れます）</div>' + m; });
+  html = html.replace(/<!--[\s\S]*?-->/g, '');
+  return html;
+}
+function previewDoc() {
+  var kit = pvKit, links = (kit && kit.links && kit.links.length ? kit.links : PV_FALLBACK_LINKS);
+  var wrap = String((kit && kit.wrapClass) || 'single single-post -body-solid').replace(/-sidebar-on/g, '-sidebar-off').replace(/\b(logged-in|admin-bar)\b/g, '');
+  var now = new Date(Date.now() + 9 * 3600e3), y = now.getUTCFullYear(), md = (now.getUTCMonth() + 1) + '/' + String(now.getUTCDate()).padStart(2, '0');
+  var body = wpToFront(toWpHtml(), kit);
+  var css = '.pv-ph{display:flex;align-items:center;justify-content:center;min-height:180px;background:#e5e7eb;color:#4b5563;font-size:14px;border-radius:4px;padding:12px;text-align:center}' +
+    '.pv-box{border:1px dashed #9ca3af;color:#6b7280;font-size:13px;padding:10px 12px;margin:1.5em 0;border-radius:4px;background:#f9fafb}' +
+    '.pv-tail{display:contents}' +
+    '.pv-eye{aspect-ratio:16/5;background:#e5e7eb;color:#4b5563;display:flex;align-items:center;justify-content:center;font-size:14px;margin:0 0 2em}' +
+    '.post_content>*{cursor:pointer}.post_content>*:hover{outline:2px dashed #60a5fa;outline-offset:4px}.pv-tail,.swell-block-postLink{cursor:default}' +
+    'body{background:#fff}';
+  return '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+    // サイトの幅などの値の控え（実際の記事で確かめた値 2026-10-27）。サイトの設定（GAS の材料）が読めれば、そちらで上書きされる。読めないと本文の幅が0になる
+    '<style>:root{--container_size:1200px;--article_size:900px;--swl-pad_container:48px;--swl-pad_post_content:16px;--swl-fz--content:16px}</style>' +
+    links.map(function (h) { return '<link rel="stylesheet" href="' + pvAttr(h) + '">'; }).join('') +
+    ((kit && kit.styles) || []).map(function (c) { return '<style>' + String(c).replace(/<\/style/gi, '') + '</style>'; }).join('') +
+    '<style>' + css + '</style></head><body class="' + pvAttr(wrap) + '"><div id="body_wrap" class="' + pvAttr(wrap) + '"><div id="content" class="l-content l-container"><main id="main_content" class="l-mainContent l-article"><article class="l-mainContent__inner">' +
+    '<div class="p-articleHead c-postTitle"><h1 class="c-postTitle__ttl">' + esc(cur.title && cur.title !== '（タイトル未定）' ? cur.title : '（タイトル未定）') + '</h1><time class="c-postTitle__date u-thin"><span class="__y">' + y + '</span><span class="__md">' + md + '</span></time></div>' +
+    '<div class="pv-eye">アイキャッチ画像（WordPress で設定します）</div>' +
+    '<div class="post_content">' + body + '</div></article></main></div></div>' +
+    '<scr' + 'ipt>document.addEventListener("click",function(e){var a=e.target.closest("a");if(a)e.preventDefault();var b=e.target.closest(".post_content > *");if(!b||b.matches(".pv-tail,.swell-block-postLink,.pv-toc"))return;try{parent.previewJump(b.textContent)}catch(x){}});</scr' + 'ipt></body></html>';
+}
+function renderPreview() {
+  var f = document.getElementById('pvFrame'); if (!f || !cur) return;
+  f.srcdoc = previewDoc(); pvSetWidth(pvWidth);
+}
+/** プレビューでクリックした段落を、編集画面で見せる */
+function previewJump(text) {
+  var key = String(text || '').replace(/\s+/g, '').slice(0, 24);
+  closeModal('m-preview');
+  if (!key) return;
+  if (cur.step !== 3 && cur.step !== 4) step(3);
+  var hit = null;
+  Array.prototype.some.call(document.querySelectorAll('#doc > *'), function (el) { var t = el.textContent.replace(/\s+/g, ''); if (t && (t.indexOf(key) >= 0 || key.indexOf(t.slice(0, 24)) === 0)) { hit = el; return true; } return false; });
+  if (!hit) { toast('この部分は本文の中に見つかりませんでした（記事の最後の定型文・出典・ブログカードなどは本文ではありません）', 4000); return; }
+  hit.scrollIntoView({ block: 'center' }); hit.classList.add('flash'); setTimeout(function () { hit.classList.remove('flash'); }, 1800);
+}
+
 // ===== 保留（v2.9）=====
 function openHold() { document.getElementById('holdNote').value = ''; openModal('m-hold'); setTimeout(function () { document.getElementById('holdNote').focus(); }, 50); }
 function doHold(btn, on) {
