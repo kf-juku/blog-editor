@@ -433,13 +433,16 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 /* WordPressプレビュー（v2.10）。ボタンはほかのボタンと見分けられるように WordPress の青で塗り、目のアイコンを付ける（v2.10.1 川上さん「見た目が似ていて分かりづらい」） */
 .btn-pv { display: inline-flex; align-items: center; gap: 6px; background: #2271b1; color: #fff; border: 0; border-radius: 999px; padding: 5px 14px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; }
 .btn-pv:hover { background: #135e96; }
-.pv-back .pv-modal { max-width: none; width: calc(100vw - 32px); height: calc(100vh - 32px); max-height: none; display: flex; flex-direction: column; padding: 12px 14px; }
-.pv-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-right: 44px; }
-.pv-head h3 { margin-right: auto !important; font-size: 16px; }
+.pv-back { padding: 0 !important; overflow: hidden; }
+.pv-back .pv-modal { max-width: none; width: 100vw; height: 100vh; max-height: none; border-radius: 0; display: flex; flex-direction: column; padding: 6px 10px 8px; }
+#m-preview .m-closefix { top: 0; right: 0; width: 30px; height: 30px; font-size: 16px; }  /* 画面いっぱいなので、バツ印を枠の内側に置く（v2.11.2 川上さん「×は残せ。閉じるがいらない」） */
+.pv-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; padding-right: 40px; min-height: 30px; }
+.pv-head h3 { font-size: 15px; }
+.pv-hint { font-size: 12px; } .pv-head .pv-state { margin-right: auto; font-size: 12px; }
 .pv-sw { display: inline-flex; gap: 4px; } .pv-sw .on { background: #334155; color: #fff; border-color: #334155; }
 .pv-note { font-size: 12px; margin: 6px 0 8px; }
 .pv-state { color: #2271b1; font-weight: 700; }
-.pv-stage { flex: 1; min-height: 0; background: #e5e7eb; border-radius: 8px; display: flex; justify-content: center; overflow: auto; padding: 8px; }
+.pv-stage { flex: 1; min-height: 0; background: #e5e7eb; border-radius: 6px; display: flex; justify-content: center; overflow: auto; padding: 0; }
 #pvFrame { border: 0; background: #fff; height: 100%; width: 100%; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
 /* スマホ幅の一覧：タイトル・担当・進行状況・削除だけ出す（v2.8。前は v6 モックの列の並びのままで、タイトルが隠れていた） */
 @media (max-width: 640px) {
@@ -826,11 +829,9 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 
 <!-- WordPress での見え方（v2.10） -->
 <div class="modal-back pv-back" id="m-preview"><div class="modal pv-modal">
-  <div class="pv-head"><h3 style="margin:0">WordPressプレビュー（疑似）</h3>
-    <span class="pv-sw"><button class="btn-ghost btn-sm on" data-w="pc" onclick="pvSetWidth('pc')">パソコン幅</button><button class="btn-ghost btn-sm" data-w="sp" onclick="pvSetWidth('sp')">スマホ幅</button></span>
-    <button class="btn-primary btn-sm" onclick="closeModal('m-preview')">閉じる</button></div>
-  <div class="muted pv-note"><b>文字はこの画面で直せます。</b>段落・見出し・箇条書き・吹き出しをクリックして打ち直すと、段落から外れたときに本文に入り、自動で保存します（段落の中の改行は Shift+Enter）。見出しにする・太字・マーカー・画像・段落を足す消すは、段落の右上の「編集画面で開く」から。<br>サイトのデザインで表示していますが、本物とは少し違います（画像・アイキャッチ・ブログカードの写真は灰色の枠、目次は位置だけ）。WordPress には送っていません。 <span id="pvState" class="pv-state"></span></div>
-  <div class="pv-stage"><iframe id="pvFrame" title="WordPressプレビュー"></iframe></div>
+  <div class="pv-head"><h3 style="margin:0">WordPressプレビュー（疑似）</h3><span class="muted pv-hint">改行は Shift+Enter</span><span id="pvState" class="pv-state"></span>
+    <span class="pv-sw"><button class="btn-ghost btn-sm on" data-w="pc" onclick="pvSetWidth('pc')">パソコン幅</button><button class="btn-ghost btn-sm" data-w="sp" onclick="pvSetWidth('sp')">スマホ幅</button></span></div>
+    <div class="pv-stage"><iframe id="pvFrame" title="WordPressプレビュー"></iframe></div>
 </div></div>
 
 <!-- 保留にする（v2.9） -->
@@ -859,7 +860,7 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 <div id="toast"></div>
 <script>
 // ===== ブログエディター（第1段階） =====
-var APP_VERSION = 'v2.11.0（2026-10-27 WordPressプレビューの中で文字を直せる）';
+var APP_VERSION = 'v2.11.2（2026-10-27 WordPressプレビューは右上のバツ印で閉じる）';
 var GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9v4PW9op-Nx58BaRsGwk__KWzLecZtNQR7N5lu_N9O3nKQYRQhubBlQAQLf1WytWHWw/exec';
 var GAS_URL = (new URLSearchParams(location.search).get('gas')) || GAS_URL_DEFAULT;
 var STEP_NAMES = ['原稿入力中', '編集中', '編集中', '編集中', '仕上げチェック中', '送信準備中'];
@@ -2306,7 +2307,7 @@ document.querySelectorAll('.modal-back').forEach(function (back) {
 document.addEventListener('keydown', function (e) {
   if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); flushSave(); return; }
   if (e.key !== 'Escape') return; var o = document.querySelectorAll('.modal-back.show'); if (!o.length) return;
-  var top = o[o.length - 1]; if (top.id === 'm-sync') return; top.classList.remove('show');
+  var top = o[o.length - 1]; if (top.id === 'm-sync') return; closeModal(top.id);  // closeModal を通す（WordPressプレビューで打っている途中の直しを確定させるため。v2.11.1）
 });
 
 // ===== 起動 =====
