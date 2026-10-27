@@ -430,7 +430,9 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 .btn-danger { background: #b91c1c !important; }
 .rv-bar .btn-primary { background: #334155; }
 @media (max-width: 820px) { .rv-in { width: 100%; } .rv-act { margin-left: 0; } }
-/* WordPress での見え方（v2.10） */
+/* WordPressプレビュー（v2.10）。ボタンはほかのボタンと見分けられるように WordPress の青で塗り、目のアイコンを付ける（v2.10.1 川上さん「見た目が似ていて分かりづらい」） */
+.btn-pv { display: inline-flex; align-items: center; gap: 6px; background: #2271b1; color: #fff; border: 0; border-radius: 999px; padding: 5px 14px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; }
+.btn-pv:hover { background: #135e96; }
 .pv-back .pv-modal { max-width: none; width: calc(100vw - 32px); height: calc(100vh - 32px); max-height: none; display: flex; flex-direction: column; padding: 12px 14px; }
 .pv-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-right: 44px; }
 .pv-head h3 { margin-right: auto !important; font-size: 16px; }
@@ -515,7 +517,7 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
           <span class="ed-title" id="edTitle">（タイトル未定）</span>
           <span class="muted" id="edType"></span>
           <select class="form-input ed-owner" id="edOwner" onchange="changeOwner(this)" title="この記事の担当者"></select>
-          <button class="btn-ghost btn-sm" id="btnPreview" onclick="openPreview()" title="WordPress の記事ページに似せた見た目で表示します。WordPress には送りません">WordPressでの見え方</button>
+          <button class="btn-pv" id="btnPreview" onclick="openPreview()" title="WordPress の記事ページに似せた見た目で表示します。WordPress には送りません"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>WordPressプレビュー</span></button>
           <span class="sync ok" id="sync" onclick="syncClick()" title="この画面の内容とサーバーに保存されている内容が同じかを表示します"><span class="dot"></span><span id="syncTx">-</span></span>
           <span class="muted">この記事のAI料金 <span id="artCost">$0.00（約0円）</span> <span class="help" title="AIを呼ぶたびに、実際に使った量から計算した金額を足しています。概算です">?</span></span>
         </div>
@@ -823,12 +825,12 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 
 <!-- WordPress での見え方（v2.10） -->
 <div class="modal-back pv-back" id="m-preview"><div class="modal pv-modal">
-  <div class="pv-head"><h3 style="margin:0">WordPress での見え方（疑似プレビュー）</h3>
+  <div class="pv-head"><h3 style="margin:0">WordPressプレビュー（疑似）</h3>
     <span class="pv-sw"><button class="btn-ghost btn-sm on" data-w="pc" onclick="pvSetWidth('pc')">パソコン幅</button><button class="btn-ghost btn-sm" data-w="sp" onclick="pvSetWidth('sp')">スマホ幅</button></span>
     <button class="btn-ghost btn-sm" onclick="renderPreview()">今の本文で描き直す</button>
     <button class="btn-primary btn-sm" onclick="closeModal('m-preview')">閉じる</button></div>
   <div class="muted pv-note">サイトのデザインで表示していますが、本物とは少し違います（画像・アイキャッチ・ブログカードの写真は灰色の枠、目次は位置だけ）。WordPress には送っていません。<b>段落をクリックすると、編集画面のその段落へ移ります。</b> <span id="pvState"></span></div>
-  <div class="pv-stage"><iframe id="pvFrame" title="WordPress での見え方"></iframe></div>
+  <div class="pv-stage"><iframe id="pvFrame" title="WordPressプレビュー"></iframe></div>
 </div></div>
 
 <!-- 保留にする（v2.9） -->
@@ -857,7 +859,7 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 <div id="toast"></div>
 <script>
 // ===== ブログエディター（第1段階） =====
-var APP_VERSION = 'v2.10.0（2026-10-27 WordPressでの見え方（疑似プレビュー））';
+var APP_VERSION = 'v2.10.1（2026-10-27 WordPressプレビューのボタンを見分けやすく）';
 var GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9v4PW9op-Nx58BaRsGwk__KWzLecZtNQR7N5lu_N9O3nKQYRQhubBlQAQLf1WytWHWw/exec';
 var GAS_URL = (new URLSearchParams(location.search).get('gas')) || GAS_URL_DEFAULT;
 var STEP_NAMES = ['原稿入力中', '編集中', '編集中', '編集中', '仕上げチェック中', '送信準備中'];
