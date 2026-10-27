@@ -384,6 +384,53 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
 .ck-split { background: #fff7ed; border: 2px solid #fb923c; border-radius: 10px; padding: 10px; margin: 6px 0 10px; }
 .ck-split-h { font-weight: 700; font-size: 14px; color: #9a3412; margin-bottom: 4px; }
 .ck-all-done { background: #dcfce7; border-radius: 8px; padding: 8px; font-size: 13px; margin-bottom: 8px; }
+.rw-tag { background: #fff; color: #ea580c; box-shadow: inset 0 0 0 1px #ea580c; padding: 0 6px; font-size: 11px; }
+/* 進行状況（v2.8）：色は 確認待ち（黄）と 差し戻し（赤）だけ。ほかは灰色 */
+.list-top { display: flex; gap: 8px; flex-wrap: wrap; align-items: stretch; margin-bottom: 10px; }
+.list-top .st-cards { flex: 1 1 620px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.list-top .stat-row { flex: 0 1 auto; margin: 0; flex-wrap: nowrap; }
+.list-top .stat .num { font-size: 20px; }
+@media (max-width: 820px) { .list-top .st-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .list-top .stat-row { flex-wrap: wrap; } }
+.st-card { text-align: left; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; cursor: pointer; font-family: inherit; display: flex; flex-direction: column; }
+.st-card .num { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.st-card .lbl { font-size: 12px; color: var(--text-muted); }
+.st-card.st-ask .num { color: #b45309; } .st-card.st-back .num { color: #b91c1c; }
+.st-card.on { border-color: #334155; box-shadow: inset 0 0 0 1px #334155; }
+.badge.st-work { background: #f1f3f6; color: #334155; }
+.badge.st-ask { background: #fff7e6; color: #b45309; box-shadow: inset 0 0 0 1px #f5d9a8; }
+.badge.st-back { background: #fdf2f2; color: #b91c1c; box-shadow: inset 0 0 0 1px #f3c7c7; }
+.badge.st-done { background: none; color: var(--text-muted); padding-left: 0; }
+.badge.st-ok { background: #f1f3f6; color: #334155; }
+.st-bar { display: flex; gap: 3px; margin-top: 6px; }
+.st-bar i { display: block; width: 18px; height: 4px; border-radius: 2px; background: #e5e7eb; }
+.st-bar i.on { background: #64748b; }
+.st-bar.st-ask i.on { background: #f59e0b; } .st-bar.st-back i.on { background: #dc2626; } .st-bar.st-done i.on { background: #cbd5e1; }
+tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
+.who { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 13px; color: #334155; }
+.av { width: 22px; height: 22px; border-radius: 50%; background: #e5e7eb; color: #334155; font-size: 11px; display: inline-grid; place-items: center; font-weight: 700; }
+.rv-note { margin-top: 5px; font-size: 12px; line-height: 1.5; padding-left: 8px; }
+.rv-note.rv-ask { color: var(--text-muted); border-left: 2px solid #f59e0b; }
+.rv-note.rv-back { color: #b91c1c; border-left: 2px solid #dc2626; }
+.hide-sent { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; cursor: pointer; }
+.ed-owner { width: auto; padding: 3px 8px; font-size: 13px; }
+.rv-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; padding: 6px 10px; border-radius: 8px; background: #f8fafc; border: 1px solid var(--border); font-size: 13px; }
+.rv-bar.rv-ask { background: #fffbf2; border-color: #f5d9a8; }
+.rv-bar.rv-back { background: #fdf6f6; border-color: #f3c7c7; }
+.rv-bar .rv-msg { color: var(--text); } .rv-bar .rv-msg.rv-back { color: #b91c1c; }
+.rv-act { display: flex; gap: 6px; align-items: center; margin-left: auto; flex-wrap: wrap; }
+.rv-in { width: 280px; padding: 4px 8px; font-size: 13px; }
+.btn-sm { padding: 4px 12px !important; font-size: 13px !important; }
+.rv-backbtn { color: #b91c1c; border-color: #e5a3a3; }
+.btn-danger { background: #b91c1c !important; }
+.rv-bar .btn-primary { background: #334155; }
+@media (max-width: 820px) { .rv-in { width: 100%; } .rv-act { margin-left: 0; } }
+/* スマホ幅の一覧：タイトル・担当・進行状況・削除だけ出す（v2.8。前は v6 モックの列の並びのままで、タイトルが隠れていた） */
+@media (max-width: 640px) {
+  #v-list table.tbl th, #v-list table.tbl td { display: none; }
+  #v-list table.tbl th:nth-child(2), #v-list table.tbl td:nth-child(2), #v-list table.tbl th:nth-child(3), #v-list table.tbl td:nth-child(3), #v-list table.tbl th:nth-child(4), #v-list table.tbl td:nth-child(4), #v-list table.tbl th:nth-child(8), #v-list table.tbl td:nth-child(8) { display: table-cell; }
+  #v-list .who-n { display: none; } #v-list .st-bar i { width: 12px; }
+  tr.row-ask td:nth-child(2) { box-shadow: inset 3px 0 0 #f59e0b; }
+}
 
 </style>
 </head>
@@ -402,7 +449,7 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
 <div class="app-layout" id="app" style="display:none">
   <nav class="side-nav">
     <div class="side-nav-logo"><span>ブログエディター</span><small>進学塾クロフネ</small></div>
-    <button class="side-nav-item active" data-v="list" onclick="go('list')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span>記事一覧</span></button>
+    <button class="side-nav-item active" data-v="list" onclick="navList()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span>記事一覧</span></button>
     <button class="side-nav-item" data-v="library" onclick="go('library')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>資料ライブラリ</span></button>
     <button class="side-nav-item" data-v="settings" onclick="go('settings')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>設定</span></button>
     <div class="side-nav-foot"><span>今月のAI利用料金</span><br><b style="font-size:14px;color:var(--text)" class="js-month">$0.00</b><div class="t-sub" style="margin-top:4px" id="verLine"></div></div>
@@ -416,28 +463,30 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
         <h1>記事一覧</h1>
         <button class="btn-primary" onclick="openNew()">＋ 新しい記事を書く</button><button class="btn-primary btn-rw" onclick="openRwPick()" title="検索で読まれている古い記事を、URLを変えずに今の書き方と最新の数字に直します">↻ 公開済みの記事をリライトする</button>
       </div>
+      <div class="list-top">
+      <div class="st-cards" id="stateCards"></div>
       <div class="stat-row">
-        <div class="stat"><div class="num" id="stWork">-</div><div class="lbl">作業中の記事</div></div>
-        <div class="stat"><div class="num" id="stSent">-</div><div class="lbl">下書き送信済み</div></div>
-        <div class="stat"><div class="num" id="stRw">-</div><div class="lbl">リライトで書き換え済み</div></div>
         <div class="stat"><div class="num js-month">$0.00</div><div class="lbl">今月のAI利用料金（概算）</div></div>
         <div class="stat"><div class="lbl">今の設定で記事1本を作る目安 <span class="help" title="塾長ブログ＝「AIで記事を作る」1回＋AIで部分修正5回＋仕上げチェック1回。情報発信ブログ＝記事が長いぶん「AIで記事を作る」が重く、AIで部分修正10回＋仕上げチェック1回。内訳は「設定」→「モデル・料金」">?</span></div>
           <div class="cost-line"><span class="lbl">塾長ブログ</span><b class="js-art-juku-yen">-</b></div>
           <div class="cost-line"><span class="lbl">情報発信ブログ</span><b class="js-art-info-yen">-</b></div></div>
       </div>
+      </div>
       <div class="row" style="margin-bottom:8px">
-        <input class="form-input" style="width:260px" placeholder="タイトルで検索" id="listQ" oninput="renderList()">
+        <input class="form-input" style="width:200px" placeholder="タイトルで検索" id="listQ" oninput="renderList()">
+        <select class="form-input" id="listWho" style="width:auto" onchange="renderList()"><option value="">担当者：全員</option></select>
         <button class="btn-ghost on" data-f="all" onclick="setListFilter(this)">すべて</button>
         <button class="btn-ghost" data-f="juku" onclick="setListFilter(this)">塾長ブログ</button>
         <button class="btn-ghost" data-f="info" onclick="setListFilter(this)">情報発信ブログ</button>
         <button class="btn-ghost" data-f="rw" onclick="setListFilter(this)">リライト</button>
         <button class="btn-ghost" data-f="deleted" onclick="setListFilter(this)">削除した記事</button>
+        <label class="muted hide-sent"><input type="checkbox" id="listHideSent" onchange="renderList()"> 送信済みを隠す</label>
         <span class="muted" id="listCount"></span>
         <button class="btn-ghost btn-reload" onclick="loadList(this)">一覧を読み込み直す</button>
       </div>
       <div id="listLoading" class="loading-msg"><span class="spin dark"></span>記事一覧を読み込んでいます…</div>
       <table class="tbl" id="listTbl" style="display:none">
-        <thead><tr><th>No.</th><th>タイトル</th><th>種類</th><th>進行状況</th><th>更新</th><th>AI料金</th><th></th></tr></thead>
+        <thead><tr><th>No.</th><th>タイトル</th><th>担当</th><th>進行状況</th><th>種類</th><th>更新</th><th>AI料金</th><th></th></tr></thead>
         <tbody id="listBody"></tbody>
       </table>
       <div class="empty-state" id="listEmpty" style="display:none"></div>
@@ -450,6 +499,7 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
           <button class="btn-icon" onclick="leaveEditor()"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg><span>記事一覧</span></button>
           <span class="ed-title" id="edTitle">（タイトル未定）</span>
           <span class="muted" id="edType"></span>
+          <select class="form-input ed-owner" id="edOwner" onchange="changeOwner(this)" title="この記事の担当者"></select>
           <span class="sync ok" id="sync" onclick="syncClick()" title="この画面の内容とサーバーに保存されている内容が同じかを表示します"><span class="dot"></span><span id="syncTx">-</span></span>
           <span class="muted">この記事のAI料金 <span id="artCost">$0.00（約0円）</span> <span class="help" title="AIを呼ぶたびに、実際に使った量から計算した金額を足しています。概算です">?</span></span>
         </div>
@@ -459,6 +509,7 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
           <button class="step" onclick="step(4)">3 仕上げチェック</button>
           <button class="step" onclick="step(5)">4 送信</button>
         </div>
+        <div class="rv-bar" id="rvBar"></div>
       </div>
 
       <div class="ed-body" id="edBody">
@@ -642,6 +693,12 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
           <div class="row" style="margin-top:8px"><button class="btn-primary" id="tailSave" disabled onclick="saveTail(this)">定型文の設定を保存</button><span class="muted" id="tailState">変更はありません</span></div>
         </div>
         <div class="card" style="max-width:760px">
+          <h2>担当者の名前</h2>
+          <div class="muted" style="font-size:12px">記事を作るときに選ぶ担当者です。1行に1人。名前を消しても、その人が担当の記事はそのまま残ります。</div>
+          <textarea class="form-textarea" id="staffText" oninput="staffChanged()" style="min-height:110px;max-width:320px;margin-top:6px" placeholder="川上&#10;佐藤"></textarea>
+          <div class="row" style="margin-top:8px"><button class="btn-primary" id="staffSave" disabled onclick="saveStaff(this)">担当者の名前を保存</button><span class="muted" id="staffState">変更はありません</span></div>
+        </div>
+        <div class="card" style="max-width:760px">
           <h2>この端末</h2>
           <div class="muted">共通パスワードはこの端末のブラウザに記憶しています。</div>
           <button class="btn-ghost" style="margin-top:8px" onclick="logout()">この端末からログアウトする</button>
@@ -653,7 +710,7 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
 </div>
 
 <nav class="bottom-nav" id="bnav" style="display:none">
-  <button class="bottom-nav-item active" data-v="list" onclick="go('list')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span>記事一覧</span></button>
+  <button class="bottom-nav-item active" data-v="list" onclick="navList()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span>記事一覧</span></button>
   <button class="bottom-nav-item" data-v="library" onclick="go('library')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>資料</span></button>
   <button class="bottom-nav-item" data-v="settings" onclick="go('settings')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span>設定</span></button>
 </nav>
@@ -676,6 +733,8 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
     <div class="type-card sel" data-t="juku" onclick="selType(this)"><b>塾長ブログ</b><span class="muted">日々の出来事・教室で感じたこと・教育の考え</span></div>
     <div class="type-card" data-t="info" onclick="selType(this)"><b>情報発信ブログ</b><span class="muted">受験・学校・学習方法・制度</span></div>
   </div>
+  <label class="form-label" style="margin-top:10px">担当者</label>
+  <select class="form-input" id="newOwner" style="max-width:260px" onchange="newBtnLabel()"></select>
   <label class="form-label" style="margin-top:10px">原稿または本文</label>
   <textarea class="form-textarea" id="newText" oninput="newBtnLabel()" placeholder="音声入力で作った文章や、できている本文を貼り付け"></textarea>
   <div class="muted" style="margin-top:4px">本文がもうできているときは「AIに書かせず、そのまま本文にする」を押すと、AIを使わずに編集から始められます（料金はかかりません）。</div>
@@ -721,6 +780,7 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
 <div class="modal-back" id="m-rwpick"><div class="modal" style="max-width:820px">
   <h3>公開済みの記事をリライトする</h3>
   <div>
+    <div class="row" style="margin-bottom:8px"><label class="form-label" style="margin:0">担当者</label><select class="form-input" id="rwOwner" style="max-width:260px"></select></div>
     <div class="muted" style="margin-bottom:6px">リライトする記事を選んでください。URLを変えずに中身を新しくします。選ぶとツールに読み込むだけで、公開中の記事はまだ変わりません。</div>
     <input class="form-input" id="rwQ" placeholder="言葉を入れると絞り込みます（例：自習室、追浜、令和）" oninput="rwQuery=this.value;renderRwPick()">
     <div id="rwList" style="margin-top:8px;max-height:60vh;overflow:auto"></div>
@@ -735,6 +795,14 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
     <div id="boxEdits" style="max-height:60vh;overflow:auto"></div>
   </div>
   <div class="modal-foot"><button class="btn-primary" onclick="applyBoxEdit(false)">決定</button><button class="btn-ghost" id="boxEditUndo" onclick="applyBoxEdit(true)">読み込んだときの文字に戻す</button><button class="btn-ghost" onclick="closeModal('m-box')">やめる</button></div>
+</div></div>
+
+<!-- 確認：差し戻す（v2.8） -->
+<div class="modal-back" id="m-review"><div class="modal" style="max-width:520px">
+  <h3 id="rvTitle">この記事を差し戻す</h3>
+  <label class="form-label">差し戻す理由（担当者の一覧に出ます）</label><textarea class="form-textarea" id="rvNote" maxlength="500" style="min-height:80px" placeholder="例：2段落目の数字の出典を足してください"></textarea>
+  <div class="err" id="rvErr" style="display:none"></div>
+  <div class="modal-foot"><button class="btn-primary btn-danger" id="rvGo" onclick="doReview(this, 'back')">差し戻す</button><button class="btn-ghost" onclick="closeModal('m-review')">やめる</button></div>
 </div></div>
 
 <div class="modal-back" id="m-send"><div class="modal">
@@ -754,7 +822,7 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
 <div id="toast"></div>
 <script>
 // ===== ブログエディター（第1段階） =====
-var APP_VERSION = 'v2.7.7（2026-10-13 分ける案を一番上に・【要確認】の結びつけ・一覧はNo.の大きい順）';
+var APP_VERSION = 'v2.8.0（2026-10-27 進行状況：担当者・確認待ち・差し戻し・OKが出るまで送らない）';
 var GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9v4PW9op-Nx58BaRsGwk__KWzLecZtNQR7N5lu_N9O3nKQYRQhubBlQAQLf1WytWHWw/exec';
 var GAS_URL = (new URLSearchParams(location.search).get('gas')) || GAS_URL_DEFAULT;
 var STEP_NAMES = ['原稿入力中', '編集中', '編集中', '編集中', '仕上げチェック中', '送信準備中'];
@@ -762,7 +830,7 @@ var SAVE_DELAY = 2500;   // 自動保存までの待ち（GASの往復より短�
 var POLL_MS = 60000;     // ほかの端末の保存を確かめる間隔
 
 var PASS = lsGet('be_pass') || '';
-var articles = [], monthUsd = 0, settings = null, listFilter = 'all', newType = 'juku';
+var articles = [], monthUsd = 0, settings = null, listFilter = 'all', newType = 'juku', cardFilter = null;
 var cur = null;          // 開いている記事 { id, title, type, step, status, wpId, version, updatedAt, costUsd, skipped, content:{...} }
 var st = { dirty: false, saving: false, pending: false, editSeq: 0, snapshot: '', retryTimer: null, saveTimer: null, conflictServer: null, pollTimer: null };
 var savedRange = null, caretRange = null, chatRanges = {}, wholeHtml = '', pendingCheck = null, curSide = 'check';
@@ -821,6 +889,8 @@ function go(v) {
 }
 
 // ===== 記事一覧 =====
+// メニューの「記事一覧」：記事を開いていたら、その記事の今の状態（題名・進行状況など）を一覧に写してから出す（v2.8。前は描き直さず、開く前の状態が出ていた）
+function navList() { if (cur) leaveEditor(); else { go('list'); if (articles.length) renderList(); } }
 function loadList(btn) {
   var done = busy(btn, '読み込み中…');
   return api('list').then(function (j) {
@@ -829,31 +899,74 @@ function loadList(btn) {
     renderList();
   }).catch(function (e) { done(); document.getElementById('listLoading').innerHTML = '記事一覧を読み込めませんでした：' + esc(netMsg(e)) + ' <button class="btn-ghost" onclick="loadList(this)">もう一度読み込む</button>'; });
 }
-function statusBadge(a) {
-  if (a.status === 'sent') return a.rewriteOf ? '<span class="badge b-rw">書き換え済み</span>' : '<span class="badge b-green">下書き送信済み</span>';
-  if (a.status === 'pub') return '<span class="badge b-green">公開済み</span>';
-  return '<span class="badge b-gray">' + (STEP_NAMES[a.step] || '原稿入力中') + '</span>';
+// ===== 進行状況（v2.8）=====
+// 色を付けるのは、誰かが動く番の2つだけ：確認待ち（川上さんの番・黄）／差し戻し（担当者の番・赤）。ほかは灰色
+// g：上のカードと並び順に使う組（ask 確認待ち／back 差し戻し／work 原稿・編集中／fin 仕上げチェック中／okw OK・送信待ち／sent 送信済み）
+function listState(a) {
+  if (a.review === 'ask') return { k: '確認待ち', c: 'st-ask', bar: 4, g: 'ask' };
+  if (a.review === 'back') return { k: '差し戻し', c: 'st-back', bar: 2, g: 'back' };
+  if (a.status === 'sent') return { k: a.rewriteOf ? '書き換え済み' : '下書き送信済み', c: 'st-done', bar: 5, g: 'sent' };
+  if (a.status === 'pub') return { k: '公開済み', c: 'st-done', bar: 5, g: 'sent' };
+  if (a.review === 'ok') return { k: 'OK・送信待ち', c: 'st-work', bar: 4, g: 'okw' };
+  var n = Number(a.step) || 0;
+  if (n === 4) return { k: '仕上げチェック中', c: 'st-work', bar: 3, g: 'fin' };
+  if (n === 5) return { k: '送信準備中', c: 'st-work', bar: 3, g: 'fin' };
+  if (n >= 1) return { k: '編集中', c: 'st-work', bar: 2, g: 'work' };
+  return { k: '原稿入力中', c: 'st-work', bar: 1, g: 'work' };
 }
+var STATE_ORDER = { ask: 0, back: 1, okw: 2, fin: 3, work: 4, sent: 5 };
+var STATE_CARDS = [{ g: ['ask'], l: '確認待ち（川上さんの番）', c: 'st-ask' }, { g: ['back'], l: '差し戻し（担当者の番）', c: 'st-back' }, { g: ['work'], l: '原稿・編集中' }, { g: ['fin', 'okw'], l: '仕上げチェック・送信待ち' }, { g: ['sent'], l: '送信済み' }];
+function statusBadge(a) {
+  var s = listState(a), h = '<div class="st-bar ' + s.c + '">';
+  for (var i = 0; i < 5; i++) h += '<i' + (i < s.bar ? ' class="on"' : '') + '></i>';
+  return '<span class="badge ' + s.c + '">' + (s.g === 'sent' ? '✓ ' : '') + s.k + '</span>' + h + '</div>';
+}
+function ownerHtml(o) { return o ? '<span class="who" title="担当：' + esc(o) + '"><span class="av">' + esc(o.slice(0, 1)) + '</span><span class="who-n">' + esc(o) + '</span></span>' : '<span class="muted">未設定</span>'; }
+function staffList() { return String((settings && settings.staff) || '川上').split(/\n/).map(function (x) { return x.trim(); }).filter(Boolean); }
+/** 担当者のプルダウンの中身。今の値が一覧に無いとき（名前を消したあとなど）も選べるように残す */
+function ownerOptions(curVal, emptyLabel) {
+  var l = staffList(); if (curVal && l.indexOf(curVal) < 0) l.push(curVal);
+  return '<option value="">' + esc(emptyLabel) + '</option>' + l.map(function (n) { return '<option' + (n === curVal ? ' selected' : '') + '>' + esc(n) + '</option>'; }).join('');
+}
+function fillOwnerFilter() {
+  var el = document.getElementById('listWho'); if (!el) return; var v = el.value;
+  var l = staffList(); articles.forEach(function (a) { if (a.owner && l.indexOf(a.owner) < 0) l.push(a.owner); });
+  el.innerHTML = '<option value="">担当者：全員</option>' + l.map(function (n) { return '<option' + (n === v ? ' selected' : '') + '>' + esc(n) + '</option>'; }).join('') + '<option value="-"' + (v === '-' ? ' selected' : '') + '>担当者：未設定</option>';
+}
+function setCardFilter(i) { cardFilter = cardFilter === i ? null : i; renderList(); }
 function renderList() {
   document.getElementById('listLoading').style.display = 'none';
   var q = (document.getElementById('listQ').value || '').trim();
   var delMode = listFilter === 'deleted';
   var src = delMode ? (deletedArticles || []) : articles;
-  var rows = src.filter(function (a) { return (listFilter === 'all' || delMode || (listFilter === 'rw' ? !!a.rewriteOf : a.type === listFilter)) && (!q || String(a.title).indexOf(q) >= 0); });
-  // 並びは No. の大きい順（新しく作った記事が上）。開いたり直したりしても順番は動かない（v2.7.7）
-  rows.sort(function (a, b) { return (Number(b.no) || 0) - (Number(a.no) || 0); });
+  var who = (document.getElementById('listWho') || {}).value || '', hideSent = !!(document.getElementById('listHideSent') || {}).checked;
+  var rows = src.filter(function (a) {
+    if (!(listFilter === 'all' || delMode || (listFilter === 'rw' ? !!a.rewriteOf : a.type === listFilter))) return false;
+    if (q && String(a.title).indexOf(q) < 0) return false;
+    if (delMode) return true;
+    if (who && (who === '-' ? !!a.owner : a.owner !== who)) return false;
+    var g = listState(a).g;
+    if (hideSent && g === 'sent') return false;
+    if (cardFilter !== null && STATE_CARDS[cardFilter].g.indexOf(g) < 0) return false;
+    return true;
+  });
+  // 並びは 確認待ち → 差し戻し → OK・送信待ち → 仕上げチェック中 → 原稿・編集中 → 送信済み。同じ組の中は No. の大きい順（v2.8）
+  rows.sort(function (a, b) { return (delMode ? 0 : STATE_ORDER[listState(a).g] - STATE_ORDER[listState(b).g]) || (Number(b.no) || 0) - (Number(a.no) || 0); });
   document.getElementById('listBody').innerHTML = rows.map(function (a) {
-    return '<tr class="click" onclick="' + (delMode ? '' : 'openArticle(\'' + a.id + '\')') + '"><td class="t-no">' + (a.no ? 'No.' + a.no : '') + '</td><td><div class="t-title">' + (a.rewriteOf ? '<span class="rw-tag">リライト</span>' : '') + esc(a.title || '（タイトル未定）') + '</div><div class="t-sub">' + [a.rewriteOf ? '公開中の記事 #' + a.rewriteOf + ' を書き換える' : a.wpId ? 'WordPress 下書き #' + a.wpId : '', a.madeWith ? 'AIで作った版：' + esc(a.madeWith) : ''].filter(Boolean).join('　') + '</div></td>' +
-      '<td class="t-sub">' + (a.type === 'info' ? '情報発信ブログ' : '塾長ブログ') + '</td><td>' + statusBadge(a) + '</td><td class="t-sub">' + hm(a.updatedAt) + '</td><td class="t-sub">' + yen(a.costUsd) + '</td><td class="t-act">' + (delMode ? '<button class="btn-ghost" onclick="event.stopPropagation();doRestore(this,\'' + a.id + '\')">元に戻す</button>' : '<button class="btn-icon del-btn" title="削除" aria-label="この記事を削除" onclick="event.stopPropagation();askTrash(\'' + a.id + '\')">' + I_TRASH + '</button>') + '</td></tr>';
+    var rv = !delMode && (a.review === 'ask' || a.review === 'back') && a.reviewNote ? '<div class="rv-note ' + (a.review === 'back' ? 'rv-back' : 'rv-ask') + '">' + esc(a.reviewNote) + '</div>' : '';
+    return '<tr class="click' + (!delMode && a.review === 'ask' ? ' row-ask' : '') + '" onclick="' + (delMode ? '' : 'openArticle(\'' + a.id + '\')') + '"><td class="t-no">' + (a.no ? 'No.' + a.no : '') + '</td><td><div class="t-title">' + (a.rewriteOf ? '<span class="rw-tag">リライト</span>' : '') + esc(a.title || '（タイトル未定）') + '</div><div class="t-sub">' + [a.rewriteOf ? '公開中の記事 #' + a.rewriteOf + ' を書き換える' : a.wpId ? 'WordPress 下書き #' + a.wpId : '', a.madeWith ? 'AIで作った版：' + esc(a.madeWith) : ''].filter(Boolean).join('　') + '</div>' + rv + '</td>' +
+      '<td>' + ownerHtml(a.owner) + '</td><td>' + statusBadge(a) + '</td><td class="t-sub">' + (a.type === 'info' ? '情報発信ブログ' : '塾長ブログ') + '</td><td class="t-sub">' + hm(a.updatedAt) + '</td><td class="t-sub">' + yen(a.costUsd) + '</td><td class="t-act">' + (delMode ? '<button class="btn-ghost" onclick="event.stopPropagation();doRestore(this,\'' + a.id + '\')">元に戻す</button>' : '<button class="btn-icon del-btn" title="削除" aria-label="この記事を削除" onclick="event.stopPropagation();askTrash(\'' + a.id + '\')">' + I_TRASH + '</button>') + '</td></tr>';
   }).join('');
   document.getElementById('listTbl').style.display = rows.length ? '' : 'none';
   var em = document.getElementById('listEmpty');
   em.style.display = rows.length ? 'none' : '';
   em.textContent = delMode ? (deletedArticles === null ? '読み込み中…' : '削除した記事はありません。') : articles.length ? '条件に合う記事がありません。検索語や絞り込みを変えてください。' : 'まだ記事がありません。「＋ 新しい記事を書く」から始めてください。';
   document.getElementById('listCount').textContent = delMode ? '削除した記事 ' + rows.length + '件' : '全' + articles.length + '件中 ' + rows.length + '件表示';
-  document.getElementById('stWork').textContent = articles.filter(function (a) { return !a.status; }).length;
-  document.getElementById('stSent').textContent = articles.filter(function (a) { return a.status === 'sent' && !a.rewriteOf; }).length;
-  document.getElementById('stRw').textContent = articles.filter(function (a) { return a.status === 'sent' && a.rewriteOf; }).length;
+  fillOwnerFilter();
+  document.getElementById('stateCards').innerHTML = STATE_CARDS.map(function (c, i) {
+    var n = articles.filter(function (a) { return c.g.indexOf(listState(a).g) >= 0; }).length;
+    return '<button class="st-card ' + (c.c || '') + (cardFilter === i ? ' on' : '') + '" onclick="setCardFilter(' + i + ')" title="押すと、この状況の記事だけを出します。もう一度押すと戻ります"><span class="num">' + n + '</span><span class="lbl">' + c.l + '</span></button>';
+  }).join('');
 }
 function setListFilter(btn) {
   listFilter = btn.getAttribute('data-f'); btn.parentNode.querySelectorAll('[data-f]').forEach(function (b) { b.classList.toggle('on', b === btn); });
@@ -899,18 +1012,22 @@ function doRestore(btn, id) {
 
 // ===== 新しい記事 =====
 function newBtnLabel() {
-  var has = !!document.getElementById('newText').value.trim();
+  var has = !!document.getElementById('newText').value.trim() && !!document.getElementById('newOwner').value;
   document.getElementById('newBtn').disabled = !has;
   document.getElementById('newDirect').disabled = !has;
 }
-function openNew() { selType(document.querySelector('.type-card[data-t="juku"]')); document.getElementById('newText').value = ''; newBtnLabel(); openModal('m-new'); }
+function openNew() { selType(document.querySelector('.type-card[data-t="juku"]')); document.getElementById('newText').value = ''; fillOwnerSel('newOwner'); newBtnLabel(); openModal('m-new'); }
+/** 新しい記事・リライトの担当者のプルダウン。前にこの端末で選んだ人を最初から選んでおく */
+function fillOwnerSel(id) { var el = document.getElementById(id); var last = lsGet('be_owner') || '', l = staffList(); if (l.indexOf(last) < 0) last = l.length === 1 ? l[0] : ''; el.innerHTML = ownerOptions(last, '担当者を選んでください'); }
+function pickedOwner(id) { var v = document.getElementById(id).value; if (v) lsSet('be_owner', v); return v; }
 function selType(el) { document.querySelectorAll('.type-card').forEach(function (c) { c.classList.toggle('sel', c === el); }); newType = el.getAttribute('data-t'); }
 function textToHtml(t) { return t.split(/\n+/).map(function (l) { return l.trim() ? '<p>' + esc(l.trim()) + '</p>' : ''; }).join(''); }
 function createArticle(btn, mode) {
   var text = document.getElementById('newText').value.trim();
   var start = mode === 'direct' && text ? 3 : 0;
+  var owner = pickedOwner('newOwner'); if (!owner) { toast('担当者を選んでください'); return; }
   var done = busy(btn, '準備中…');
-  api('create', { type: newType, step: start, draft: start === 0 ? text : '', doc: start === 3 && text ? textToHtml(text) : '', skipped: start === 3 ? { 1: true, 2: true } : {} })
+  api('create', { owner: owner, type: newType, step: start, draft: start === 0 ? text : '', doc: start === 3 && text ? textToHtml(text) : '', skipped: start === 3 ? { 1: true, 2: true } : {} })
     .then(function (j) {
       done(); closeModal('m-new'); articles.unshift(j.article); renderList(); enterArticle(j.article);
       // 原稿を貼ってあれば、そのままAIに書かせる（「AIで記事を作る」をもう一度押さなくてよい）
@@ -944,6 +1061,7 @@ function enterArticle(a) {
 function fillEditor() {
   document.getElementById('edTitle').textContent = cur.title || '（タイトル未定）';
   document.getElementById('edType').innerHTML = esc(cur.type === 'info' ? '情報発信ブログ' : '塾長ブログ') + (cur.content.rewrite ? ' <span class="rw-tag">リライト：公開中の記事 #' + esc(cur.content.rewrite.wpId) + '</span>' : '');
+  document.getElementById('edOwner').innerHTML = ownerOptions(cur.owner || '', '担当者：未設定'); renderReview();
   document.getElementById('draft').value = cur.content.draft || ''; draftCount();
   setDoc(cur.content.doc || '');
   document.getElementById('titleInput').value = cur.title === '（タイトル未定）' ? '' : (cur.title || '');
@@ -956,7 +1074,7 @@ function fillEditor() {
 function leaveEditor() {
   if (st.dirty || st.saving) { flushSave(); toast('保存してから一覧に戻ります…'); }
   var a = articles.filter(function (x) { return x.id === cur.id; })[0];
-  if (a) Object.assign(a, { title: cur.title, step: cur.step, status: cur.status, wpId: cur.wpId, version: cur.version, updatedAt: cur.updatedAt, costUsd: cur.costUsd });
+  if (a) Object.assign(a, { title: cur.title, step: cur.step, status: cur.status, wpId: cur.wpId, version: cur.version, updatedAt: cur.updatedAt, costUsd: cur.costUsd, owner: cur.owner, review: cur.review, reviewNote: cur.reviewNote, reviewAt: cur.reviewAt });
   go('list'); renderList();
 }
 
@@ -1583,6 +1701,11 @@ function openSend() {
   if (!cur.title || cur.title === '（タイトル未定）') problems.push('タイトルが入っていません（「4 編集」で入れてください）');
   if (!docText()) problems.push('本文がありません');
   if (cur.content.slug && !/^[a-z0-9-]+$/.test(cur.content.slug)) problems.push('スラッグは英小文字・数字・ハイフンだけにしてください');
+  if (cur.review !== 'ok') {
+    b.innerHTML = '<div class="grp-title"><span class="badge b-red">送れません</span><span>まだ川上さんの OK が出ていません</span></div><div class="muted">記事の上の「確認をお願いする」を押してください。川上さんが読んで OK を押すと送れるようになります。' + (cur.review === 'ask' ? '（いまは確認待ちです）' : cur.review === 'back' ? '（差し戻されています。直してから、もう一度「確認をお願いする」を押してください）' : '') + '</div>';
+    document.getElementById('sendH').textContent = cur.content.rewrite ? '公開中の記事を書き換える前の確認' : 'WordPressに下書きを送る前の確認';
+    resetSendFoot(); document.getElementById('sendBtn').disabled = true; openModal('m-send'); return;
+  }
   var rwb = cur.content.rewrite ? rwBlockers() : [];
   if (rwb.length) {
     b.innerHTML = '<div class="grp-title"><span class="badge b-red">送れません</span><span>公開中の記事なので、作業用の印が残っていると読者にそのまま見えます。次の ' + rwb.length + '件を直してから送ってください</span></div>' +
@@ -1686,7 +1809,7 @@ function doSave(force) {
   st.saving = true; var seq = st.editSeq; var id = cur.id;
   setSync('saving');
   var snap = st.snapshot; st.snapshot = '';
-  api('save', { id: id, baseVersion: cur.version, force: !!force, snapshot: snap, content: cur.content, meta: { title: cur.title, step: cur.step } }).then(function (j) {
+  api('save', { id: id, baseVersion: cur.version, force: !!force, snapshot: snap, content: cur.content, meta: { title: cur.title, step: cur.step, owner: cur.owner || '' } }).then(function (j) {
     st.saving = false;
     if (!cur || cur.id !== id) return;
     if (j.conflict) {
@@ -1697,6 +1820,8 @@ function doSave(force) {
       return;
     }
     cur.version = j.version; cur.updatedAt = j.updatedAt;
+    if (j.review !== undefined) { cur.review = j.review; cur.reviewNote = j.reviewNote; cur.reviewAt = j.reviewAt; renderReview(); }
+    if (j.reviewReset) toast('OKのあとで本文か題名を直したので、確認待ちに戻りました。送る前にもう一度 OK をもらってください', 6000);
     if (st.editSeq === seq) { st.dirty = false; lsDel('be_bk_' + id); setSync('ok'); }
     else { writeBackup(); setSync('dirty'); }
     if (st.pending || st.dirty) { st.pending = false; clearTimeout(st.saveTimer); st.saveTimer = setTimeout(doSave, 300); }
@@ -1763,6 +1888,11 @@ function checkServer(open) {
   var id = cur.id;
   api('head', { id: id }).then(function (j) {
     if (!cur || cur.id !== id || st.saving) return;
+    if (j.review !== undefined && (j.review !== (cur.review || '') || j.reviewNote !== (cur.reviewNote || ''))) {
+      var was = cur.review; cur.review = j.review; cur.reviewNote = j.reviewNote; cur.reviewAt = j.reviewAt; renderReview();
+      if (j.review === 'ok' && was !== 'ok') toast('川上さんの OK が出ました。送信できます', 5000);
+      else if (j.review === 'back' && was !== 'back') toast('差し戻されました：' + j.reviewNote, 8000);
+    }
     if (j.version > cur.version) {
       if (!open) { setSync('newer'); return; }
       api('get', { id: id }).then(function (g) {
@@ -1812,6 +1942,62 @@ function calcCost() {
   updateMonth(); updateArtCost(); updateChatCost();
 }
 
+// ===== 確認（担当者 → 川上さん。v2.8）=====
+// 担当者：「確認をお願いする」（ひとことは任意）／川上さん：「OK」「差し戻す」（理由が要る）。確認用のパスワードは付けない（2026-10-27 川上さん）
+function changeOwner(sel) { if (!cur) return; cur.owner = sel.value; markDirty(); toast(sel.value ? '担当者を「' + sel.value + '」にしました' : '担当者を外しました'); }
+function renderReview() {
+  var el = document.getElementById('rvBar'); if (!el || !cur) return;
+  var r = cur.review || '', sent = cur.status === 'sent', h = '';
+  var lab = { ask: '<span class="badge st-ask">確認待ち</span>', back: '<span class="badge st-back">差し戻し</span>', ok: '<span class="badge st-ok">✓ OK</span>' }[r] || '<span class="badge st-work">確認はまだ</span>';
+  var when = cur.reviewAt ? '<span class="muted">（' + hm(cur.reviewAt) + '）</span>' : '';
+  if (r === 'ok') h = lab + '<span>川上さんの OK が出ています。「4 送信」から送れます</span>' + when + '<span class="muted">本文か題名を直すと、確認待ちに戻ります</span>';
+  else if (r === 'ask') h = lab + '<span class="rv-msg">' + (cur.reviewNote ? esc(cur.reviewNote) : '担当者から確認のお願いが来ています') + '</span>' + when +
+    '<span class="rv-act"><button class="btn-primary btn-sm" id="rvOk" onclick="doReview(this, \'ok\')">OK（送信してよい）</button><button class="btn-ghost btn-sm rv-backbtn" id="rvBack" onclick="openReview()">差し戻す</button></span>';
+  else h = lab + (r === 'back' ? '<span class="rv-msg rv-back">' + esc(cur.reviewNote || '') + '</span>' + when : '<span class="muted">' + (sent ? '送ったあとに直したときも、もう一度 OK をもらってから送ります' : 'できあがったら、川上さんに確認をお願いします') + '</span>') +
+    '<span class="rv-act"><input class="form-input rv-in" id="rvAskNote" maxlength="500" placeholder="川上さんへのひとこと（なくてもよい）"><button class="btn-primary btn-sm" id="rvAsk" onclick="doAsk(this)">確認をお願いする</button><button class="btn-ghost btn-sm" id="rvOk" onclick="doReview(this, \'ok\')" title="川上さんが自分の記事を書いたときなど、すぐ OK にするとき">OK にする（川上さん）</button></span>';
+  el.className = 'rv-bar rv-' + (r || 'none'); el.innerHTML = h;
+  measureTop();
+}
+function applyReview(j) {
+  cur.review = j.review; cur.reviewNote = j.reviewNote; cur.reviewAt = j.reviewAt;
+  articles.forEach(function (a) { if (a.id === cur.id) { a.review = j.review; a.reviewNote = j.reviewNote; a.reviewAt = j.reviewAt; } });
+  renderReview();
+}
+function doAsk(btn) {
+  if (!cur) return; var note = (document.getElementById('rvAskNote') || {}).value || '';
+  var id = cur.id, done = busy(btn, '送っています…');
+  waitSaved(30000).then(function (ok) { if (!ok) throw new Error('本文の保存が終わっていません。少し待ってからもう一度押してください'); return api('review', { id: id, kind: 'ask', note: note.trim() }); })
+    .then(function (j) { done(); if (!cur || cur.id !== id) return; applyReview(j); toast('川上さんに確認をお願いしました。一覧で「確認待ち」になります', 4000); })
+    .catch(function (e) { done(); toast('確認のお願いを送れませんでした：' + netMsg(e), 5000); });
+}
+/** 差し戻す：理由を書く画面を出す */
+function openReview() {
+  document.getElementById('rvNote').value = ''; document.getElementById('rvErr').style.display = 'none';
+  openModal('m-review'); setTimeout(function () { document.getElementById('rvNote').focus(); }, 50);
+}
+function rvError(m) { var e = document.getElementById('rvErr'); e.textContent = m; e.style.display = ''; }
+/** kind=ok は帯のボタンからすぐ、kind=back は理由の画面の「差し戻す」から */
+function doReview(btn, kind) {
+  if (!cur) return;
+  var note = kind === 'back' ? document.getElementById('rvNote').value.trim() : '';
+  if (kind === 'back' && !note) { rvError('差し戻す理由を書いてください。担当者の一覧に出ます'); return; }
+  var id = cur.id, done = busy(btn, kind === 'ok' ? 'OK にしています…' : '差し戻しています…');
+  // その場で直した分も保存してから OK にする（OK は保存済みの本文に対して出る）
+  waitSaved(30000).then(function (ok) { if (!ok) throw new Error('本文の保存が終わっていません。少し待ってからもう一度押してください'); return api('review', { id: id, kind: kind, note: note }); })
+    .then(function (j) {
+      done(); if (kind === 'back') closeModal('m-review'); if (!cur || cur.id !== id) return; applyReview(j);
+      toast(kind === 'ok' ? 'OK にしました。担当者が送信できるようになりました' : '差し戻しました。担当者の一覧に理由が出ます', 4000);
+    }).catch(function (e) { done(); if (kind === 'back') rvError(netMsg(e)); else toast('OK にできませんでした：' + netMsg(e), 5000); });
+}
+function staffChanged() { document.getElementById('staffSave').disabled = false; document.getElementById('staffState').textContent = '保存していない変更があります'; }
+function saveStaff(btn) {
+  var v = document.getElementById('staffText').value.split(/\n/).map(function (x) { return x.trim(); }).filter(Boolean).join('\n');
+  if (!v) { toast('名前を1人以上入れてください'); return; }
+  var done = busy(btn, '保存中…');
+  api('saveSettings', { settings: { staff: v } }).then(function (j) { done(); settings = j.settings; btn.disabled = true; document.getElementById('staffText').value = settings.staff || ''; document.getElementById('staffState').textContent = '✓ 保存しました'; renderList(); toast('担当者の名前を保存しました'); })
+    .catch(function (e) { done(); toast('保存できませんでした：' + netMsg(e), 4000); });
+}
+
 // ===== 設定 =====
 function loadSettings() {
   return api('getSettings').then(function (j) {
@@ -1822,6 +2008,9 @@ function loadSettings() {
     var sm = document.getElementById('searchMax'); if (sm) sm.value = String(settings.searchMax || 4);
     // 1回だけ：記事の最後を「1564（お問合せボタン）だけ」から、No.3619 と同じ並びのパターンにする（2026-10-12 川上さんの判断）
     if (String(settings.fixedBlockRef || '') === '1564' && String(settings.fixedCheckText || '') === '横須賀市唯一' && !lsGet('be_tail25')) { lsSet('be_tail25', '1'); settings.fixedBlockRef = TAIL_DEFAULT; settings.fixedCheckText = TAIL_CHECK; api('saveSettings', { settings: { fixedBlockRef: TAIL_DEFAULT, fixedCheckText: TAIL_CHECK } }).catch(function () { lsDel('be_tail25'); }); }
+    var sf = document.getElementById('staffText'); if (sf) sf.value = settings.staff || '';
+    if (articles.length) renderList();
+    if (cur) { document.getElementById('edOwner').innerHTML = ownerOptions(cur.owner || '', '担当者：未設定'); }
     var tr = document.getElementById('tailRefs'); if (tr) tr.value = settings.fixedBlockRef || ''; var tc = document.getElementById('tailCheck'); if (tc) tc.value = settings.fixedCheckText || '';
     document.querySelectorAll('#s1 [data-k]').forEach(function (t) { t.value = settings[t.getAttribute('data-k')] || ''; });
     document.getElementById('fx').value = settings.fx || 160;
@@ -2409,7 +2598,7 @@ function usedSources() {
 
 // --- 公開済みの記事を選ぶ ---
 var rwQuery = '';
-function openRwPick() { rwQuery = ''; document.getElementById('rwQ').value = ''; renderRwPick(); openModal('m-rwpick'); setTimeout(function () { document.getElementById('rwQ').focus(); }, 50); }
+function openRwPick() { fillOwnerSel('rwOwner'); rwQuery = ''; document.getElementById('rwQ').value = ''; renderRwPick(); openModal('m-rwpick'); setTimeout(function () { document.getElementById('rwQ').focus(); }, 50); }
 function renderRwPick() {
   var el = document.getElementById('rwList');
   if (!wpPostList) { el.innerHTML = '<div class="muted">公開済みの記事を読み込み中…</div>'; loadPosts(renderRwPick); if (!categories) loadCategories(); return; }
@@ -2422,6 +2611,7 @@ function renderRwPick() {
   }).join('') + (!q && list.length > 30 ? '<div class="muted" style="font-size:12px;padding:4px 0">新しい順に30本だけ出しています。ほかは言葉を入れて探してください。</div>' : '') : '<div class="muted">見つかりませんでした。</div>';
 }
 function pickRewrite(id, btn) {
+  var owner = pickedOwner('rwOwner'); if (!owner) { toast('先に上の「担当者」を選んでください', 3000); document.getElementById('rwOwner').focus(); return; }
   var done = busy(btn, '読み込み中…');
   api('wpPost', { wpId: id }).then(function (j) {
     var p = j.post;
@@ -2429,7 +2619,7 @@ function pickRewrite(id, btn) {
     var conv = wpToDoc(p.raw, 0);
     var cn = catNames({ categories: p.categories });
     var rw = { wpId: p.id, link: p.link, title: p.title, date: p.date, modified: p.modified, origDoc: conv.doc, origTitle: p.title, origExcerpt: p.excerpt, dropped: conv.dropped, styleLoss: conv.styleLoss, boxN: conv.boxN };
-    return api('create', { type: /塾長/.test(cn) ? 'juku' : 'info', step: 0, title: p.title, doc: conv.doc, slug: p.slug, excerpt: p.excerpt, categoryId: String((p.categories || [])[0] || ''), related: conv.related, boxes: conv.boxes, rewrite: rw }).then(function (k) {
+    return api('create', { owner: owner, type: /塾長/.test(cn) ? 'juku' : 'info', step: 0, title: p.title, doc: conv.doc, slug: p.slug, excerpt: p.excerpt, categoryId: String((p.categories || [])[0] || ''), related: conv.related, boxes: conv.boxes, rewrite: rw }).then(function (k) {
       done(); closeModal('m-rwpick'); articles.unshift(k.article); renderList(); enterArticle(k.article);
       toast('元の記事を読み込みました（動かせない箱 ' + conv.boxN + '個）', 4000);
     });
