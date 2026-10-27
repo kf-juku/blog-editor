@@ -394,12 +394,12 @@ details.unit summary { cursor: pointer; font-size: 12px; color: var(--text-muted
 .st-card { text-align: left; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; cursor: pointer; font-family: inherit; display: flex; flex-direction: column; }
 .st-card .num { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.3; }
 .st-card .lbl { font-size: 12px; color: var(--text-muted); }
-.st-card.st-ask .num { color: #b45309; } .st-card.st-back .num { color: #b91c1c; }
+.st-card.st-ask .num { color: #b45309; } .st-card.st-back .num { color: #b91c1c; } .st-card.st-done .num { color: #15803d; }
 .st-card.on { border-color: #334155; box-shadow: inset 0 0 0 1px #334155; }
 .badge.st-work { background: #f1f3f6; color: #334155; }
 .badge.st-ask { background: #fff7e6; color: #b45309; box-shadow: inset 0 0 0 1px #f5d9a8; }
 .badge.st-back { background: #fdf2f2; color: #b91c1c; box-shadow: inset 0 0 0 1px #f3c7c7; }
-.badge.st-done { background: none; color: var(--text-muted); padding-left: 0; }
+.badge.st-done { background: #ecfdf3; color: #15803d; box-shadow: inset 0 0 0 1px #bbf7d0; }  /* 送信済みは緑（v2.11.3 川上さん「終わったやつは緑とか、わかるようにしないの？」） */
 .badge.st-ok { background: #f1f3f6; color: #334155; }
 .badge.st-hold { background: #fff; color: #6b7280; box-shadow: inset 0 0 0 1px #d1d5db; }
 .st-bar.st-hold i.on { background: #d1d5db; }
@@ -410,7 +410,7 @@ tr.row-hold td { background: #fafafa; } tr.row-hold .t-title { color: #6b7280; }
 .st-bar { display: flex; gap: 3px; margin-top: 6px; }
 .st-bar i { display: block; width: 18px; height: 4px; border-radius: 2px; background: #e5e7eb; }
 .st-bar i.on { background: #64748b; }
-.st-bar.st-ask i.on { background: #f59e0b; } .st-bar.st-back i.on { background: #dc2626; } .st-bar.st-done i.on { background: #cbd5e1; }
+.st-bar.st-ask i.on { background: #f59e0b; } .st-bar.st-back i.on { background: #dc2626; }  .st-bar.st-done i.on { background: #22c55e; }
 tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 .who { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 13px; color: #334155; }
 .av { width: 22px; height: 22px; border-radius: 50%; background: #e5e7eb; color: #334155; font-size: 11px; display: inline-grid; place-items: center; font-weight: 700; }
@@ -860,7 +860,7 @@ tr.row-ask td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
 <div id="toast"></div>
 <script>
 // ===== ブログエディター（第1段階） =====
-var APP_VERSION = 'v2.11.2（2026-10-27 WordPressプレビューは右上のバツ印で閉じる）';
+var APP_VERSION = 'v2.11.3（2026-10-27 送信済みは緑）';
 var GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9v4PW9op-Nx58BaRsGwk__KWzLecZtNQR7N5lu_N9O3nKQYRQhubBlQAQLf1WytWHWw/exec';
 var GAS_URL = (new URLSearchParams(location.search).get('gas')) || GAS_URL_DEFAULT;
 var STEP_NAMES = ['原稿入力中', '編集中', '編集中', '編集中', '仕上げチェック中', '送信準備中'];
@@ -962,7 +962,7 @@ function baseState(a) {
   return { k: '原稿入力中', c: 'st-work', bar: 1, g: 'work' };
 }
 var STATE_ORDER = { ask: 0, back: 1, okw: 2, fin: 3, work: 4, sent: 5, hold: 6 };
-var STATE_CARDS = [{ g: ['ask'], l: '確認待ち（川上さんの番）', c: 'st-ask' }, { g: ['back'], l: '差し戻し（担当者の番）', c: 'st-back' }, { g: ['work'], l: '原稿・編集中' }, { g: ['fin', 'okw'], l: '仕上げチェック・送信待ち' }, { g: ['sent'], l: '送信済み' }, { g: ['hold'], l: '保留', c: 'st-hold' }];
+var STATE_CARDS = [{ g: ['ask'], l: '確認待ち（川上さんの番）', c: 'st-ask' }, { g: ['back'], l: '差し戻し（担当者の番）', c: 'st-back' }, { g: ['work'], l: '原稿・編集中' }, { g: ['fin', 'okw'], l: '仕上げチェック・送信待ち' }, { g: ['sent'], l: '送信済み', c: 'st-done' }, { g: ['hold'], l: '保留', c: 'st-hold' }];
 function statusBadge(a) {
   var s = listState(a), h = '<div class="st-bar ' + s.c + '">';
   for (var i = 0; i < 5; i++) h += '<i' + (i < s.bar ? ' class="on"' : '') + '></i>';
