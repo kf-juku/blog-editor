@@ -447,6 +447,13 @@ body:has(#v-editor.active) .side-nav { width: 52px; }
 body:has(#v-editor.active) .side-nav-logo, body:has(#v-editor.active) .side-nav-foot, body:has(#v-editor.active) .side-nav-item span { display: none; }
 body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12px 0; }
 @media (min-width: 901px) and (max-width: 1400px) { .ed-body:not(.no-chat):not(.chat-closed) { grid-template-columns: minmax(0,1fr) 380px; } body:has(#v-editor.active .ed-body:not(.no-chat):not(.chat-closed)) #toast { right: 400px; } }
+/* タイトル（v2.13.0） */
+#titleInput { max-width: none; font-size: 15px; font-weight: 700; }
+.tt-head { font-size: 12px; color: var(--text-muted); margin: 10px 0 2px; font-weight: 700; }
+.tt-opt { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-top: 1px dashed var(--border); font-size: 13px; }
+.tt-opt .tt-tx { flex: 1; min-width: 0; }
+.tt-opt.used .tt-tx { font-weight: 700; }
+.tt-opt .tt-use, .tt-opt .tt-used { flex: none; }
 /* WordPressプレビュー（v2.10）。ボタンはほかのボタンと見分けられるように WordPress の青で塗り、目のアイコンを付ける（v2.10.1 川上さん「見た目が似ていて分かりづらい」） */
 .btn-pv { display: inline-flex; align-items: center; gap: 6px; background: #2271b1; color: #fff; border: 0; border-radius: 999px; padding: 5px 14px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; }
 .btn-pv:hover { background: #135e96; }
@@ -579,8 +586,9 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
           <div class="panel" id="p3">
             <div class="card" id="titleCard">
               <h2>タイトル</h2>
+              <label class="form-label" for="titleInput">使うタイトル</label>
+              <input class="form-input" id="titleInput" placeholder="タイトルを入力" oninput="setTitle(this.value)">
               <div id="titleOpts"></div>
-              <input class="form-input" style="max-width:600px;margin-top:4px" id="titleInput" placeholder="タイトルを入力" oninput="setTitle(this.value)">
             </div>
             <div class="toolbar" title="文を選ぶか、カーソルを置いてから押します" onmousedown="if(event.target.closest('button'))event.preventDefault()">
               <button onclick="fmt('h2')" title="記事の中の大きな区切り。タイトルがH1になるので、本文はH2から">大見出し（H2）</button>
@@ -876,7 +884,7 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
 <div id="toast"></div>
 <script>
 // ===== ブログエディター（第1段階） =====
-var APP_VERSION = 'v2.12.0（2026-10-28 本文を広く：上を2段・書式を1段・左のメニューを細く）';
+var APP_VERSION = 'v2.13.0（2026-10-29 タイトル：使うタイトルを上に・AIの案は「これを使う」で入れて直す）';
 var GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9v4PW9op-Nx58BaRsGwk__KWzLecZtNQR7N5lu_N9O3nKQYRQhubBlQAQLf1WytWHWw/exec';
 var GAS_URL = (new URLSearchParams(location.search).get('gas')) || GAS_URL_DEFAULT;
 var STEP_NAMES = ['原稿入力中', '編集中', '編集中', '編集中', '仕上げチェック中', '送信準備中'];
@@ -1219,16 +1227,25 @@ function applyWriteResult(j) {
 }
 
 // ===== タイトル =====
+// タイトル（v2.13.0 2026-10-29 川上さん）：上の「使うタイトル」がそのままタイトル（自分で直した案＝採用案。別に残さない）。
+// AIの案は下に元のまま残し、「これを使う」で上に入れてから一部を直す。今のタイトルと同じ案には「使用中」
 function renderTitles() {
-  var t = cur.content.titleOptions || [];
-  document.getElementById('titleOpts').innerHTML = t.length ? t.map(function (x, i) {
-    return '<label class="title-opt"><input type="radio" name="tt" ' + (cur.title === x ? 'checked' : '') + ' onchange="setTitle(cur.content.titleOptions[' + i + '], true)"><span>' + esc(x) + '</span></label>';
-  }).join('') : '<div class="muted">AIで記事を作ると、タイトル案が3つ出ます。</div>';
+  var t = cur.content.titleOptions || [], now = String(cur.title || '').trim();
+  document.getElementById('titleOpts').innerHTML = t.length ? '<div class="tt-head">AIの案</div>' + t.map(function (x, i) {
+    var used = String(x).trim() === now;
+    return '<div class="tt-opt' + (used ? ' used' : '') + '"><span class="tt-tx">' + esc(x) + '</span>' + (used ? '<span class="badge st-ok tt-used">使用中</span>' : '<button class="btn-ghost btn-sm tt-use" onclick="useTitle(' + i + ')">これを使う</button>') + '</div>';
+  }).join('') : '';
+}
+function useTitle(i) {
+  var v = (cur.content.titleOptions || [])[i]; if (v == null) return;
+  var inp = document.getElementById('titleInput'); inp.value = v; setTitle(v);
+  inp.focus(); try { inp.setSelectionRange(v.length, v.length); } catch (e) { }
 }
 function setTitle(v, fromOpt) {
   cur.title = v || '（タイトル未定）';
   document.getElementById('edTitle').textContent = cur.title;
   if (fromOpt) document.getElementById('titleInput').value = v;
+  renderTitles();
   markDirty();
 }
 
