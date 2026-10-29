@@ -454,6 +454,12 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
 .tt-opt .tt-tx { flex: 1; min-width: 0; }
 .tt-opt.used .tt-tx { font-weight: 700; }
 .tt-opt .tt-use, .tt-opt .tt-used { flex: none; }
+/* v2.14.0 塾長ノートのアイキャッチ */
+.eye-auto { display: flex; gap: 12px; align-items: center; max-width: 760px; padding: 8px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 8px; }
+.eye-auto img { flex: none; width: 180px; height: auto; border-radius: 4px; display: block; }
+.eye-auto .eye-auto-h { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+.eye-auto .muted { font-size: 12px; }
+@media (max-width: 600px) { .eye-auto { flex-direction: column; align-items: flex-start; } .eye-auto img { width: 100%; } }
 /* WordPressプレビュー（v2.10）。ボタンはほかのボタンと見分けられるように WordPress の青で塗り、目のアイコンを付ける（v2.10.1 川上さん「見た目が似ていて分かりづらい」） */
 .btn-pv { display: inline-flex; align-items: center; gap: 6px; background: #2271b1; color: #fff; border: 0; border-radius: 999px; padding: 5px 14px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; }
 .btn-pv:hover { background: #135e96; }
@@ -616,8 +622,9 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
               <div style="max-width:640px;margin-top:8px"><label class="form-label">抜粋（120字前後） <span id="exLen" class="muted"></span></label><textarea class="form-textarea" style="min-height:60px" id="excerpt" oninput="exLen();metaChanged()"></textarea></div>
             </div>
             <div class="card sec-card">
-              <h2><span class="sec-no">②</span>アイキャッチ画像のプロンプト <span class="sec-sub">ChatGPTの画像生成に貼って、アイキャッチ画像を作ります。画像はWordPressで設定してください</span></h2>
-              <div style="max-width:760px"><textarea class="form-textarea" style="min-height:70px" id="eyecatch" oninput="cur.content.eyecatch=this.value;markDirty()" placeholder="「AIで記事を作る」で作られます"></textarea>
+              <h2><span class="sec-no">②</span>アイキャッチ画像 <span class="sec-sub" id="eyeSub">ChatGPTの画像生成に貼って、アイキャッチ画像を作ります。画像はWordPressで設定してください</span></h2>
+              <div id="eyeAuto"></div>
+              <div style="max-width:760px"><label class="form-label" id="eyeLabel">画像生成のプロンプト</label><textarea class="form-textarea" style="min-height:70px" id="eyecatch" oninput="cur.content.eyecatch=this.value;markDirty()" placeholder="「AIで記事を作る」で作られます"></textarea>
               <button class="btn-ghost" style="margin-top:4px" onclick="copyText(document.getElementById('eyecatch').value,'アイキャッチのプロンプトをコピーしました')">プロンプトをコピー</button></div>
             </div>
             <div class="card sec-card">
@@ -737,6 +744,12 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
           <input class="form-input" id="tailCheck" oninput="tailChanged()" style="max-width:260px" placeholder="横須賀市で唯一">
           <div class="muted" style="font-size:12px;margin-top:2px">送った直後に WordPress の表示を読み、この文字があれば「定型文が出ている」とみなします。定型文に必ず入っている言葉にしてください。</div>
           <div class="row" style="margin-top:8px"><button class="btn-primary" id="tailSave" disabled onclick="saveTail(this)">定型文の設定を保存</button><span class="muted" id="tailState">変更はありません</span></div>
+        </div>
+        <div class="card" style="max-width:760px">
+          <h2>塾長ノートのアイキャッチ</h2>
+          <div class="muted" style="font-size:12px">カテゴリが「塾長ノート」の記事を送るとき、アイキャッチにこの画像を付けます（リライトの記事には付けません）。番号は WordPress のメディアの画面で画像を開いたときの URL の「item=」の数字です。0 にすると付けません。</div>
+          <div class="row" style="margin-top:6px;align-items:center"><label class="form-label" style="margin:0">メディアの番号</label><input class="form-input" id="eyeId" inputmode="numeric" style="width:120px" oninput="eyeIdChanged()"><img id="eyeThumb" alt="" style="height:64px;border-radius:4px;display:none"></div>
+          <div class="row" style="margin-top:8px"><button class="btn-primary" id="eyeSave" disabled onclick="saveEyeId(this)">アイキャッチの設定を保存</button><span class="muted" id="eyeState">変更はありません</span></div>
         </div>
         <div class="card" style="max-width:760px">
           <h2>担当者の名前</h2>
@@ -884,7 +897,7 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
 <div id="toast"></div>
 <script>
 // ===== ブログエディター（第1段階） =====
-var APP_VERSION = 'v2.13.0（2026-10-29 タイトル：使うタイトルを上に・AIの案は「これを使う」で入れて直す）';
+var APP_VERSION = 'v2.14.0（2026-10-29 塾長ノートのアイキャッチを自動で付ける）';
 var GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9v4PW9op-Nx58BaRsGwk__KWzLecZtNQR7N5lu_N9O3nKQYRQhubBlQAQLf1WytWHWw/exec';
 var GAS_URL = (new URLSearchParams(location.search).get('gas')) || GAS_URL_DEFAULT;
 var STEP_NAMES = ['原稿入力中', '編集中', '編集中', '編集中', '仕上げチェック中', '送信準備中'];
@@ -1140,7 +1153,7 @@ function fillEditor() {
   document.getElementById('slug').value = cur.content.slug || '';
   document.getElementById('excerpt').value = cur.content.excerpt || ''; exLen();
   renderTitles(); renderChat(); renderComments(); updateArtCost(); renderSentInfo(); loadCategories(); clearTarget(); pendingCheck = null; renderCheck(); renderFinish();
-  document.getElementById('eyecatch').value = cur.content.eyecatch || ''; renderSlugOpts(); renderRelated(); renderRwCard();
+  document.getElementById('eyecatch').value = cur.content.eyecatch || ''; renderEyecatch(); renderSlugOpts(); renderRelated(); renderRwCard();
   sideTab(cur.step === 4 ? 'finish' : checkLeft() ? 'check' : 'chat');
 }
 function leaveEditor() {
@@ -1606,6 +1619,36 @@ function catNote() {
   var ai = categories.filter(function (c) { return String(c.id) === String(cur.content.catAI || ''); })[0];
   var v = document.getElementById('cat').value;
   el.textContent = ai ? (String(ai.id) === v ? 'AIのおすすめと同じです' : 'AIのおすすめ：' + ai.name) : (cur.type !== 'info' ? '塾長ブログは「塾長ノート」が最初に入ります' : '');
+  renderEyecatch();
+}
+// ===== 塾長ノートのアイキャッチ（v2.14.0）=====
+// カテゴリが「塾長ノート」の記事は、送るときに GAS がアイキャッチ（設定 jukuEyecatchId）を付ける。リライトの記事には付けない
+function isJukuNote() {
+  if (!cur || cur.content.rewrite || !categories) return false;
+  var v = (document.getElementById('cat') || {}).value; if (v == null || v === '') v = cur.content.categoryId;
+  var c = categories.filter(function (x) { return String(x.id) === String(v || ''); })[0];
+  return !!(c && c.name === '塾長ノート');
+}
+function jukuEyeOn() { return isJukuNote() && !!(settings && Number(settings.jukuEyecatchId) && settings.jukuEyecatchUrl); }
+function renderEyecatch() {
+  var box = document.getElementById('eyeAuto'); if (!box || !cur) return;
+  var on = jukuEyeOn(), rw = !!cur.content.rewrite;
+  box.innerHTML = on ? '<div class="eye-auto"><img src="' + esc(settings.jukuEyecatchUrl) + '" alt="塾長ノートのアイキャッチ"><div><div class="eye-auto-h">この画像をアイキャッチに付けて送ります</div><div class="muted">WordPress で差し替えた画像は、送り直しても元に戻しません。</div></div></div>' : '';
+  document.getElementById('eyeSub').textContent = rw ? 'リライトではアイキャッチを変えません。変えるときは WordPress で設定してください' : on ? '別の画像に差し替えたいときは、下のプロンプトで作って WordPress で設定してください' : 'ChatGPTの画像生成に貼って、アイキャッチ画像を作ります。画像はWordPressで設定してください';
+  document.getElementById('eyeLabel').textContent = on ? '差し替えるときのおすすめプロンプト（ChatGPT の画像生成に貼る）' : '画像生成のプロンプト（ChatGPT の画像生成に貼る）';
+}
+function eyeSettingsShow() {
+  var i = document.getElementById('eyeId'); if (!i || !settings) return;
+  i.value = String(Number(settings.jukuEyecatchId) || 0);
+  var t = document.getElementById('eyeThumb'); if (settings.jukuEyecatchUrl && Number(settings.jukuEyecatchId)) { t.src = settings.jukuEyecatchUrl; t.style.display = ''; } else { t.removeAttribute('src'); t.style.display = 'none'; }
+}
+function eyeIdChanged() { document.getElementById('eyeSave').disabled = false; document.getElementById('eyeState').textContent = '保存していない変更があります'; }
+function saveEyeId(btn) {
+  var v = document.getElementById('eyeId').value.trim();
+  if (!/^\d+$/.test(v)) { document.getElementById('eyeState').textContent = '数字だけを入れてください'; return; }
+  var done = busy(btn, '画像を確かめています…');
+  api('saveSettings', { settings: { jukuEyecatchId: Number(v) } }).then(function (j) { done(); settings = j.settings; btn.disabled = true; eyeSettingsShow(); renderEyecatch(); document.getElementById('eyeState').textContent = Number(v) ? '✓ 保存しました。次に送る塾長ノートの記事から使われます' : '✓ 保存しました。アイキャッチは付けません'; toast('塾長ノートのアイキャッチを保存しました'); })
+    .catch(function (e) { done(); document.getElementById('eyeState').textContent = '保存できませんでした：' + netMsg(e); });
 }
 function renderSlugOpts() {
   var el = document.getElementById('slugOpts'); if (!el || !cur) return;
@@ -1841,6 +1884,7 @@ function openSend() {
   html += ph ? '<div class="muted">・画像の仮置き ' + ph + '件は、WordPress に画像の枠として入ります。WordPress で枠を選び「置換」で画像を差し替えてください' + (cur.content.rewrite ? '（差し替えるまで、公開ページでは画像の代わりに説明の文字が出ます）' : '') + '</div>' : '<div class="muted">・画像の仮置きはありません</div>';
   var srcs = usedSources();
   if (srcs.length) html += '<div class="muted">・本文の最後に小さな字で「情報の確認日・出典」（' + srcs.length + '件）を付けます</div>';
+  html += cur.content.rewrite ? '<div class="muted">・アイキャッチは変えません</div>' : jukuEyeOn() ? '<div class="muted">・アイキャッチに塾長ノートの画像を付けます（WordPress ですでに付けてある下書きは、その画像のまま）</div>' : '';
   var bxN = document.querySelectorAll('#doc .keep').length;
   if (bxN) html += '<div class="muted">・動かせない箱 ' + bxN + '個は、WordPress の元の部品のまま戻します</div>';
   html += '<label class="chk"><input type="checkbox" class="must" onchange="chkSend()"><span>写っている生徒の掲載許可を確認した（写真がない場合もチェック）</span></label>';
@@ -1891,7 +1935,7 @@ function doSend(btn, overwrite, attempt) {
     }
     cur.wpId = j.wpId; cur.status = 'sent'; cur.version = j.version; cur.updatedAt = j.updatedAt; cur.step = 5;
     resetSendFoot(); closeModal('m-send'); cur.sendCheck = sendCheckMsg(j.check); renderSentInfo(); setSync('ok');
-    toast((j.rewrite ? '公開中の記事 #' + j.wpId + ' を書き換えました' : j.updated ? 'WordPress の下書き #' + j.wpId + ' を更新しました' : 'WordPress に下書き #' + j.wpId + ' を作りました') + (cur.sendCheck ? '。ただし：' + cur.sendCheck : '。WordPressで正しく表示されることも確かめました'), cur.sendCheck ? 9000 : 4000);
+    toast((j.rewrite ? '公開中の記事 #' + j.wpId + ' を書き換えました' : j.updated ? 'WordPress の下書き #' + j.wpId + ' を更新しました' : 'WordPress に下書き #' + j.wpId + ' を作りました') + (j.eyecatch === 'set' ? '（アイキャッチ：塾長ノートの画像）' : j.eyecatch === 'kept' ? '（アイキャッチ：WordPress で付けた画像のまま）' : '') + (cur.sendCheck ? '。ただし：' + cur.sendCheck : '。WordPressで正しく表示されることも確かめました'), cur.sendCheck ? 9000 : 4000);
   }).catch(function (e) {
     done();
     var m = netMsg(e);
@@ -2167,6 +2211,7 @@ function previewDoc() {
   var css = '.pv-ph{display:flex;align-items:center;justify-content:center;min-height:180px;background:#e5e7eb;color:#4b5563;font-size:14px;border-radius:4px;padding:12px;text-align:center}' +
     '.pv-box{border:1px dashed #9ca3af;color:#6b7280;font-size:13px;padding:10px 12px;margin:1.5em 0;border-radius:4px;background:#f9fafb}' +
     '.pv-tail{display:contents}' +
+    '.pv-eyeimg{display:block;width:100%;height:auto;margin:0 0 2em}.p-articleThumb{margin:0}' +
     '.pv-eye{aspect-ratio:16/5;background:#e5e7eb;color:#4b5563;display:flex;align-items:center;justify-content:center;font-size:14px;margin:0 0 2em}' +
     '[contenteditable=true]{cursor:text;border-radius:2px}[contenteditable=true]:hover{outline:2px dashed #93c5fd;outline-offset:4px}[contenteditable=true]:focus{outline:2px solid #2271b1;outline-offset:4px}' +
     '#pvJump{position:absolute;z-index:50;display:none;background:#2271b1;color:#fff;border:0;border-radius:999px;font-size:12px;padding:3px 10px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2);font-family:sans-serif}' +
@@ -2178,7 +2223,7 @@ function previewDoc() {
     ((kit && kit.styles) || []).map(function (c) { return '<style>' + String(c).replace(/<\/style/gi, '') + '</style>'; }).join('') +
     '<style>' + css + '</style></head><body class="' + pvAttr(wrap) + '"><div id="body_wrap" class="' + pvAttr(wrap) + '"><div id="content" class="l-content l-container"><main id="main_content" class="l-mainContent l-article"><article class="l-mainContent__inner">' +
     '<div class="p-articleHead c-postTitle"><h1 class="c-postTitle__ttl">' + esc(cur.title && cur.title !== '（タイトル未定）' ? cur.title : '（タイトル未定）') + '</h1><time class="c-postTitle__date u-thin"><span class="__y">' + y + '</span><span class="__md">' + md + '</span></time></div>' +
-    '<div class="pv-eye">アイキャッチ画像（WordPress で設定します）</div>' +
+    (jukuEyeOn() ? '<figure class="p-articleThumb"><img class="p-articleThumb__img pv-eyeimg" src="' + pvAttr(settings.jukuEyecatchUrl) + '" alt=""></figure>' : '<div class="pv-eye">アイキャッチ画像（WordPress で設定します）</div>') +
     '<div class="post_content">' + body + '</div></article></main></div></div>' +
     '<button id="pvJump" type="button">編集画面で開く</button>' +
     '<scr' + 'ipt>(' + pvFrameScript.toString() + ')();</scr' + 'ipt></body></html>';
@@ -2297,6 +2342,7 @@ function loadSettings() {
     var sf = document.getElementById('staffText'); if (sf) sf.value = settings.staff || '';
     if (articles.length) renderList();
     if (cur) { document.getElementById('edOwner').innerHTML = ownerOptions(cur.owner || '', '担当者：未設定'); }
+    eyeSettingsShow(); if (cur) renderEyecatch();
     var tr = document.getElementById('tailRefs'); if (tr) tr.value = settings.fixedBlockRef || ''; var tc = document.getElementById('tailCheck'); if (tc) tc.value = settings.fixedCheckText || '';
     document.querySelectorAll('#s1 [data-k]').forEach(function (t) { t.value = settings[t.getAttribute('data-k')] || ''; });
     document.getElementById('fx').value = settings.fx || 160;
