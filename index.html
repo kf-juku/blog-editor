@@ -517,8 +517,8 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
       <div class="st-cards" id="stateCards"></div>
       <div class="stat-row">
         <div class="stat"><div class="num js-month">$0.00</div><div class="lbl">今月のAI利用料金（概算）</div></div>
-        <div class="stat"><div class="lbl">今の設定で記事1本を作る目安 <span class="help" title="塾長ブログ＝「AIで記事を作る」1回＋AIで部分修正5回＋仕上げチェック1回。情報発信ブログ＝記事が長いぶん「AIで記事を作る」が重く、AIで部分修正10回＋仕上げチェック1回。内訳は「設定」→「モデル・料金」">?</span></div>
-          <div class="cost-line"><span class="lbl">塾長ブログ</span><b class="js-art-juku-yen">-</b></div>
+        <div class="stat"><div class="lbl">今の設定で記事1本を作る目安 <span class="help" title="塾長ノート＝「AIで記事を作る」1回＋AIで部分修正5回＋仕上げチェック1回。情報発信ブログ＝記事が長いぶん「AIで記事を作る」が重く、AIで部分修正10回＋仕上げチェック1回。内訳は「設定」→「モデル・料金」">?</span></div>
+          <div class="cost-line"><span class="lbl">塾長ノート</span><b class="js-art-juku-yen">-</b></div>
           <div class="cost-line"><span class="lbl">情報発信ブログ</span><b class="js-art-info-yen">-</b></div></div>
       </div>
       </div>
@@ -526,7 +526,7 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
         <input class="form-input" style="width:200px" placeholder="タイトルで検索" id="listQ" oninput="renderList()">
         <select class="form-input" id="listWho" style="width:auto" onchange="renderList()"><option value="">担当者：全員</option></select>
         <button class="btn-ghost on" data-f="all" onclick="setListFilter(this)">すべて</button>
-        <button class="btn-ghost" data-f="juku" onclick="setListFilter(this)">塾長ブログ</button>
+        <button class="btn-ghost" data-f="juku" onclick="setListFilter(this)">塾長ノート</button>
         <button class="btn-ghost" data-f="info" onclick="setListFilter(this)">情報発信ブログ</button>
         <button class="btn-ghost" data-f="rw" onclick="setListFilter(this)">リライト</button>
         <button class="btn-ghost" data-f="deleted" onclick="setListFilter(this)">削除した記事</button>
@@ -686,9 +686,9 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
           <div class="card sec-card">
             <h2><span class="sec-no">①</span>文体 <span class="sec-sub">AIが記事を書くときの書き方。全部の記事に使う方針と、ブログの種類ごとの書き方</span></h2>
             <label class="form-label">共通の文章編集方針（どちらのブログにも使う）</label><textarea class="form-textarea" data-k="rulesCommon"></textarea>
-            <label class="form-label" style="margin-top:8px">塾長ブログの文体</label><textarea class="form-textarea" data-k="rulesJuku"></textarea>
+            <label class="form-label" style="margin-top:8px">塾長ノートの文体</label><textarea class="form-textarea" data-k="rulesJuku"></textarea>
             <label class="form-label" style="margin-top:8px">情報発信ブログの文体</label><textarea class="form-textarea" data-k="rulesInfo"></textarea>
-            <label class="form-label" style="margin-top:8px">読みやすさとユーモア（塾長ブログは全部、情報発信ブログは1〜2か所だけ使う）</label><textarea class="form-textarea" data-k="rulesHumor"></textarea>
+            <label class="form-label" style="margin-top:8px">読みやすさとユーモア（塾長ノートは全部、情報発信ブログは1〜2か所だけ使う）</label><textarea class="form-textarea" data-k="rulesHumor"></textarea>
           </div>
           <div class="card sec-card">
             <h2><span class="sec-no">②</span>直す言葉・使わない言葉 <span class="sec-sub">音声入力の誤変換を直す表と、AIに使わせない言い回し</span></h2>
@@ -699,7 +699,7 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
             <h2><span class="sec-no">③</span>手本とキーワード <span class="sec-sub">AIが真似する過去の記事と、記事に入れてよい言葉</span></h2>
             <label class="form-label">手本にする過去記事（WordPressの投稿ID。カンマ区切り・3本まで）</label>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <div style="flex:1;min-width:160px"><div class="muted">塾長ブログ</div><input class="form-input" data-k="exemplarJuku" placeholder="3285,3474"></div>
+              <div style="flex:1;min-width:160px"><div class="muted">塾長ノート</div><input class="form-input" data-k="exemplarJuku" placeholder="3285,3474"></div>
               <div style="flex:1;min-width:160px"><div class="muted">情報発信ブログ</div><input class="form-input" data-k="exemplarInfo" placeholder="781,2257"></div>
             </div>
             <div class="muted">AIは手本の文体・文の長さ・運び方を真似ます。内容は真似しません。1本増やすと「記事を作る」1回あたり約1円上がります。</div>
@@ -714,7 +714,7 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
       </div>
       <div class="panel" id="s2">
         <div class="card" style="max-width:900px">
-          <h2>ボタンごとのAI料金 <span class="muted">今の設定での目安・概算</span> <span class="help" title="ボタンを1回押すたびにAIを呼びます。金額は、塾長ブログ1本（原稿1,200字・本文2,500字程度）を想定した試算です。実際の料金は記事一覧と記事の画面に、使った量から計算して表示します">?</span></h2>
+          <h2>ボタンごとのAI料金 <span class="muted">今の設定での目安・概算</span> <span class="help" title="ボタンを1回押すたびにAIを呼びます。金額は、塾長ノート1本（原稿1,200字・本文2,500字程度）を想定した試算です。実際の料金は記事一覧と記事の画面に、使った量から計算して表示します">?</span></h2>
           <table class="tbl" id="costTbl"><thead><tr><th>押すボタン</th><th>どこにあるか</th><th>使うモデル</th><th>1回あたり</th><th>1記事で押す回数</th><th>1記事あたり</th></tr></thead><tbody></tbody></table>
           
           <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border)"><label class="form-label">仕上げチェックでネット検索する回数の上限</label>
@@ -789,7 +789,7 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
   <h3>新しい記事を書く</h3>
   <label class="form-label">記事の種類</label>
   <div class="type-cards">
-    <div class="type-card sel" data-t="juku" onclick="selType(this)"><b>塾長ブログ</b><span class="muted">日々の出来事・教室で感じたこと・教育の考え</span></div>
+    <div class="type-card sel" data-t="juku" onclick="selType(this)"><b>塾長ノート</b><span class="muted">日々の出来事・教室で感じたこと・教育の考え</span></div>
     <div class="type-card" data-t="info" onclick="selType(this)"><b>情報発信ブログ</b><span class="muted">受験・学校・学習方法・制度</span></div>
   </div>
   <label class="form-label" style="margin-top:10px">担当者</label>
@@ -897,7 +897,7 @@ body:has(#v-editor.active) .side-nav-item { justify-content: center; padding: 12
 <div id="toast"></div>
 <script>
 // ===== ブログエディター（第1段階） =====
-var APP_VERSION = 'v2.14.0（2026-10-29 塾長ノートのアイキャッチを自動で付ける）';
+var APP_VERSION = 'v2.14.1（2026-10-29 種類の呼び名を「塾長ノート」にそろえた）';
 var GAS_URL_DEFAULT = 'https://script.google.com/macros/s/AKfycby9v4PW9op-Nx58BaRsGwk__KWzLecZtNQR7N5lu_N9O3nKQYRQhubBlQAQLf1WytWHWw/exec';
 var GAS_URL = (new URLSearchParams(location.search).get('gas')) || GAS_URL_DEFAULT;
 var STEP_NAMES = ['原稿入力中', '編集中', '編集中', '編集中', '仕上げチェック中', '送信準備中'];
@@ -1040,7 +1040,7 @@ function renderList() {
   document.getElementById('listBody').innerHTML = rows.map(function (a) {
     var rv = delMode ? '' : a.hold ? (a.holdNote ? '<div class="rv-note rv-hold">保留：' + esc(a.holdNote) + '</div>' : '') : (a.review === 'ask' || a.review === 'back') && a.reviewNote ? '<div class="rv-note ' + (a.review === 'back' ? 'rv-back' : 'rv-ask') + '">' + esc(a.reviewNote) + '</div>' : '';
     return '<tr class="click' + (!delMode && !a.hold && a.review === 'ask' ? ' row-ask' : '') + (!delMode && a.hold ? ' row-hold' : '') + '" onclick="' + (delMode ? '' : 'openArticle(\'' + a.id + '\')') + '"><td class="t-no">' + (a.no ? 'No.' + a.no : '') + '</td><td><div class="t-title">' + (a.rewriteOf ? '<span class="rw-tag">リライト</span>' : '') + esc(a.title || '（タイトル未定）') + '</div><div class="t-sub">' + [a.rewriteOf ? '公開中の記事 #' + a.rewriteOf + ' を書き換える' : a.wpId ? 'WordPress 下書き #' + a.wpId : '', a.madeWith ? 'AIで作った版：' + esc(a.madeWith) : ''].filter(Boolean).join('　') + '</div>' + rv + '</td>' +
-      '<td>' + ownerHtml(a.owner) + '</td><td>' + statusBadge(a) + '</td><td class="t-sub">' + (a.type === 'info' ? '情報発信ブログ' : '塾長ブログ') + '</td><td class="t-sub">' + hm(a.updatedAt) + '</td><td class="t-sub">' + yen(a.costUsd) + '</td><td class="t-act">' + (delMode ? '<button class="btn-ghost" onclick="event.stopPropagation();doRestore(this,\'' + a.id + '\')">元に戻す</button>' : '<button class="btn-icon del-btn" title="削除" aria-label="この記事を削除" onclick="event.stopPropagation();askTrash(\'' + a.id + '\')">' + I_TRASH + '</button>') + '</td></tr>';
+      '<td>' + ownerHtml(a.owner) + '</td><td>' + statusBadge(a) + '</td><td class="t-sub">' + (a.type === 'info' ? '情報発信ブログ' : '塾長ノート') + '</td><td class="t-sub">' + hm(a.updatedAt) + '</td><td class="t-sub">' + yen(a.costUsd) + '</td><td class="t-act">' + (delMode ? '<button class="btn-ghost" onclick="event.stopPropagation();doRestore(this,\'' + a.id + '\')">元に戻す</button>' : '<button class="btn-icon del-btn" title="削除" aria-label="この記事を削除" onclick="event.stopPropagation();askTrash(\'' + a.id + '\')">' + I_TRASH + '</button>') + '</td></tr>';
   }).join('');
   document.getElementById('listTbl').style.display = rows.length ? '' : 'none';
   var em = document.getElementById('listEmpty');
@@ -1145,7 +1145,7 @@ function enterArticle(a) {
 }
 function fillEditor() {
   document.getElementById('edTitle').textContent = cur.title || '（タイトル未定）';
-  document.getElementById('edType').innerHTML = esc(cur.type === 'info' ? '情報発信ブログ' : '塾長ブログ') + (cur.content.rewrite ? ' <span class="rw-tag">リライト：公開中の記事 #' + esc(cur.content.rewrite.wpId) + '</span>' : '');
+  document.getElementById('edType').innerHTML = esc(cur.type === 'info' ? '情報発信ブログ' : '塾長ノート') + (cur.content.rewrite ? ' <span class="rw-tag">リライト：公開中の記事 #' + esc(cur.content.rewrite.wpId) + '</span>' : '');
   document.getElementById('edOwner').innerHTML = ownerOptions(cur.owner || '', '担当者：未設定'); renderReview();
   document.getElementById('draft').value = cur.content.draft || ''; draftCount();
   setDoc(cur.content.doc || '');
@@ -1605,7 +1605,7 @@ function loadCategories() {
 function fillCats() {
   var sel = document.getElementById('cat');
   sel.innerHTML = '<option value="">（選んでください）</option>' + categories.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + '</option>'; }).join('');
-  // 塾長ブログで何も選んでいなければ「塾長ノート」にしておく
+  // 塾長ノートで何も選んでいなければ「塾長ノート」にしておく
   if (!cur.content.categoryId && cur.type !== 'info') {
     var jk = categories.filter(function (c) { return c.name === '塾長ノート'; })[0];
     // 保存は記事を開く処理（送れていない内容の確認）が終わってから行う。開いた直後に保存の印を付けると、新しい記事でも「送れていない内容が残っています」が出てしまうため
@@ -1618,7 +1618,7 @@ function catNote() {
   var el = document.getElementById('catNote'); if (!el || !categories) return;
   var ai = categories.filter(function (c) { return String(c.id) === String(cur.content.catAI || ''); })[0];
   var v = document.getElementById('cat').value;
-  el.textContent = ai ? (String(ai.id) === v ? 'AIのおすすめと同じです' : 'AIのおすすめ：' + ai.name) : (cur.type !== 'info' ? '塾長ブログは「塾長ノート」が最初に入ります' : '');
+  el.textContent = ai ? (String(ai.id) === v ? 'AIのおすすめと同じです' : 'AIのおすすめ：' + ai.name) : (cur.type !== 'info' ? '塾長ノートの記事は、カテゴリ「塾長ノート」が最初に入ります' : '');
   renderEyecatch();
 }
 // ===== 塾長ノートのアイキャッチ（v2.14.0）=====
@@ -2073,7 +2073,7 @@ function updateMonth() {
   document.querySelectorAll('.js-month').forEach(function (el) { el.textContent = yen(monthUsd); });
 }
 // 1回あたりの目安（千トークン。試作の実測：日本語1文字≒1.2トークン）
-// 塾長ブログ：本文2,500字前後／情報発信ブログ：本文4,000字前後（試作 test2 の実測：3,327字で書かせた量 4,029）
+// 塾長ノート：本文2,500字前後／情報発信ブログ：本文4,000字前後（試作 test2 の実測：3,327字で書かせた量 4,029）
 var ACTS = [
   { key: 'write', name: 'AIで記事を作る（手本の過去記事2本・点検・画像のプロンプトを含む）', where: '記事 › 1 原稿', inK: 13, outK: 20, n: 1, infoIn: 14, infoOut: 23, infoN: 1 },
   { key: 'chat', name: 'AIで部分修正の「送る」（選んだ文だけを直す）', where: '記事 › 2 編集 › 右の「AIで部分修正」', inK: 5, outK: 0.5, n: 5, infoIn: 7, infoOut: 0.6, infoN: 10 },
